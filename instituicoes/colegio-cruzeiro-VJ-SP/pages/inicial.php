@@ -25,6 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
      <link rel="stylesheet" href="../css/inicial.css">
 </head>
 <body>
+
     <div>
         <a href="tour.html" class="map-link">
             <img src="../assets/imagens/mapa.png" alt="Mapa do Tour Virtual" />
