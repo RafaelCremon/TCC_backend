@@ -5,62 +5,80 @@ const viewer = new Marzipano.Viewer(document.getElementById('pano'), {
   }
 });
 
+// Apenas fotos do Bloco A cadastradas
 const panoData = [
-  { name: "Catraca", image: "../assets/minimapa/CATRACA.jpg", initialYaw: 10 },
-  { name: "Escadaria", image: "../assets/minimapa/DOURADO_ESCADARIA.jpg", initialYaw: Math.PI },
-  { name: "Safe_zone", image: "../assets/minimapa/SAFE_ZONE.jpg", initialYaw: 0 },
-  { name: "hell", image: "../assets/minimapa/HELL.jpg", initialYaw: 0 },
-  { name: "centro_patio", image: "../assets/minimapa/CENTRO_PATIOO.jpg", initialYaw: 0 },
-  { name: "Bom_Gosto", image: "../assets/minimapa/BOM_GOSTO.jpg", initialYaw: 0 },
-  { name: "impressao", image: "../assets/minimapa/FUNDO_IMPRESSAO.jpg", initialYaw: 0 },
-  { name: "elevadores", image: "../assets/minimapa/ELEVADORES.jpg", initialYaw: 0 },
-  { name: "fundo_corredor", image: "../assets/minimapa/FUNDO_CORREDOR.jpg", initialYaw: 0 },
-  { name: "transporte", image: "../assets/minimapa/TRANSPORTE.jpg", initialYaw: 0 },
-  { name: "escadaria_principal", image: "../assets/minimapa/ESCADAS_PRINCIPAL.jpg", initialYaw: 0 },
-  { name: "secretaria", image: "../assets/minimapa/SECRETARIA.jpg", initialYaw: 0 },
-  { name: "dema", image: "../assets/minimapa/DEMA.jpg", initialYaw: 0 }
+  { name: "Catraca", image: "../assets/minimapa/CATRACA.jpg", bloco: "A" },
+  { name: "Escadaria", image: "../assets/minimapa/DOURADO_ESCADARIA.jpg", bloco: "A" },
+  { name: "fundo_corredor", image: "../assets/minimapa/FUNDO_CORREDOR.jpg", bloco: "A" },
+  { name: "dema", image: "../assets/minimapa/DEMA.jpg", bloco: "A" },
+   { name: "Safe_zone", image: "../assets/minimapa/SAFE_ZONE.jpg", bloco: "A" },
+  { name: "hell", image: "../assets/minimapa/HELL.jpg", bloco: "A" },
+  { name: "transporte", image: "../assets/minimapa/TRANSPORTE.jpg", bloco: "A" },
+  { name: "centro_patio", image: "../assets/minimapa/CENTRO_PATIOO.jpg", bloco: "A" },
+ { name: "Bom_Gosto", image: "../assets/minimapa/BOM_GOSTO.jpg", bloco: "A" },
+  { name: "escadaria_principal", image: "../assets/minimapa/ESCADAS_PRINCIPAL.jpg", bloco: "A" },
+  { name: "impressao", image: "../assets/minimapa/FUNDO_IMPRESSAO.jpg", bloco: "A" },
+  { name: "elevadores", image: "../assets/minimapa/ELEVADORES.jpg", bloco: "A" },
+  { name: "secretaria", image: "../assets/minimapa/SECRETARIA.jpg", bloco: "A" },
 ];
 
-const scenes = panoData.map((data, index) => {
-  const source = Marzipano.ImageUrlSource.fromString(data.image);
-  const geometry = new Marzipano.EquirectGeometry([{ width: 4000 }]);
-  const limiter = Marzipano.RectilinearView.limit.traditional(2048, Math.PI / 2, Math.PI / 2);
-  const view = new Marzipano.RectilinearView({ yaw: data.initialYaw || 0 }, limiter);
-  const scene = viewer.createScene({ source, geometry, view });
-
-  scene.view = view;
-
-  return { name: data.name, scene, view };
-});
-
-let currentIndex = 0;
-
-const forwardArrow = document.createElement('div');
-forwardArrow.className = 'hotspot arrow forward';
-forwardArrow.title = "Avançar/Retornar"; // Título pode ser mais genérico agora
-document.getElementById('pano').appendChild(forwardArrow);
-
-forwardArrow.addEventListener('click', () => {
-  const yaw = scenes[currentIndex].view.yaw();
-
-  // Lógica INVERTIDA:
-  // Se a seta aponta para "frente" (cos(yaw) >= 0), a foto RETORNA
-  if (Math.cos(yaw) >= 0 && currentIndex > 0) { // Garante que não vai para índice negativo
-    currentIndex--;
-  }
-  // Se a seta aponta para "trás" (cos(yaw) < 0), a foto AVANÇA
-  else if (Math.cos(yaw) < 0 && currentIndex < scenes.length - 1) { // Garante que não excede o array
-    currentIndex++;
-  }
-  scenes[currentIndex].scene.switchTo();
-});
-
-function updateArrowRotation() {
-  const yaw = scenes[currentIndex].view.yaw();
-  const degrees = yaw * (180 / Math.PI);
-  forwardArrow.style.transform = `translateX(-50%) rotate(${degrees}deg)`;
-  requestAnimationFrame(updateArrowRotation);
+// Função para pegar o parâmetro da URL
+function getBlocoFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('bloco');
 }
 
-scenes[currentIndex].scene.switchTo();
-updateArrowRotation();
+const blocoSelecionado = getBlocoFromUrl();
+const panoFiltrado = blocoSelecionado
+  ? panoData.filter(data => data.bloco === blocoSelecionado)
+  : [];
+
+// Só cria cenas se houver fotos para o bloco selecionado
+const scenes = panoFiltrado.map((data, index) => {
+  const source = Marzipano.ImageUrlSource.fromString(data.image);
+  const geometry = new Marzipano.EquirectGeometry([{ width: 4000 }]);
+  const limiter = Marzipano.RectilinearView.limit.traditional(
+    2048,
+    100 * Math.PI / 180,
+    120 * Math.PI / 180
+  );
+
+  const initialViewParams = (index === 1)
+    ? { yaw: 10 }
+    : null;
+
+  const view = new Marzipano.RectilinearView(initialViewParams, limiter);
+  const scene = viewer.createScene({ source, geometry, view });
+
+  // Hotspot Avançar (próxima cena)
+  if (index < panoFiltrado.length - 1) {
+    const nextHotspot = document.createElement('div');
+    nextHotspot.className = 'hotspot arrow next';
+    nextHotspot.title = "Próxima";
+    nextHotspot.addEventListener('click', () => {
+      scenes[index + 1].scene.switchTo();
+    });
+    scene.hotspotContainer().createHotspot(nextHotspot, { yaw: 1.0, pitch: 0 });
+  }
+
+  // Hotspot Voltar (cena anterior)
+  if (index > 0) {
+    const prevHotspot = document.createElement('div');
+    prevHotspot.className = 'hotspot arrow prev';
+    prevHotspot.title = "Voltar";
+    prevHotspot.addEventListener('click', () => {
+      scenes[index - 1].scene.switchTo();
+    });
+    scene.hotspotContainer().createHotspot(prevHotspot, { yaw: -1.0, pitch: 0 });
+  }
+
+  return {
+    name: data.name,
+    scene: scene
+  };
+});
+
+// Só inicia se houver cenas (fotos)
+if (scenes.length > 0) {
+  scenes[0].scene.switchTo();
+}

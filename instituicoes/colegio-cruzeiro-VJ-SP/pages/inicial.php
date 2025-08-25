@@ -19,23 +19,281 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Página Inicial</title>
-     <link rel="stylesheet" href="../css/inicial.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Página Inicial</title>
+  <link rel="stylesheet" href="../css/inicial.css">
+  <style>
+  .apple-transition-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: linear-gradient(120deg, #5b8cff 0%, #2e3192 100%);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 9999;
+      transition: opacity 0.7s cubic-bezier(.4,1.4,.6,1);
+    }
+    .apple-transition-active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .shortcuts-card.apple-animate {
+      animation: appleFadeOutScale 0.7s cubic-bezier(.4,1.4,.6,1) forwards;
+    }
+      .shortcuts-card.apple-animate-in {
+        animation: appleFadeInScaleUp 0.7s cubic-bezier(.4,1.4,.6,1);
+      }
+      @keyframes appleFadeInScaleUp {
+        0% {
+          opacity: 0;
+          transform: scale(1.12) translateY(40px);
+        }
+        40% {
+          opacity: 0.7;
+          transform: scale(1.04) translateY(16px);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
+    @keyframes appleFadeInScale {
+      0% { opacity: 0; transform: scale(1.12); }
+      40% { opacity: 0.7; transform: scale(1.04); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+    .shortcuts-card.hide {
+      animation: fadeOutScale 0.5s cubic-bezier(.4,1.4,.6,1) forwards;
+    }
+    @keyframes fadeOutScale {
+      to {
+        opacity: 0;
+        transform: scale(0.92) translateY(30px);
+        filter: blur(2px);
+      }
+    }
+
+    /* Adicione ao seu CSS */    /* Adicione ao seu CSS */
+    .atalho-slot.preenchido {
+      transition: background 0.3s, box-shadow 0.3s;
+      background: #eaf2ff;
+      box-shadow: 0 2px 12px rgba(44,92,255,0.10);
+    }
+    .atalho-slot.preenchido {
+      transition: background 0.3s, box-shadow 0.3s;
+      background: #eaf2ff;
+      box-shadow: 0 2px 12px rgba(44,92,255,0.10);
+    }
+  </style>
 </head>
 <body>
-
-    <div>
-        <a href="tour.html" class="map-link">
-            <img src="../assets/imagens/mapa.png" alt="Mapa do Tour Virtual" />
-            <span>Clique para abrir o Mini mapa</span>
-        </a>
-
-        <!-- Botão de Logout -->
-        <form method="POST">
-            <button type="submit" name="logout" class="logout-button">Logout</button>
-        </form>
+  <div class="apple-transition-overlay" id="appleOverlay"></div>
+  <div id="welcomeAnimation" style="position:fixed;top:0;left:0;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;z-index:10000;background:rgba(44,92,255,0.18);backdrop-filter:blur(2px);transition:opacity 0.7s;opacity:1;">
+    <h2 id="welcomeText" style="margin:0;font-size:2.6rem;font-weight:600;letter-spacing:0.03em;background:linear-gradient(90deg,#5b8cff 0%,#2e3192 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-fill-color:transparent;opacity:0;white-space:nowrap;overflow:hidden;border-right:2px solid #5b8cff;"></h2>
+  </div>
+  <header class="top-bar">
+    <div class="brand">
+      <button id="toggleSidebarBtn" class="menu-button" aria-label="Abrir menu">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      </button>
+  <img src="../assets/imagens/LOGO.png" alt="Logo Quantum" class="logo" id="headerLogo" style="width:32px;height:32px;border-radius:50%;margin-right:10px;vertical-align:middle;box-shadow:0 2px 8px rgba(44,92,255,0.10);">
+      <h1>Quantum Edu.</h1>
+  <h2 class="welcome-header" id="headerWelcome" style="font-size:16px; font-weight:400; margin:4px 0 0 0; color:#5b8cff; opacity:0; transition:opacity 0.5s;"></h2>
     </div>
+    <div class="admin-profile" id="adminProfile" style="position: relative; cursor: pointer;">
+      <img src="../assets/imagens/spongebob.png" alt="Admin" class="admin-avatar">
+      <span>Admin</span>
+      <!-- Menu suspenso -->
+      <div id="profileMenu" style="display:none; position:absolute; right:0; top:110%; background:#fff; border:1px solid #ddd; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.08); min-width:120px; z-index:100;">
+        <button id="toggleThemeBtn" style="width:100%; background:none; border:none; padding:10px; text-align:left; cursor:pointer;">
+          Alternar modo claro/escuro
+        </button>
+      <form method="POST">
+            <button type="submit" name="logout" class="logout-button">Logout</button>
+      </form>
+
+  </header>
+
+  <div class="welcome-card">
+    <img src="../assets/imagens/spongebob.png" alt="Avatar Admin" class="welcome-avatar">
+    <div>
+      <h2 class="welcome-title" id="cardWelcome" style="font-size:1.3rem;font-weight:600;margin:0 0 4px 0;color:#5b8cff;opacity:0;transition:opacity 0.5s;"></h2>
+      <p class="welcome-desc">Acesse e gerencie todos os recursos da plataforma Quantum Admin.</p>
+    </div>
+  </div>
+
+  <aside class="sidebar" id="sidebar">
+
+    <a href="#" class="sidebar-item">
+      <svg class="sidebar-icon" viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.5V12h-2V9.7l-7 3.11v5.39l-7-3.11V18h2v-3.2l7 3.11 9-4.5V18h2v-6l-11 6-11-6 11-6z"/></svg>
+      <span>Acadêmico</span>
+    </a>
+
+    <div class="sidebar-item-container">
+      <div class="sidebar-item" id="mapButton">
+        <svg class="sidebar-icon" viewBox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/></svg>
+        <span>Mini Mapa</span>
+      </div>
+      <div class="options" id="optionsMenu">
+        <button onclick="window.location.href='tour.html?bloco=A'">Bloco A</button>
+        <button onclick="window.location.href='tour.html?bloco=B'">Bloco B</button>
+        <button onclick="window.location.href='tour.html?bloco=D'">Bloco D</button>
+        <button onclick="window.location.href='tour.html?bloco=INFANTIL'">Infantil</button>
+      </div>
+    </div>
+
+    <a href="lanchonetes.html" class="sidebar-item">
+      <svg class="sidebar-icon" viewBox="0 0 24 24"><path d="M16 4h- situazionea1-2-2-1-2-2h-2c-1.1 0-2 .9-2 2v2H6c-1.1 0-2 .9-2 2v9c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-2V4c0-1.1-.9-2-2-2zm-4 0h2v2h-2V4zM6 8h14v9H6V8z"/></svg>
+      <span>Lanchonetes</span>
+    </a>
+
+    <a href="#" class="sidebar-item">
+      <svg class="sidebar-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-2-9h4v2h-4v-2zm-2 4h8v2H8v-2z"/></svg>
+      <span>Financeiro</span>
+    </a>
+
+    <a href="#" class="sidebar-item">
+      <svg class="sidebar-icon" viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c.04.32.07.65.07.98s-.03.66-.07.98l2.11 1.65c.19.15.24.42.12.64l-2 3.46c-.12.22-.39.3-.61.22l-2.49-1c-.52.4-1.08.73-1.69.98l-.38 2.65c-.03.24-.24.42-.49.42h-4c-.25 0-.46-.18-.49-.42l-.38-2.65c-.61-.25-1.17-.59-1.69-.98l-2.49 1c-.23.09-.49 0-.61-.22l-2-3.46c-.12-.22-.07-.49.12-.64l2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>
+      <span>Preferências</span>
+    </a>
+  </aside>
+
+  <main class="content">
+    <div class="shortcuts-card" id="shortcutsCard">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <h3 style="margin: 0;">Atalhos</h3>
+        <button 
+          id="editShortcutsBtn"
+          title="Editar atalhos" 
+          style="background: none; border: none; cursor: pointer; padding: 4px;"
+          aria-label="Editar atalhos"
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0057ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 20h9" />
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>
+          </svg>
+        </button>
+      </div>
+      <div class="shortcut-buttons">
+        <button class="add-shortcut-btn" onclick="window.location.href='atalhos.html'">+</button>
+        <button class="add-shortcut-btn" onclick="window.location.href='atalhos.html'">+</button>
+        <button class="add-shortcut-btn" onclick="window.location.href='atalhos.html'">+</button>
+        <button class="add-shortcut-btn" onclick="window.location.href='atalhos.html'">+</button>
+      </div>
+    </div>
+
+
+    <div class="opcoes-grid" id="opcoes">
+      <!-- Cada opção de atalho deve ter uma classe .opcao-atalho e um id único, ex: id="opcao-1" -->
+    </div>
+  </main>
+
+  <div class="overlay" id="overlay"></div>
+  
+  <script src="../js/inicial.js"></script>
+  <script>
+  window.addEventListener('DOMContentLoaded', function() {
+    // Apple-style card animation
+    var card = document.getElementById('shortcutsCard');
+    if(card) {
+      card.classList.add('apple-animate-in');
+      // Não remove a classe, assim só anima uma vez
+    }
+    // Welcome animation só na primeira vez
+    var welcomeDiv = document.getElementById('welcomeAnimation');
+    var welcomeText = document.getElementById('welcomeText');
+    var cardWelcome = document.getElementById('cardWelcome');
+    var text = 'Bem-vindo, Admin!';
+    var jaViuBoasVindas = localStorage.getItem('jaViuBoasVindas');
+    function initAppFeatures() {
+      // Atalhos
+      if (typeof carregarAtalhos === 'function') carregarAtalhos();
+      // Perfil
+      const adminProfile = document.getElementById('adminProfile');
+      const profileMenu = document.getElementById('profileMenu');
+      const btnSair = document.getElementById('btnSair');
+      if (adminProfile && profileMenu) {
+        adminProfile.addEventListener('click', function(e) {
+          e.stopPropagation();
+          profileMenu.style.display = profileMenu.style.display === 'block' ? 'none' : 'block';
+        });
+        document.addEventListener('click', function() {
+          profileMenu.style.display = 'none';
+        });
+      }
+      // Botão sair do perfil
+      if (btnSair) {
+        btnSair.onclick = function() {
+          document.querySelector('.shortcuts-card').classList.add('apple-animate');
+          document.getElementById('appleOverlay').classList.add('apple-transition-active');
+          setTimeout(function() {
+            window.location.href = '../login.html';
+          }, 700);
+        };
+      }
+      // Editar atalhos
+      const editShortcutsBtn = document.getElementById('editShortcutsBtn');
+      if (editShortcutsBtn && card) {
+        editShortcutsBtn.onclick = function() {
+          card.classList.add('hide');
+          setTimeout(() => {
+            window.location.href = 'atalhos.html';
+          }, 480);
+        };
+      }
+    }
+    if (welcomeDiv && welcomeText && cardWelcome) {
+      if (!jaViuBoasVindas) {
+        // Executa animação de boas-vindas
+        welcomeText.textContent = '';
+        let i = 0;
+        let animationDone = false;
+        setTimeout(function() {
+          welcomeText.style.opacity = '1';
+          typeWriter();
+        }, 300);
+        function typeWriter() {
+          if (i <= text.length) {
+            welcomeText.textContent = text.slice(0, i);
+            i++;
+            setTimeout(typeWriter, 60);
+          } else {
+            setTimeout(moveToCard, 700);
+          }
+        }
+        function moveToCard() {
+          animationDone = true;
+          welcomeText.style.transition = 'all 0.7s cubic-bezier(.4,1.4,.6,1)';
+          welcomeDiv.style.transition = 'opacity 0.7s';
+          welcomeText.style.transform = 'translateY(-40px) scale(0.7)';
+          welcomeText.style.opacity = '0';
+          welcomeDiv.style.opacity = '0';
+          setTimeout(function() {
+            welcomeDiv.style.display = 'none';
+            cardWelcome.textContent = text;
+            cardWelcome.style.opacity = '1';
+            localStorage.setItem('jaViuBoasVindas', 'true');
+            initAppFeatures();
+          }, 700);
+        }
+      } else {
+        // Já viu, mostra direto no card
+        if (welcomeDiv) welcomeDiv.style.display = 'none';
+        cardWelcome.textContent = text;
+        cardWelcome.style.opacity = '1';
+        initAppFeatures();
+      }
+    } else if (cardWelcome) {
+      // Fallback: sempre mostra o texto no card
+      cardWelcome.textContent = text;
+      cardWelcome.style.opacity = '1';
+      initAppFeatures();
+    } else {
+      // Se não houver animação, inicializa recursos normalmente
+      initAppFeatures();
+    }
+  });
+  </script>
+  </script>
 </body>
 </html>

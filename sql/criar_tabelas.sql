@@ -27,3 +27,43 @@ CREATE TABLE administradores (
         ON DELETE CASCADE
         ON UPDATE CASCADE
 );
+
+-- Inserir instituição Cruzeiro do Sul
+INSERT INTO instituicoes (
+    nome, 
+    cnpj, 
+    endereco, 
+    cidade, 
+    estado, 
+    cep, 
+    telefone, 
+    email, 
+    subdominio
+) VALUES (
+    'Colégio Cruzeiro do Sul',
+    '11.111.111/1111-11',
+    'Vila Jacuí, Av. Dr. Ussiel Ciril',
+    'São Paulo',
+    'SP',
+    '08060-070',
+    '(11) 20375-777',
+    'cruzeiroeducacional@cruzei',
+    'colegio-cruzeiro'
+);
+
+-- Dados usuário administrador
+INSERT INTO administradores (
+    instituicao_id,
+    nome,
+    usuario,
+    email,
+    telefone,
+    senha
+) VALUES (
+    1, -- id da instituição Colégio Cruzeiro do Sul
+    'Rafael Cremon',
+    'RafaelCremon',
+    'rafaelcremon10@gmail.com',
+    '(11) 94136-0669',
+    MD5('12345678') -- senha criptografada
+);

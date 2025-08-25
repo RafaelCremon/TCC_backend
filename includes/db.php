@@ -2,7 +2,7 @@
 // db.php
 
 $host = 'localhost'; // Endereço do servidor MySQL
-$dbname = 'sislogin'; // Nome do seu banco de dados
+$dbname = 'quantumdb'; // Nome do seu banco de dados
 $username = 'root'; // Nome de usuário do MySQL
 $password = ''; // Senha do usuário
 

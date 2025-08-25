@@ -1,9 +1,11 @@
+// Garante que o código só execute se o elemento existir
 const bolhas = document.getElementById("bolhas");
 const bubbleSize = 20;
 const maxScale = 1.4;
 const gap = bubbleSize * (maxScale - 1); // 8px
 
 function criarBolhas() {
+  if (!bolhas) return;
   bolhas.innerHTML = "";
 
   const width = window.innerWidth;
@@ -34,16 +36,22 @@ function criarBolhas() {
   }
 }
 
-criarBolhas();
-window.addEventListener("resize", criarBolhas);
+if (bolhas) {
+  criarBolhas();
+  window.addEventListener("resize", criarBolhas);
+}
 
 // Função que vai esconder a mensagem de erro ao digitar em qualquer campo
-document.getElementById("usuario").addEventListener("input", limparErro);
-document.getElementById("senha").addEventListener("input", limparErro);
-
 function limparErro() {
   const erroMensagem = document.getElementById("erroMensagem");
   if (erroMensagem) {
     erroMensagem.textContent = "";  // Limpa o texto da mensagem de erro
   }
 }
+
+document.addEventListener("DOMContentLoaded", function() {
+  const usuario = document.getElementById("usuario");
+  const senha = document.getElementById("senha");
+  if (usuario) usuario.addEventListener("input", limparErro);
+  if (senha) senha.addEventListener("input", limparErro);
+});

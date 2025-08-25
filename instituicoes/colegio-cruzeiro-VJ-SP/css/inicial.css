@@ -1,49 +1,256 @@
-body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  margin: 0;
-  background: #f0f0f0;
-  font-family: sans-serif;
-  }
-.map-link {
-  cursor: pointer;
-  border: 3px solid #444;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
-  width: 300px;
-  transition: transform 0.2s ease;
-  }
-.map-link:hover {
-  transform: scale(1.05);
+:root{
+  --bg-1:#0e1b4d;
+  --bg-2:#2a5cff;
+  --card:#ffffff;
+  --ink:#0b1020;
+  --muted:#5b6b8b;
+  --brand:#5b8cff;
+  --brand-2:#7049ff;
+  --ring:#cfe0ff;
+  --shadow:0 24px 48px rgba(15,25,80,.2);
+  --radius:16px;
 }
-.map-link img {
-  width: 100%;
-  display: block;
-  }
-.map-link span {
-  display: block;
-  text-align: center;
-  background: #222;
-  color: white;
-  padding: 10px 0;
-  font-weight: bold;
-  font-size: 1.1rem;
-  }
-/* Estilo do botão de logout */
-.logout-button {
-  margin-top: 20px;
-  padding: 10px 20px;
-  background-color: #ff4d4d;
-  border: none;
-  border-radius: 5px;
-  color: white;
-  font-size: 16px;
-  cursor: pointer;
-  transition: 0.3s;
-  }
-.logout-button:hover {
-  background-color: #e60000;
-  }
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; font-family:Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  color:var(--ink);
+  background:
+    radial-gradient(1200px 600px at 10% -10%, #14266f 0%, transparent 60%),
+    linear-gradient(180deg, var(--bg-2) 0%, var(--bg-1) 60%);
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  overflow-x: hidden;
+}
+body::before{
+  content:""; position:fixed; inset:0; z-index:-1; pointer-events:none; opacity:.22;
+  background-image: radial-gradient(circle at center, rgba(255,255,255,.22) 0 2px, transparent 2.5px);
+  background-size:28px 28px;
+  animation:dots 36s linear infinite;
+}
+@keyframes dots{ to{ background-position:180px 160px } }
+@media (prefers-reduced-motion: reduce){ body::before{ animation:none } }
+
+/* Top-bar com vidro */
+.top-bar{
+  position:sticky; top:0; z-index:998;
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+  padding:14px 22px;
+  background:linear-gradient(to bottom, rgba(255,255,255,.9), rgba(255,255,255,.7));
+  border-bottom:1px solid rgba(176,198,255,.4);
+  backdrop-filter:saturate(1.1) blur(8px);
+}
+.brand{ display:flex; align-items:center; gap:16px }
+.logo{ width:24px; height:24px; border-radius:8px; background:linear-gradient(135deg, var(--brand), var(--brand-2)); box-shadow:0 6px 18px rgba(76,92,255,.35) }
+.top-bar h1{ font-size:18px; margin:0 }
+
+.admin-profile { display: flex; align-items: center; gap: 8px; }
+.admin-avatar { width: 32px; height: 32px; border-radius: 99px; background: #eee; border: 2px solid #fff; }
+
+.menu-button {
+  background: transparent; border: none; cursor: pointer; padding: 4px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--ink); border-radius: 99px; transition: background-color 0.2s;
+}
+.menu-button:hover { background-color: rgba(0, 0, 0, 0.05); }
+
+/* --- ESTILO DA SIDEBAR --- */
+.sidebar{
+  position:fixed; top: 0; left: 0; width: 88px; height: 100vh;
+  padding: 80px 8px 12px;
+  background:linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.8));
+  border-right:1px solid rgba(176,198,255,.4);
+  backdrop-filter:saturate(1.1) blur(10px);
+  display:flex; flex-direction:column; align-items:center; gap: 16px;
+  box-shadow:4px 0 24px rgba(0,0,0,.15);
+  z-index: 1000;
+  transform: translateX(-100%); transition: transform 0.3s ease-in-out;
+}
+.sidebar.visible {
+  transform: translateX(0);
+}
+
+/* Estilo para cada item/atalho na sidebar */
+.sidebar-item {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  cursor: pointer; text-decoration: none; color: #1b2b66; font-size: 12px;
+  font-weight: 500; padding: 8px; border-radius: 12px; width: 100%;
+  transition: background-color 0.2s;
+}
+.sidebar-item:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* --- NOVO ESTILO PARA OS ÍCONES SVG --- */
+.sidebar-icon {
+  width: 36px; height: 36px;
+  fill: #2a5cff; /* Cor do preenchimento do ícone */
+  filter: drop-shadow(0 4px 8px rgba(20,30,120,.2));
+}
+
+/* Container do Mini Mapa (necessário para o posicionamento do menu dropdown) */
+.sidebar-item-container {
+  position: relative; display: flex;
+  justify-content: center; width: 100%;
+}
+
+/* Menu de opções (abre ao lado, como no original) */
+.options{
+  position:absolute; top:0; left: 88px; /* Posição ao lado da sidebar */
+  display:flex; flex-direction:column; gap:8px;
+  background:#ffffff; border:1px solid #e4ecff; border-radius:14px; padding:10px; min-width:180px;
+  box-shadow:var(--shadow); 
+  transform: translateX(-8px); opacity:0; pointer-events:none; transition:.2s ease;
+  z-index: 1001;
+}
+.options.active{ transform:none; opacity:1; pointer-events:auto }
+.options button{
+  text-align:left; border:none; border-radius:10px; padding:10px 12px; cursor:pointer; color:#1a2d6a;
+  background:#f2f6ff; transition:background .2s;
+}
+.options button:hover{ background:#e6efff }
+
+.content{ 
+  margin-left: 0; padding: 22px; display: flex;
+  justify-content: center; padding-top: 50px;
+}
+
+.shortcuts-card {
+  background-color: #fff; border-radius: var(--radius); padding: 24px;
+  box-shadow: var(--shadow); width: min(400px, 90vw);
+  animation: fadeInUp 0.6s ease-out forwards; animation-delay: 0.4s;
+}
+.shortcuts-card h3 { margin: 0 0 16px; font-weight: 600; color: var(--ink); }
+.shortcut-buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.add-shortcut-btn {
+  background-color: #f0f4ff; border: 1px dashed #cdd8f3; border-radius: 12px;
+  font-size: 24px; font-weight: bold; color: #849ae0; cursor: pointer;
+  aspect-ratio: 1 / 1; transition: background-color 0.2s;
+}
+.add-shortcut-btn:hover { background-color: #e6efff; border-color: #b4c7f0; }
+
+.overlay {
+  position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.4); z-index: 999;
+  opacity: 0; pointer-events: none; transition: opacity 0.3s ease-in-out;
+}
+.overlay.visible { opacity: 1; pointer-events: auto; }
+
+@keyframes fadeInUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* --- MODO ESCURO IRADO --- */
+body.dark-mode {
+  --bg-1: #181c2f;
+  --bg-2: #232a4d;
+  --card: #232a4d;
+  --ink: #f1f1f1;
+  --muted: #8fa2d9;
+  --brand: #7f5cff;
+  --brand-2: #00e0ff;
+  --ring: #3a4a7a;
+  --shadow: 0 24px 48px rgba(0,0,0,.45);
+  background:
+    radial-gradient(1200px 600px at 10% -10%, #2e1a47 0%, transparent 60%),
+    linear-gradient(180deg, var(--bg-2) 0%, var(--bg-1) 60%);
+  color: var(--ink);
+}
+
+body.dark-mode .top-bar,
+body.dark-mode .sidebar,
+body.dark-mode .shortcuts-card,
+body.dark-mode #profileMenu {
+  background: linear-gradient(135deg, #232a4d 80%, #2e1a47 100%) !important;
+  color: var(--ink) !important;
+  border-color: #3a4a7a !important;
+}
+
+body.dark-mode .sidebar-item,
+body.dark-mode .sidebar-icon {
+  color: #c3bfff !important;
+  fill: #7f5cff !important;
+}
+
+body.dark-mode .sidebar-item:hover {
+  background: rgba(127,92,255,0.12);
+}
+
+body.dark-mode .add-shortcut-btn {
+  background: linear-gradient(135deg, #2e1a47 60%, #00e0ff 100%);
+  border: 1px dashed #7f5cff;
+  color: #00e0ff;
+}
+
+body.dark-mode .add-shortcut-btn.atalho-preenchido {
+  background: linear-gradient(135deg, #7f5cff 60%, #00e0ff 100%);
+  color: #fff;
+}
+
+body.dark-mode .shortcuts-card h3,
+body.dark-mode .shortcuts-card span {
+  color: #00e0ff;
+}
+
+body.dark-mode .options {
+  background: #232a4d;
+  border-color: #7f5cff;
+}
+
+body.dark-mode .options button {
+  background: #2e1a47;
+  color: #00e0ff;
+}
+
+body.dark-mode .options button:hover {
+  background: #7f5cff;
+  color: #fff;
+}
+
+body.dark-mode .overlay {
+  background-color: rgba(0,0,0,0.7);
+}
+
+/* Novos estilos para o cartão de boas-vindas */
+.welcome-card {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  background: #fff;
+  border-radius: 22px;
+  box-shadow: 0 8px 32px rgba(44, 92, 255, 0.10);
+  padding: 28px 36px;
+  max-width: 420px;
+  margin: 32px auto 0 auto;
+  animation: fadeInUp 0.7s;
+}
+.welcome-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 2px 12px rgba(44,92,255,0.10);
+  background: #eaf2ff;
+}
+.welcome-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #1b2b66;
+  margin: 0 0 6px 0;
+  line-height: 1.1;
+}
+.welcome-desc {
+  font-size: 1rem;
+  color: #5b6b8b;
+  margin: 0;
+}
+body.dark-mode .welcome-card {
+  background: linear-gradient(135deg, #232a4d 80%, #2e1a47 100%);
+  color: #fff;
+}
+body.dark-mode .welcome-title {
+  color: #00e0ff;
+}
+body.dark-mode .welcome-desc {
+  color: #8fa2d9;
+}

@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lanchonetes</title>
+  <link rel="stylesheet" href="../css/lanchonetes.css">
+</head>
+<body>
+  <script src="../js/lanchonetes.js"></script>
+  <div class="lanchonetes-card">
+    <button class="voltar-btn" onclick="voltar()">← Voltar</button>
+    <div class="lanchonetes-title" style="display: flex; align-items: center; justify-content: center; gap: 12px;">
+      <span>Lanchonetes</span>
+      <span class="lanchonetes-mainicon" style="font-size:2.2rem; color:#5b8cff;">🍔</span>
+    </div>
+    <div class="lanchonetes-list">
+      <div class="lanchonete-item" onclick="mostrarUnicantina()">
+        <div class="lanchonete-icon">🍽️</div>
+        <span class="lanchonete-nome">Unicantina</span>
+      </div>
+      <div class="lanchonete-item" onclick="alert('Café Bom Gosto selecionado!')">
+        <div class="lanchonete-icon">☕</div>
+        <span class="lanchonete-nome">Café Bom Gosto</span>
+      </div>
+      <div class="lanchonete-item" onclick="mostrarImperatriz()">
+        <div class="lanchonete-icon">🥪</div>
+        <span class="lanchonete-nome">Imperatriz</span>
+      </div>
+      <div class="lanchonete-item" onclick="alert('@cafe selecionado!')">
+        <div class="lanchonete-icon">🍰</div>
+        <span class="lanchonete-nome">@cafe</span>
+      </div>
+      <div class="lanchonete-item" onclick="alert('Dema selecionada!')">
+        <div class="lanchonete-icon">🥤</div>
+        <span class="lanchonete-nome">Dema</span>
+      </div>
+      <div class="lanchonete-item" onclick="alert('Bonníer selecionada!')">
+        <div class="lanchonete-icon">🍩</div>
+        <span class="lanchonete-nome">Bonníer</span>
+      </div>
+      <div class="lanchonete-item" onclick="mostrarPizzaChicken()">
+        <div class="lanchonete-icon">🍕</div>
+        <span class="lanchonete-nome">Pizza & Chicken</span>
+      </div>
+    </div>
+  </div>
+  <!-- Unicantina -->
+  <div id="unicantinaCard" style="display:none;">
+    <div class="cardapio-novo-container">
+    <!-- Modal de confirmação de compra -->
+    <div id="modalConfirmacaoUnicantina" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.25);z-index:999;align-items:center;justify-content:center;">
+      <div style="background:#fff;border-radius:12px;box-shadow:0 2px 16px #0004;padding:32px 38px;max-width:340px;margin:auto;display:flex;flex-direction:column;align-items:center;">
+        <div style="font-size:2rem;font-weight:700;margin-bottom:8px;text-align:center;">Comprar <span id="modalItemUnicantina">[comida]</span>?</div>
+        <div style="font-size:1.1rem;margin-bottom:18px;text-align:center;">O pagamento será realizado presencialmente</div>
+        <button id="btnConfirmarUnicantina" style="width:100%;background:linear-gradient(90deg,#1a2980 0%,#2e3192 100%);color:#fff;font-weight:700;font-size:1.3rem;padding:10px 0;border:none;border-radius:24px;cursor:pointer;margin-bottom:12px;">Sim</button>
+        <button id="btnCancelarUnicantina" style="width:100%;background:none;color:#222;font-weight:700;font-size:1.2rem;padding:8px 0;border:none;border-radius:24px;cursor:pointer;">Não</button>
+      </div>
+    </div>
+      <div class="cardapio-novo-topo" style="width:100vw;height:140px;background:linear-gradient(90deg,#1a2980 0%,#2e3192 100%);display:flex;align-items:center;justify-content:center;">
+        <span class="cardapio-novo-logo" style="display:flex;align-items:center;justify-content:center;background:#222;padding:18px 60px;border-radius:50px;font-size:2.8rem;font-weight:700;color:#fff;box-shadow:0 2px 16px #0003;letter-spacing:2px;">Logo</span>
+      </div>
+      <div class="cardapio-novo-lista" style="padding:32px 0 0 0;display:flex;justify-content:center;">
+        <table class="cardapio-novo-tabela" style="background:#fff;border-radius:12px;padding:18px 0;box-shadow:0 2px 16px #0002;font-size:1.25rem;min-width:340px;max-width:420px;width:100%;text-align:center;">
+          <thead>
+            <tr style="background:#1a2980;color:#fff;font-size:1.3rem;">
+              <th style="padding:10px 0;border-radius:12px 0 0 0;">Menu</th>
+              <th style="padding:10px 0;border-radius:0 12px 0 0;">Preço</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>P (Pequeno)</td><td>R$ 10,00</td></tr>
+            <tr><td>M (Médio)</td><td>R$ 13,00</td></tr>
+            <tr><td>G (Grande)</td><td>R$ 14,00</td></tr>
+            <tr><td>Açaí</td><td>R$ 14,00</td></tr>
+            <tr><td>Hot-Dog simples</td><td>R$ 8,00</td></tr>
+            <tr><td>Hot-Dog completo</td><td>R$ 10,00</td></tr>
+            <tr><td>Hot-Dog combo</td><td>R$ 12,00</td></tr>
+            <tr><td>Churro</td><td>R$ 7,00</td></tr>
+            <tr><td>Copo salgado</td><td>R$ 11,00</td></tr>
+            <tr><td>Copo churros</td><td>R$ 11,00</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pedido-bot" style="max-width:400px;margin:32px auto 0 auto;background:#fff;border-radius:12px;box-shadow:0 2px 16px #0002;padding:24px 32px;display:flex;flex-direction:column;gap:12px;align-items:center;">
+        <label for="itemUnicantina" style="font-weight:600;font-size:1.1rem;align-self:flex-start;">Item:</label>
+        <select id="itemUnicantina" style="width:100%;padding:8px 12px;border-radius:6px;border:1px solid #ccc;">
+          <option>P (Pequeno)</option>
+          <option>M (Médio)</option>
+          <option>G (Grande)</option>
+          <option>Açaí</option>
+          <option>Hot-Dog simples</option>
+          <option>Hot-Dog completo</option>
+          <option>Hot-Dog combo</option>
+          <option>Churro</option>
+          <option>Copo salgado</option>
+          <option>Copo churros</option>
+        </select>
+        <label for="horarioUnicantina" style="font-weight:600;font-size:1.1rem;align-self:flex-start;">Horário:</label>
+        <input type="time" id="horarioUnicantina" style="width:100%;padding:8px 12px;border-radius:6px;border:1px solid #ccc;">
+        <button onclick="enviarPedidoUnicantina()" style="width:100%;background:#5b8cff;color:#fff;font-weight:700;font-size:1.1rem;padding:10px 0;border:none;border-radius:6px;cursor:pointer;">Enviar pedido</button>
+        <button onclick="fecharUnicantina()" style="width:100%;margin-top:8px;background:#eee;color:#0057ff;font-weight:700;font-size:1.1rem;padding:10px 0;border:none;border-radius:6px;cursor:pointer;">Fechar</button>
+      </div>
+    </div>
+  </div>
+  <!-- Pizza & Chicken -->
+  <div id="pizzaChickenCard" style="display:none;">
+    <div class="cardapio-novo-container">
+      <div class="cardapio-novo-topo" style="width:100vw;height:140px;background:linear-gradient(90deg,#1a2980 0%,#2e3192 100%);display:flex;align-items:center;justify-content:center;">
+        <span class="cardapio-novo-logo" style="display:flex;align-items:center;justify-content:center;background:#222;padding:18px 60px;border-radius:50px;font-size:2.8rem;font-weight:700;color:#fff;box-shadow:0 2px 16px #0003;letter-spacing:2px;">🍕 Pizza & Chicken</span>
+      </div>
+      <div class="cardapio-novo-lista" style="padding:32px 0 0 0;display:flex;justify-content:center;">
+        <table class="cardapio-novo-tabela" style="background:#fff;border-radius:12px;padding:18px 0;box-shadow:0 2px 16px #0002;font-size:1.25rem;min-width:340px;max-width:420px;width:100%;text-align:center;">
+          <thead>
+            <tr style="background:#1a2980;color:#fff;font-size:1.3rem;">
+              <th style="padding:10px 0;border-radius:12px 0 0 0;">Menu</th>
+              <th style="padding:10px 0;border-radius:0 12px 0 0;">Preço</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Fatia 🍕</td><td>R$ 11,00</td></tr>
+            <tr><td>Massas 🍝</td><td>A partir de R$ 22,00</td></tr>
+            <tr><td>Calzone</td><td>R$ 12,00</td></tr>
+            <tr><td>Íscas de Frango (Frito)</td><td>A partir de R$ 15,00</td></tr>
+            <tr><td>Argentina (Atum, cebola, palmito)</td><td>R$ 48,00 / R$ 23,90</td></tr>
+            <tr><td>Atum (Atum e cebola)</td><td>R$ 42,00 / R$ 20,90</td></tr>
+            <tr><td>Atussela (Atum, coberto com mussarela)</td><td>R$ 48,00 / R$ 23,90</td></tr>
+            <tr><td>Bacon (Bacon coberto com mussarela)</td><td>R$ 48,00 / R$ 23,90</td></tr>
+            <tr><td>Baiacatu (Calabresa moída, ovos, catupiry)</td><td>R$ 46,90 / R$ 21,90</td></tr>
+            <tr><td>Baiana (Calabresa moída, ovos, cebola e pimenta)</td><td>R$ 46,90 / R$ 21,90</td></tr>
+            <tr><td>Brócolis (Brócolis, mussarela, alho e tomate)</td><td>R$ 46,90 / R$ 23,90</td></tr>
+            <tr><td>Calabresa (Calabresa fatiada e cebola)</td><td>R$ 46,90 / R$ 23,90</td></tr>
+            <tr><td>Caipira (Frango, milho e catupiry)</td><td>R$ 48,00 / R$ 23,90</td></tr>
+            <tr><td>Catupiry (Catupiry, orégano e azeitona)</td><td>R$ 42,00 / R$ 20,90</td></tr>
+            <tr><td>Cheddar (Mussarela e cheddar)</td><td>R$ 46,90 / R$ 21,90</td></tr>
+            <tr><td>Chefe (Frango desfiado, milho, bacon e mussarela)</td><td>R$ 48,00 / R$ 23,90</td></tr>
+            <tr><td>Dois Queijos (Mussarela e catupiry)</td><td>R$ 46,90 / R$ 23,90</td></tr>
+            <tr><td>Dona Gema (Calabresa fatiada, cobertura de mussarela)</td><td>R$ 50,90 / R$ 26,00</td></tr>
+            <tr><td>Francesa (Presunto, ovos, mussarela, catupiry, tomate)</td><td>R$ 47,90 / R$ 23,90</td></tr>
+            <tr><td>Frango com Catupiry (Frango desfiado, catupiry)</td><td>R$ 46,90 / R$ 23,90</td></tr>
+            <tr><td>Frango com Mussarela (Frango desfiado, mussarela)</td><td>R$ 48,00 / R$ 23,90</td></tr>
+            <tr><td>Grega (Presunto, palmito, ervilha, mussarela)</td><td>R$ 46,90 / R$ 23,90</td></tr>
+            <tr><td>Milho Verde (Milho, mussarela ou catupiry)</td><td>R$ 46,90 / R$ 23,90</td></tr>
+            <tr><td>Mussarela</td><td>R$ 46,90 / R$ 23,90</td></tr>
+            <tr><td>Napolitana (Mussarela, alho, tomate)</td><td>R$ 46,90 / R$ 21,90</td></tr>
+            <tr><td>Palmito (Palmito, mussarela)</td><td>R$ 47,00 / R$ 23,90</td></tr>
+            <tr><td>Pizza Chiken (Palmito, frango desfiado, mussarela, bacon, alho frito)</td><td>R$ 50,00 / R$ 26,00</td></tr>
+            <tr><td>Portuguesa (Presunto, ervilha, ovos, cebola, mussarela)</td><td>R$ 49,00 / R$ 25,00</td></tr>
+            <tr><td>Saborosa (Presunto, calabresa, bacon, cebola, mussarela, tomate)</td><td>R$ 51,90 / R$ 27,00</td></tr>
+            <tr><td>Siciliana (Mussarela, parmesão, tomate)</td><td>R$ 46,90 / R$ 23,90</td></tr>
+            <tr><td>Toscana (Calabresa moída, mussarela)</td><td>R$ 46,90 / R$ 23,90</td></tr>
+            <tr><td>Três Queijos (Mussarela, parmesão, catupiry)</td><td>R$ 48,00 / R$ 23,90</td></tr>
+            <tr><td>Vegetariana (Palmito, milho, ervilha, mussarela, tomate)</td><td>R$ 48,00 / R$ 23,90</td></tr>
+            <tr><td>Chocolate (Broto fechado com chocolate e cobertura de chocolate)</td><td>R$ 22,00</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pedido-bot" style="max-width:400px;margin:32px auto 0 auto;background:#fff;border-radius:12px;box-shadow:0 2px 16px #0002;padding:24px 32px;display:flex;flex-direction:column;gap:12px;align-items:center;">
+        <label for="itemPizzaChicken" style="font-weight:600;font-size:1.1rem;align-self:flex-start;">Item:</label>
+        <select id="itemPizzaChicken" style="width:100%;padding:8px 12px;border-radius:6px;border:1px solid #ccc;">
+          <option>Fatia 🍕</option>
+          <option>Massas 🍝</option>
+          <option>Calzone</option>
+          <option>Íscas de Frango (Frito)</option>
+          <option>Argentina (Atum, cebola, palmito)</option>
+          <option>Atum (Atum e cebola)</option>
+          <option>Atussela (Atum, coberto com mussarela)</option>
+          <option>Bacon (Bacon coberto com mussarela)</option>
+          <option>Baiacatu (Calabresa moída, ovos, catupiry)</option>
+          <option>Baiana (Calabresa moída, ovos, cebola e pimenta)</option>
+          <option>Brócolis (Brócolis, mussarela, alho e tomate)</option>
+          <option>Calabresa (Calabresa fatiada e cebola)</option>
+          <option>Caipira (Frango, milho e catupiry)</option>
+          <option>Catupiry (Catupiry, orégano e azeitona)</option>
+          <option>Cheddar (Mussarela e cheddar)</option>
+          <option>Chefe (Frango desfiado, milho, bacon e mussarela)</option>
+          <option>Dois Queijos (Mussarela e catupiry)</option>
+          <option>Dona Gema (Calabresa fatiada, cobertura de mussarela)</option>
+          <option>Francesa (Presunto, ovos, mussarela, catupiry, tomate)</option>
+          <option>Frango com Catupiry (Frango desfiado, catupiry)</option>
+          <option>Frango com Mussarela (Frango desfiado, mussarela)</option>
+          <option>Grega (Presunto, palmito, ervilha, mussarela)</option>
+          <option>Milho Verde (Milho, mussarela ou catupiry)</option>
+          <option>Mussarela</option>
+          <option>Napolitana (Mussarela, alho, tomate)</option>
+          <option>Palmito (Palmito, mussarela)</option>
+          <option>Pizza Chiken (Palmito, frango desfiado, mussarela, bacon, alho frito)</option>
+          <option>Portuguesa (Presunto, ervilha, ovos, cebola, mussarela)</option>
+          <option>Saborosa (Presunto, calabresa, bacon, cebola, mussarela, tomate)</option>
+          <option>Siciliana (Mussarela, parmesão, tomate)</option>
+          <option>Toscana (Calabresa moída, mussarela)</option>
+          <option>Três Queijos (Mussarela, parmesão, catupiry)</option>
+          <option>Vegetariana (Palmito, milho, ervilha, mussarela, tomate)</option>
+          <option>Chocolate (Broto fechado com chocolate e cobertura de chocolate)</option>
+        </select>
+        <label for="horarioPizzaChicken" style="font-weight:600;font-size:1.1rem;align-self:flex-start;">Horário:</label>
+        <input type="time" id="horarioPizzaChicken" style="width:100%;padding:8px 12px;border-radius:6px;border:1px solid #ccc;">
+        <button onclick="enviarPedidoPizzaChicken()" style="width:100%;background:#5b8cff;color:#fff;font-weight:700;font-size:1.1rem;padding:10px 0;border:none;border-radius:6px;cursor:pointer;">Enviar pedido</button>
+        <button onclick="fecharPizzaChicken()" style="width:100%;margin-top:8px;background:#eee;color:#0057ff;font-weight:700;font-size:1.1rem;padding:10px 0;border:none;border-radius:6px;cursor:pointer;">Fechar</button>
+      </div>
+    </div>
+  </div>
+  <div id="imperatrizCard" style="display:none;">
+    <div class="cardapio-novo-container">
+      <div class="cardapio-novo-topo" style="width:100vw;height:140px;background:linear-gradient(90deg,#1a2980 0%,#2e3192 100%);display:flex;align-items:center;justify-content:center;">
+        <span class="cardapio-novo-logo" style="display:flex;align-items:center;justify-content:center;background:#222;padding:18px 60px;border-radius:50px;font-size:2.8rem;font-weight:700;color:#fff;box-shadow:0 2px 16px #0003;letter-spacing:2px;">🥪 Imperatriz</span>
+      </div>
+      <div class="cardapio-novo-lista" style="padding:32px 0 0 0;display:flex;justify-content:center;">
+        <table class="cardapio-novo-tabela" style="background:#fff;border-radius:12px;padding:18px 0;box-shadow:0 2px 16px #0002;font-size:1.25rem;min-width:340px;max-width:420px;width:100%;text-align:center;">
+          <thead>
+            <tr style="background:#1a2980;color:#fff;font-size:1.3rem;">
+              <th style="padding:10px 0;border-radius:12px 0 0 0;">Menu</th>
+              <th style="padding:10px 0;border-radius:0 12px 0 0;">Preço</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>X-Burger</td><td>R$ 15,00</td></tr>
+            <tr><td>X-Salada</td><td>R$ 18,00</td></tr>
+            <tr><td>X-Egg</td><td>R$ 19,00</td></tr>
+            <tr><td>X-Bacon</td><td>R$ 19,00</td></tr>
+            <tr><td>X-Tudo</td><td>R$ 22,00</td></tr>
+            <tr><td>Calabacon</td><td>R$ 22,00</td></tr>
+            <tr><td>Frangão</td><td>R$ 21,00</td></tr>
+            <tr><td>Fricassê</td><td>R$ 21,00</td></tr>
+            <tr><td>Coco c/ leite condensado</td><td>R$ 12,50</td></tr>
+            <tr><td>Coco c/ chocolate</td><td>R$ 12,50</td></tr>
+            <tr><td>Banana c/ canela</td><td>R$ 12,50</td></tr>
+            <tr><td>Banana c/ chocolate</td><td>R$ 12,50</td></tr>
+            <tr><td>Morango c/ chocolate</td><td>R$ 14,50</td></tr>
+            <tr><td>Morango c/ leite condensado</td><td>R$ 14,50</td></tr>
+            <tr><td>Mussarela (tapioca)</td><td>R$ 12,50</td></tr>
+            <tr><td>Pizza (tapioca)</td><td>R$ 12,50</td></tr>
+            <tr><td>Presunto c/ queijo (tapioca)</td><td>R$ 12,50</td></tr>
+            <tr><td>Calabresa c/ queijo (tapioca)</td><td>R$ 12,50</td></tr>
+            <tr><td>Frango c/ catupiry (tapioca)</td><td>R$ 12,50</td></tr>
+            <tr><td>Carne seca c/ queijo (tapioca)</td><td>R$ 12,50</td></tr>
+            <tr><td>Mussarela (pastel)</td><td>R$ 12,00</td></tr>
+            <tr><td>Pizza (pastel)</td><td>R$ 12,00</td></tr>
+            <tr><td>Calabresa (pastel)</td><td>R$ 12,00</td></tr>
+            <tr><td>Bauru (pastel)</td><td>R$ 12,00</td></tr>
+            <tr><td>Frango (pastel)</td><td>R$ 12,00</td></tr>
+            <tr><td>Carne moída (pastel)</td><td>R$ 12,00</td></tr>
+            <tr><td>Frango c/ catupiry (pastel)</td><td>R$ 12,00</td></tr>
+            <tr><td>Frango c/ mussarela (pastel)</td><td>R$ 12,00</td></tr>
+            <tr><td>Carne moída c/ mussarela (pastel)</td><td>R$ 14,00</td></tr>
+            <tr><td>Calabresa c/ mussarela (pastel)</td><td>R$ 14,00</td></tr>
+            <tr><td>Carne, queijo e catupiry (pastel)</td><td>R$ 15,00</td></tr>
+            <tr><td>Especial (pastel)</td><td>R$ 15,00</td></tr>
+            <tr><td>Dog tradicional</td><td>R$ 13,00</td></tr>
+            <tr><td>Dogão especial</td><td>R$ 19,00</td></tr>
+            <tr><td>Pão na chapa</td><td>R$ 6,00</td></tr>
+            <tr><td>Mortadela</td><td>R$ 10,00</td></tr>
+            <tr><td>Mistão quente</td><td>R$ 14,00</td></tr>
+            <tr><td>Pão c/ ovo</td><td>R$ 10,00</td></tr>
+            <tr><td>Pão c/ ovo e queijo</td><td>R$ 12,00</td></tr>
+            <tr><td>Americano</td><td>R$ 16,00</td></tr>
+            <tr><td>Bauru</td><td>R$ 14,00</td></tr>
+            <tr><td>Mistão quente c/ queijo</td><td>R$ 14,00</td></tr>
+            <tr><td>Batata frita pequena</td><td>R$ 14,00</td></tr>
+            <tr><td>Batata frita grande</td><td>R$ 16,00</td></tr>
+            <tr><td>Adicionais batata</td><td>R$ 2,50</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pedido-bot" style="max-width:400px;margin:32px auto 0 auto;background:#fff;border-radius:12px;box-shadow:0 2px 16px #0002;padding:24px 32px;display:flex;flex-direction:column;gap:12px;align-items:center;">
+        <label for="itemImperatriz" style="font-weight:600;font-size:1.1rem;align-self:flex-start;">Item:</label>
+        <select id="itemImperatriz" style="width:100%;padding:8px 12px;border-radius:6px;border:1px solid #ccc;">
+          <option>X-Burger</option>
+          <option>X-Salada</option>
+          <option>X-Egg</option>
+          <option>X-Bacon</option>
+          <option>X-Tudo</option>
+          <option>Calabacon</option>
+          <option>Frangão</option>
+          <option>Fricassê</option>
+          <option>Coco c/ leite condensado</option>
+          <option>Coco c/ chocolate</option>
+          <option>Banana c/ canela</option>
+          <option>Banana c/ chocolate</option>
+          <option>Morango c/ chocolate</option>
+          <option>Morango c/ leite condensado</option>
+          <option>Mussarela (tapioca)</option>
+          <option>Pizza (tapioca)</option>
+          <option>Presunto c/ queijo (tapioca)</option>
+          <option>Calabresa c/ queijo (tapioca)</option>
+          <option>Frango c/ catupiry (tapioca)</option>
+          <option>Carne seca c/ queijo (tapioca)</option>
+          <option>Mussarela (pastel)</option>
+          <option>Pizza (pastel)</option>
+          <option>Calabresa (pastel)</option>
+          <option>Bauru (pastel)</option>
+          <option>Frango (pastel)</option>
+          <option>Carne moída (pastel)</option>
+          <option>Frango c/ catupiry (pastel)</option>
+          <option>Frango c/ mussarela (pastel)</option>
+          <option>Carne moída c/ mussarela (pastel)</option>
+          <option>Calabresa c/ mussarela (pastel)</option>
+          <option>Carne, queijo e catupiry (pastel)</option>
+          <option>Especial (pastel)</option>
+          <option>Dog tradicional</option>
+          <option>Dogão especial</option>
+          <option>Pão na chapa</option>
+          <option>Mortadela</option>
+          <option>Mistão quente</option>
+          <option>Pão c/ ovo</option>
+          <option>Pão c/ ovo e queijo</option>
+          <option>Americano</option>
+          <option>Bauru</option>
+          <option>Mistão quente c/ queijo</option>
+          <option>Batata frita pequena</option>
+          <option>Batata frita grande</option>
+          <option>Adicionais batata</option>
+        </select>
+        <label for="horarioImperatriz" style="font-weight:600;font-size:1.1rem;align-self:flex-start;">Horário:</label>
+        <input type="time" id="horarioImperatriz" style="width:100%;padding:8px 12px;border-radius:6px;border:1px solid #ccc;">
+        <button onclick="enviarPedidoImperatriz()" style="width:100%;background:#5b8cff;color:#fff;font-weight:700;font-size:1.1rem;padding:10px 0;border:none;border-radius:6px;cursor:pointer;">Enviar pedido</button>
+        <button onclick="fecharImperatriz()" style="width:100%;margin-top:8px;background:#eee;color:#0057ff;font-weight:700;font-size:1.1rem;padding:10px 0;border:none;border-radius:6px;cursor:pointer;">Fechar</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    function voltar() {
+      document.body.style.animation = "fadeOutScale 0.5s cubic-bezier(.4,1.4,.6,1) forwards";
+      setTimeout(() => {
+        window.location.href = "inicial.php";
+      }, 480);
+    }
+    function mostrarUnicantina() {
+      document.querySelector('.lanchonetes-card').style.display = 'none';
+      var card = document.getElementById('unicantinaCard');
+      card.style.display = 'block';
+      card.style.animation = 'fadeInUp 0.7s cubic-bezier(.4,1.4,.6,1)';
+    }
+    function mostrarImperatriz() {
+      document.querySelector('.lanchonetes-card').style.display = 'none';
+      var card = document.getElementById('imperatrizCard');
+      card.style.display = 'block';
+      card.style.animation = 'fadeInUp 0.7s cubic-bezier(.4,1.4,.6,1)';
+    }
+    function fecharUnicantina() {
+      document.getElementById('unicantinaCard').style.display = 'none';
+      document.querySelector('.lanchonetes-card').style.display = 'block';
+    }
+    function enviarPedidoUnicantina() {
+      const item = document.getElementById('itemUnicantina').value;
+      const horario = document.getElementById('horarioUnicantina').value;
+      if (!item || !horario) {
+        alert('Preencha o item e o horário!');
+        return;
+      }
+      // Exibe modal de confirmação
+      document.getElementById('modalItemUnicantina').textContent = item;
+      document.getElementById('modalConfirmacaoUnicantina').style.display = 'flex';
+      window._unicantinaPedido = { item, horario };
+    }
+    // Modal confirmação Unicantina
+    document.addEventListener('DOMContentLoaded', function() {
+      var btnConfirmar = document.getElementById('btnConfirmarUnicantina');
+      var btnCancelar = document.getElementById('btnCancelarUnicantina');
+      if(btnConfirmar && btnCancelar) {
+        btnConfirmar.onclick = function() {
+          var pedido = window._unicantinaPedido;
+          if(pedido) {
+            var numero = '5511933561693';
+            var mensagem = `Olá! Gostaria de pedir na Unicantina o item "${pedido.item}" para o horário ${pedido.horario}.`;
+            var url = `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
+            window.open(url, '_blank');
+          }
+          document.getElementById('modalConfirmacaoUnicantina').style.display = 'none';
+        };
+        btnCancelar.onclick = function() {
+          document.getElementById('modalConfirmacaoUnicantina').style.display = 'none';
+        };
+      }
+    });
+    function mostrarPizzaChicken() {
+      document.querySelector('.lanchonetes-card').style.display = 'none';
+      const card = document.getElementById('pizzaChickenCard');
+      card.style.display = 'block';
+      card.style.animation = 'fadeInUp 0.7s cubic-bezier(.4,1.4,.6,1)';
+    }
+    function fecharPizzaChicken() {
+      document.getElementById('pizzaChickenCard').style.display = 'none';
+      document.querySelector('.lanchonetes-card').style.display = 'block';
+    }
+    function enviarPedidoPizzaChicken() {
+      const item = document.getElementById('itemPizzaChicken').value;
+      const horario = document.getElementById('horarioPizzaChicken').value;
+      const numero = '5511999999999'; // WhatsApp Pizza & Chicken (exemplo)
+
+      if (!item || !horario) {
+        alert('Preencha o item e o horário!');
+        return;
+      }
+
+      const mensagem = `Olá! Gostaria de pedir no Pizza & Chicken o item "${item}" para o horário ${horario}.`;
+      const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
+      window.open(url, '_blank');
+    }
+    function fecharImperatriz() {
+      document.getElementById('imperatrizCard').style.display = 'none';
+      document.querySelector('.lanchonetes-card').style.display = 'block';
+    }
+    function enviarPedidoImperatriz() {
+      const item = document.getElementById('itemImperatriz').value;
+      const horario = document.getElementById('horarioImperatriz').value;
+  const numero = '551191055229'; // WhatsApp Imperatriz (novo número)
+
+      if (!item || !horario) {
+        alert('Preencha o item e o horário!');
+        return;
+      }
+
+      const mensagem = `Olá! Gostaria de pedir na Imperatriz o item "${item}" para o horário ${horario}.`;
+      const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
+      window.open(url, '_blank');
+    }
+  </script>
+</body>
+</html>
