@@ -1,5 +1,11 @@
+-- Criar o banco de dados
+CREATE DATABASE IF NOT EXISTS quantumdb CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+
+-- Selecionar o banco de dados
+USE quantumdb;
+
 -- Criação da tabela de instituições
-CREATE TABLE instituicoes (
+CREATE TABLE IF NOT EXISTS instituicoes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(255) NOT NULL,
     cnpj VARCHAR(18) NOT NULL UNIQUE,
@@ -14,7 +20,7 @@ CREATE TABLE instituicoes (
 );
 
 -- Criação da tabela de administradores
-CREATE TABLE administradores (
+CREATE TABLE IF NOT EXISTS administradores (
     id INT AUTO_INCREMENT PRIMARY KEY,
     instituicao_id INT NOT NULL,
     nome VARCHAR(255) NOT NULL,
@@ -22,6 +28,36 @@ CREATE TABLE administradores (
     email VARCHAR(100) NOT NULL,
     telefone VARCHAR(20),
     senha VARCHAR(255) NOT NULL, -- Deve ser criptografada no backend
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (instituicao_id) REFERENCES instituicoes(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
+
+
+-- Criar a tabela de professores
+CREATE TABLE IF NOT EXISTS professores (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    instituicao_id INT NOT NULL,
+    nome VARCHAR(255) NOT NULL,
+    usuario VARCHAR(100) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL,
+    telefone VARCHAR(20),
+    senha VARCHAR(255) NOT NULL, -- senha criptografada
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (instituicao_id) REFERENCES instituicoes(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
+
+-- Criar a tabela de alunos
+CREATE TABLE IF NOT EXISTS alunos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    instituicao_id INT NOT NULL,
+    nome VARCHAR(255) NOT NULL,
+    matricula VARCHAR(50) NOT NULL UNIQUE,
+    email VARCHAR(100),
+    telefone VARCHAR(20),
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (instituicao_id) REFERENCES instituicoes(id)
         ON DELETE CASCADE
@@ -51,7 +87,7 @@ INSERT INTO instituicoes (
     'colegio-cruzeiro'
 );
 
--- Dados usuário administrador
+-- Inserir usuário administrador
 INSERT INTO administradores (
     instituicao_id,
     nome,

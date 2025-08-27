@@ -4,7 +4,7 @@
   --card:#ffffff;
   --ink:#0b1020;
   --muted:#5b6b8b;
-  --brand:hsl(222, 100%, 68%);
+  --brand:#5b8cff;
   --brand-2:#7049ff;
   --ring:#cfe0ff;
   --shadow:0 30px 60px rgba(15,25,80,.25);
@@ -45,7 +45,8 @@ body::before{
   border:1px solid #e4ecff;
   border-radius:var(--radius);
   box-shadow:var(--shadow);
-  padding:26px 26px 22px;
+  padding:32px 32px 24px 32px;
+  margin-top:40px;
   animation:pop .7s cubic-bezier(.2,.8,.2,1);
 }
 @keyframes pop{ from{ transform:translateY(8px) scale(.98); opacity:0 } to{ transform:none; opacity:1 } }

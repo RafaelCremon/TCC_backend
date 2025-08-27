@@ -31,6 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Armazenar o ID do usuário na sessão
             $_SESSION['usuario_id'] = $admin['id'];  // Substitua 'id' pelo nome correto da coluna de ID no banco
             $_SESSION['usuario'] = $admin['usuario']; // Armazenar o nome de usuário também, se necessário
+            $_SESSION['tipo_usuario'] = $admin['tipo'];
             header("Location: inicial.php"); // Redireciona para a página inicial
             exit();
         } else {
@@ -43,6 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header("Location: login.php"); // Redireciona para a mesma página
         exit();
     }
+    
 }
 ?>
 
@@ -67,13 +69,98 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
     }
   /* Removidas animações Apple-style, mantida apenas a animação de entrada do card */
+
+    /* Modo escuro */
+    body.dark-mode {
+      background:
+        url('../assets/imagens/FUNDO.png') center center repeat,
+        linear-gradient(135deg, #181c2f 0%, #232a45 100%);
+      color: #f3f3f3;
+    }
+    body.dark-mode .card {
+      background: #232a45;
+      color: #f3f3f3;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+    }
+    body.dark-mode .card-head h1,
+    body.dark-mode .card-head p.sub {
+      color: #f3f3f3;
+    }
+    body.dark-mode .campo label {
+      color: #bfc8e2;
+    }
+    body.dark-mode .campo input {
+      background: #181c2f;
+      color: #f3f3f3;
+      border: 1px solid #3a4266;
+    }
+    body.dark-mode .campo input::placeholder {
+      color: #8a94b8;
+    }
+    body.dark-mode .mensagem-erro {
+      color: #ff6b6b;
+    }
+    body.dark-mode .logo {
+      /* Removido filter: invert(1); */
+      background: url('../assets/imagens/FUNDO.png') center center no-repeat;
+      background-size: cover;
+    }
+    body:not(.dark-mode) .logo {
+      filter: none;
+      background: #fff;
+    }
+    /* Botão de alternância de tema */
+    .theme-toggle-btn {
+      position: fixed;
+      right: 32px;
+      bottom: 32px;
+      z-index: 100;
+      background: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      box-shadow: 0 2px 8px rgba(44,92,255,0.10);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.3s;
+      padding: 0;
+    }
+    .theme-toggle-btn img {
+      width: 28px;
+      height: 28px;
+      pointer-events: none;
+    }
+    .theme-toggle-btn:hover {
+      background: #e3e7fa;
+    }
+    body.dark-mode .theme-toggle-btn {
+      background: #232a45;
+    }
+    body.dark-mode .theme-toggle-btn:hover {
+      background: #181c2f;
+    }
+    body.dark-mode #senhaIcon,
+    body.dark-mode #themeIcon {
+      filter: invert(1) drop-shadow(0 1px 2px rgba(44,92,255,0.10));
+    }
+    body:not(.dark-mode) #senhaIcon,
+    body:not(.dark-mode) #themeIcon {
+      filter: drop-shadow(0 1px 2px rgba(44,92,255,0.10));
+    }
   </style>
 </head>
 <body>
   <!-- Card de login -->
-<div class="card" id="loginCard">
+  <div class="card" id="loginCard" style="padding:32px 32px 24px 32px; margin-top:40px;">
     <div class="card-head">
-  <img src="../assets/imagens/LOGO.png" alt="Logo Quantum" class="logo" style="width:48px;height:48px;border-radius:50%;margin-bottom:10px;box-shadow:0 2px 8px rgba(44,92,255,0.10);">
+      <img src="../assets/imagens/LOGOSEMFUNDO.png"
+           alt="Logo Quantum Education"
+           class="logo"
+           id="logoImg"
+           style="width:180px;height:auto;margin-bottom:10px;box-shadow:0 2px 8px rgba(44,92,255,0.10);border-radius:12px;padding:12px;">
       <h1>Login</h1>
       <p class="sub">Acesse sua conta</p>
     </div>
@@ -100,9 +187,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     </span>
 </div>
-
-
-            <!-- Mensagem de erro se houver -->
+           <!-- Mensagem de erro se houver -->
             <?php if (!empty($erro)): ?>
                 <div class="mensagem-erro" id="erroMensagem"><?= $erro ?></div>
             <?php endif; ?>
@@ -110,6 +195,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <button type="submit">Entrar</button>
         </form>
     </div>
+      
+    <button class="theme-toggle-btn" id="themeToggleBtn" type="button" aria-label="Alternar tema">
+    <img id="themeIcon" src="../assets/imagens/moon.png" alt="Modo escuro">
+  </button>
 
     <script src="../js/login.js"></script>
     <script>
@@ -147,10 +236,57 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Não remove a classe, assim só anima uma vez
       }
     });
+       // Alternância de tema claro/escuro e troca da logo
+    const themeBtn = document.getElementById('themeToggleBtn');
+    const themeIcon = document.getElementById('themeIcon');
+    const logoImg = document.getElementById('logoImg');
+    function setTheme(dark) {
+      if (dark) {
+        document.body.classList.add('dark-mode');
+        themeIcon.src = '../assets/imagens/sun.png'; // Ícone de sol no modo escuro
+        themeIcon.alt = 'Modo claro';
+        logoImg.src = '../assets/imagens/LOGOTEMAESCURO.png'; // Logo para tema escuro
+      } else {
+        document.body.classList.remove('dark-mode');
+        themeIcon.src = '../assets/imagens/moon.png'; // Ícone de lua no modo claro
+        themeIcon.alt = 'Modo escuro';
+        logoImg.src = '../assets/imagens/LOGOSEMFUNDO.png'; // Logo para tema claro
+      }
+      updateSenhaIcon();
+    }
+    // Inicialmente modo claro
+    setTheme(false);
+    themeBtn.addEventListener('click', function() {
+      const isDark = document.body.classList.contains('dark-mode');
+      setTheme(!isDark);
+    });
+
+    // Função para atualizar o ícone do olho conforme o tema e estado da senha
+    function updateSenhaIcon() {
+      var senhaInput = document.getElementById('senha');
+      var senhaIcon = document.getElementById('senhaIcon');
+      if (!senhaInput || !senhaIcon) return;
+      if (senhaInput.type === 'password') {
+        if (document.body.classList.contains('dark-mode')) {
+          senhaIcon.src = '../assets/imagens/OLHOESCURO.png';
+          senhaIcon.style.filter = 'invert(1)';
+        } else {
+          senhaIcon.src = '../assets/imagens/OLHO.jpg';
+          senhaIcon.style.filter = '';
+        }
+        senhaIcon.alt = 'Senha oculta';
+      } else {
+        if (document.body.classList.contains('dark-mode')) {
+          senhaIcon.src = '../assets/imagens/FECHADOESCURO.png';
+          senhaIcon.style.filter = 'invert(1)';
+        } else {
+          senhaIcon.src = '../assets/imagens/FECHADO.jpg';
+          senhaIcon.style.filter = '';
+        }
+        senhaIcon.alt = 'Senha visível';
+      }
+    }
   </script>
   <link rel="stylesheet" href="inicial.php">
 </body>
 </html>
-
-
-

@@ -1,25 +1,116 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nossa página</title>
-    <link rel="stylesheet" href="instituicoes.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Instituições - Quantum Education</title>
+<style>
+    * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { 
+        background: linear-gradient(135deg, #0e1b4d, #2a5cff); 
+        min-height:100vh; display:flex; flex-direction:column; color:#fff;
+    }
+    h2 { font-size:36px; margin:20px 0 5px 0; text-align:center; }
+    h3 { font-size:24px; margin-bottom:30px; text-align:center; }
+
+    .main-container { display:flex; max-width:1200px; margin:0 auto; padding:20px; gap:20px; }
+
+    /* Coluna lateral de filtros */
+    .sidebar { flex:1; background-color: rgba(255,255,255,0.1); padding:20px; border-radius:12px; height:max-content; min-width:200px; backdrop-filter: blur(5px); }
+    .sidebar input, .sidebar select { width:100%; padding:10px; margin-bottom:15px; border-radius:8px; border:none; background-color: rgba(255,255,255,0.2); color:#fff; }
+    .sidebar input::placeholder, .sidebar select { color:#e0e0ff; }
+
+    /* Lista de instituições */
+    .instituicoes-container { flex:3; display:flex; flex-direction:column; gap:20px; max-height:80vh; overflow-y:auto; padding-right:10px; }
+    .instituicoes-container::-webkit-scrollbar { width:6px; }
+    .instituicoes-container::-webkit-scrollbar-thumb { background-color:#fff; border-radius:4px; }
+
+    .escola-botao {
+        display:flex; align-items:center; background-color: rgba(255,255,255,0.15); border-radius:15px;
+        padding:15px; cursor:pointer; text-align:left; border:none; transition: transform 0.3s, background-color 0.3s;
+    }
+    .escola-botao:hover { background-color: rgba(255,255,255,0.3); transform:translateY(-5px); }
+
+    .logo-escola { width:60px; height:60px; object-fit:cover; border-radius:12px; margin-right:20px; flex-shrink:0; }
+    .info-escola span:first-child { font-weight:bold; font-size:18px; }
+    .info-escola span:last-child { font-size:14px; }
+
+    @media (max-width: 900px){
+        .main-container { flex-direction:column; }
+        .sidebar { width:100%; margin-bottom:20px; }
+    }
+</style>
 </head>
 <body>
-    <h2>Nossa página</h2>
-    <h3>Instituições</h3>
 
-    <div>
+<h2>Quantum Education</h2>
+<h3>Instituições</h3>
 
+<div class="main-container">
+    <div class="sidebar">
+        <input type="text" placeholder="Pesquisar escola..." id="pesquisa">
+        <select id="filtro-cidade">
+            <option value="">Filtrar por cidade</option>
+            <option value="São Paulo">São Paulo</option>
+            <option value="Rio de Janeiro">Rio de Janeiro</option>
+            <option value="Belo Horizonte">Belo Horizonte</option>
+        </select>
+        <select id="filtro-estado">
+            <option value="">Filtrar por estado</option>
+            <option value="SP">SP</option>
+            <option value="RJ">RJ</option>
+            <option value="MG">MG</option>
+        </select>
+    </div>
+
+    <div class="instituicoes-container" id="instituicoes">
         <button onclick="window.location.href='../colegio-cruzeiro-VJ-SP/pages/login.php'" class="escola-botao">
-        <img class="logo-escola" src="assets/logos/cruzeiro do sul.png" alt="Logo">
-        <div class="info-escola">
-            <span>Colégio Cruzeiro do Sul</span>
-            <span>São Paulo, SP</span>
+            <img class="logo-escola" src="assets/logos/cruzeiro do sul.png" alt="Logo">
+            <div class="info-escola">
+                <span>Colégio Cruzeiro do Sul</span>
+                <span>São Paulo, SP</span>
             </div>
         </button>
 
+        <button class="escola-botao">
+            <img class="logo-escola" src="assets/logos/outro-logo.png" alt="Logo">
+            <div class="info-escola">
+                <span>Escola Exemplo</span>
+                <span>Rio de Janeiro, RJ</span>
+            </div>
+        </button>
+
+        <button class="escola-botao">
+            <img class="logo-escola" src="assets/logos/outro-logo2.png" alt="Logo">
+            <div class="info-escola">
+                <span>Escola Modelo</span>
+                <span>Belo Horizonte, MG</span>
+            </div>
+        </button>
+
+        <button class="escola-botao">
+            <img class="logo-escola" src="assets/logos/outro-logo3.png" alt="Logo">
+            <div class="info-escola">
+                <span>Escola Futuro</span>
+                <span>Curitiba, PR</span>
+            </div>
+        </button>
     </div>
+</div>
+
+<script>
+    const pesquisa = document.getElementById('pesquisa');
+    const instituicoes = document.getElementById('instituicoes');
+
+    pesquisa.addEventListener('input', () => {
+        const termo = pesquisa.value.toLowerCase();
+        Array.from(instituicoes.children).forEach(botao => {
+            const nome = botao.querySelector('.info-escola span:first-child').textContent.toLowerCase();
+            if(nome.includes(termo)) botao.style.display = 'flex';
+            else botao.style.display = 'none';
+        });
+    });
+</script>
+
 </body>
 </html>

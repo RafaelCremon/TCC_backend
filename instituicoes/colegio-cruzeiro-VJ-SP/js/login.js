@@ -1,4 +1,43 @@
-// Garante que o código só execute se o elemento existir
+// função de login quando ativa "Ao clicar o botão", busca esses elementos:
+function login() {
+  const usuario = document.getElementById("usuario").value;
+  const senha = document.getElementById("senha").value;
+  const erroUsuario = document.getElementById("erroUsuario");
+  const erroSenha = document.getElementById("erroSenha");
+
+  // Limpa mensagens anteriores
+  erroUsuario.textContent = "";
+  erroSenha.textContent = "";
+
+  // Usuário e Senha Válidos para entrar
+  const usuariosValidos = [{ usuario: "admin", senha: "1234" }];
+
+  // Autoriza caso o Usuário e Senha inseridos forem os de cima
+  const autorizado = usuariosValidos.find(u => u.usuario === usuario && u.senha === senha);
+
+  // Se foi os autorizados, faz a transição Apple e redireciona
+  if (autorizado) {
+    if (window._appleLoginRedirect) {
+      window._appleLoginRedirect();
+    } else {
+      window.location.href = "pages/inicial.html";
+    }
+  }
+}
+
+// NOVO: manter o ícone de olho funcionando
+function toggleSenha() {
+  const input = document.getElementById("senha");
+  if (!input) return;
+  input.type = input.type === "password" ? "text" : "password";
+}
+
+/* =======================
+   Bolhas originais (decorativas)
+   Mantidas, porém desativadas por padrão para evitar travamentos.
+   Para reativar, mude ENABLE_BUBBLES para true.
+======================= */
+const ENABLE_BUBBLES = false;
 const bolhas = document.getElementById("bolhas");
 const bubbleSize = 20;
 const maxScale = 1.4;
@@ -27,31 +66,14 @@ function criarBolhas() {
     const delay = (row + col) * 0.05;
 
     const distance = col + row;
-    // Escala base: menor no canto superior esquerdo (distance=0), maior no inferior direito (distance=maxDistance)
     const scaleBase = 0.4 + (distance / maxDistance) * 1.0; // varia de 0.4 a 1.4
-
+    li.style.setProperty("--scale-base", scaleBase);
     li.style.animationDelay = `${delay}s`;
-
     bolhas.appendChild(li);
   }
 }
 
-if (bolhas) {
+if (ENABLE_BUBBLES && bolhas) {
   criarBolhas();
   window.addEventListener("resize", criarBolhas);
 }
-
-// Função que vai esconder a mensagem de erro ao digitar em qualquer campo
-function limparErro() {
-  const erroMensagem = document.getElementById("erroMensagem");
-  if (erroMensagem) {
-    erroMensagem.textContent = "";  // Limpa o texto da mensagem de erro
-  }
-}
-
-document.addEventListener("DOMContentLoaded", function() {
-  const usuario = document.getElementById("usuario");
-  const senha = document.getElementById("senha");
-  if (usuario) usuario.addEventListener("input", limparErro);
-  if (senha) senha.addEventListener("input", limparErro);
-});

@@ -3,12 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nossa página</title>
-    <link rel="stylesheet" href="principal.css">
+    <title>Quantum Education</title>
+    <style>
+        /* Reset básico */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0e1b4d, #2a5cff);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        header {
+            width: 100%;
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(5px);
+        }
+
+        header h1 {
+            font-size: 28px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        nav a {
+            margin-left: 25px;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: #ffdd57;
+        }
+
+        .hero {
+            text-align: center;
+            margin-top: 100px;
+        }
+
+        .hero h2 {
+            font-size: 48px;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .hero p {
+            font-size: 20px;
+            margin-bottom: 40px;
+            text-shadow: 1px 1px 6px rgba(0,0,0,0.3);
+        }
+
+        button {
+            background-color: #ffdd57;
+            color: #0e1b4d;
+            padding: 15px 35px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            transition: transform 0.2s, background-color 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        button:hover {
+            background-color: #ffd700;
+            transform: translateY(-3px);
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 20px;
+            text-align: center;
+            font-size: 14px;
+            background-color: rgba(0,0,0,0.3);
+            width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .hero h2 {
+                font-size: 36px;
+            }
+
+            .hero p {
+                font-size: 18px;
+            }
+
+            header {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            nav a {
+                margin-left: 0;
+                margin-right: 15px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h2>Nossa página</h2>
-    <button onclick="window.location.href='../instituicoes/pagina-instituicoes/instituicoes.html'">Instituições</button>
-    
+
+    <header>
+        <h1>Quantum Education</h1>
+        <nav>
+            <a href="#">Home</a>
+            <a href="../instituicoes/pagina-instituicoes/instituicoes.html">Instituições</a>
+            <a href="#">Contato</a>
+        </nav>
+    </header>
+
+    <div class="hero">
+        <h2>Bem-vindo à Quantum Education</h2>
+        <p>Soluções completas para gestão escolar digital</p>
+        <button onclick="window.location.href='../instituicoes/pagina-instituicoes/instituicoes.html'">Ver Instituições</button>
+    </div>
+
+    <footer>
+        &copy; 2025 Quantum Education. Todos os direitos reservados.
+    </footer>
+
 </body>
 </html>
