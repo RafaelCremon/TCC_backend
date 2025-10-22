@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Verificar se os campos estão preenchidos
     if (!empty($usuario) && !empty($senha)) {
         // Preparar a consulta SQL
-        $stmt = $pdo->prepare("SELECT * FROM administradores WHERE usuario = :usuario");
+        $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE usuario = :usuario");
         $stmt->bindParam(':usuario', $usuario);
         $stmt->execute();
         $admin = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -31,7 +31,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Armazenar o ID do usuário na sessão
             $_SESSION['usuario_id'] = $admin['id'];  // Substitua 'id' pelo nome correto da coluna de ID no banco
             $_SESSION['usuario'] = $admin['usuario']; // Armazenar o nome de usuário também, se necessário
-            $_SESSION['tipo_usuario'] = $admin['tipo'];
+            $_SESSION['classe'] = $admin['classe']; // Nova sessão para classe
+            $_SESSION['foto_perfil'] = $admin['foto_perfil']; // Foto do perfil
             header("Location: inicial.php"); // Redireciona para a página inicial
             exit();
         } else {
@@ -54,103 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Tela de Login</title>
-  <link rel="stylesheet" href="../css/login.css" />
-  <style>
-    /* Fade-in suave para o card de login */
-    .card.login-animate-in {
-      animation: loginFadeIn 0.7s cubic-bezier(.4,1.4,.6,1);
-    }
-    @keyframes loginFadeIn {
-      0% {
-        opacity: 0;
-      }
-      100% {
-        opacity: 1;
-      }
-    }
-  /* Removidas animações Apple-style, mantida apenas a animação de entrada do card */
-
-    /* Modo escuro */
-    body.dark-mode {
-      background:
-        url('../assets/imagens/FUNDO.png') center center repeat,
-        linear-gradient(135deg, #181c2f 0%, #232a45 100%);
-      color: #f3f3f3;
-    }
-    body.dark-mode .card {
-      background: #232a45;
-      color: #f3f3f3;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.25);
-    }
-    body.dark-mode .card-head h1,
-    body.dark-mode .card-head p.sub {
-      color: #f3f3f3;
-    }
-    body.dark-mode .campo label {
-      color: #bfc8e2;
-    }
-    body.dark-mode .campo input {
-      background: #181c2f;
-      color: #f3f3f3;
-      border: 1px solid #3a4266;
-    }
-    body.dark-mode .campo input::placeholder {
-      color: #8a94b8;
-    }
-    body.dark-mode .mensagem-erro {
-      color: #ff6b6b;
-    }
-    body.dark-mode .logo {
-      /* Removido filter: invert(1); */
-      background: url('../assets/imagens/FUNDO.png') center center no-repeat;
-      background-size: cover;
-    }
-    body:not(.dark-mode) .logo {
-      filter: none;
-      background: #fff;
-    }
-    /* Botão de alternância de tema */
-    .theme-toggle-btn {
-      position: fixed;
-      right: 32px;
-      bottom: 32px;
-      z-index: 100;
-      background: #fff;
-      border: none;
-      border-radius: 50%;
-      width: 48px;
-      height: 48px;
-      box-shadow: 0 2px 8px rgba(44,92,255,0.10);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: background 0.3s;
-      padding: 0;
-    }
-    .theme-toggle-btn img {
-      width: 28px;
-      height: 28px;
-      pointer-events: none;
-    }
-    .theme-toggle-btn:hover {
-      background: #e3e7fa;
-    }
-    body.dark-mode .theme-toggle-btn {
-      background: #232a45;
-    }
-    body.dark-mode .theme-toggle-btn:hover {
-      background: #181c2f;
-    }
-    body.dark-mode #senhaIcon,
-    body.dark-mode #themeIcon {
-      filter: invert(1) drop-shadow(0 1px 2px rgba(44,92,255,0.10));
-    }
-    body:not(.dark-mode) #senhaIcon,
-    body:not(.dark-mode) #themeIcon {
-      filter: drop-shadow(0 1px 2px rgba(44,92,255,0.10));
-    }
-  </style>
+  <link rel="stylesheet" href="../css/login.css">
 </head>
 <body>
   <!-- Card de login -->
@@ -240,6 +145,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     const themeBtn = document.getElementById('themeToggleBtn');
     const themeIcon = document.getElementById('themeIcon');
     const logoImg = document.getElementById('logoImg');
+    
     function setTheme(dark) {
       if (dark) {
         document.body.classList.add('dark-mode');
@@ -254,11 +160,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
       updateSenhaIcon();
     }
-    // Inicialmente modo claro
-    setTheme(false);
+    
+    // Carregar tema salvo do localStorage
+    function loadSavedTheme() {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark') {
+        setTheme(true);
+      } else {
+        setTheme(false);
+      }
+    }
+    
+    // Salvar tema no localStorage
+    function saveTheme(isDark) {
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    }
+    
+    // Carregar tema salvo ao inicializar
+    loadSavedTheme();
+    
     themeBtn.addEventListener('click', function() {
       const isDark = document.body.classList.contains('dark-mode');
-      setTheme(!isDark);
+      const newTheme = !isDark;
+      setTheme(newTheme);
+      saveTheme(newTheme);
     });
 
     // Função para atualizar o ícone do olho conforme o tema e estado da senha

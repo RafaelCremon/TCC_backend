@@ -19,8 +19,8 @@ CREATE TABLE IF NOT EXISTS instituicoes (
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Criação da tabela de administradores
-CREATE TABLE IF NOT EXISTS administradores (
+-- Criação da tabela de usuários
+CREATE TABLE IF NOT EXISTS usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     instituicao_id INT NOT NULL,
     nome VARCHAR(255) NOT NULL,
@@ -87,8 +87,8 @@ INSERT INTO instituicoes (
     'colegio-cruzeiro'
 );
 
--- Inserir usuário administrador
-INSERT INTO administradores (
+-- Inserir usuário
+INSERT INTO usuarios (
     instituicao_id,
     nome,
     usuario,

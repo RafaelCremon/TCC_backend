@@ -5,8 +5,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $usuario = $_POST['usuario'];
     $senha = $_POST['senha']; // A senha digitada pelo usuário
 
-    // Buscando o administrador no banco de dados
-    $query = "SELECT * FROM administradores WHERE usuario = ?";
+    // Buscando o usuário no banco de dados
+    $query = "SELECT * FROM usuarios WHERE usuario = ?";
     $stmt = $pdo->prepare($query);  // Usando o objeto $pdo para preparar a consulta
     $stmt->bindParam(1, $usuario, PDO::PARAM_STR); // Vincula o parâmetro de forma segura
     $stmt->execute();

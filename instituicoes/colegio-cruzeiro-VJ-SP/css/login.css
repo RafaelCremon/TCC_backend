@@ -25,6 +25,101 @@ body{
   -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
 }
 
+/* Fade-in suave para o card de login */
+    .card.login-animate-in {
+      animation: loginFadeIn 0.7s cubic-bezier(.4,1.4,.6,1);
+    }
+    @keyframes loginFadeIn {
+      0% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+  /* Removidas animações Apple-style, mantida apenas a animação de entrada do card */
+
+    /* Modo escuro */
+    body.dark-mode {
+      background:
+        url('../assets/imagens/FUNDO.png') center center repeat,
+        linear-gradient(135deg, #181c2f 0%, #232a45 100%);
+      color: #f3f3f3;
+    }
+    body.dark-mode .card {
+      background: #232a45;
+      color: #f3f3f3;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+    }
+    body.dark-mode .card-head h1,
+    body.dark-mode .card-head p.sub {
+      color: #f3f3f3;
+    }
+    body.dark-mode .campo label {
+      color: #bfc8e2;
+    }
+    body.dark-mode .campo input {
+      background: #181c2f;
+      color: #f3f3f3;
+      border: 1px solid #3a4266;
+    }
+    body.dark-mode .campo input::placeholder {
+      color: #8a94b8;
+    }
+    body.dark-mode .mensagem-erro {
+      color: #ff6b6b;
+    }
+    body.dark-mode .logo {
+      /* Removido filter: invert(1); */
+      background: url('../assets/imagens/FUNDO.png') center center no-repeat;
+      background-size: cover;
+    }
+    body:not(.dark-mode) .logo {
+      filter: none;
+      background: #fff;
+    }
+    /* Botão de alternância de tema */
+    .theme-toggle-btn {
+      position: fixed;
+      right: 32px;
+      bottom: 32px;
+      z-index: 100;
+      background: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      box-shadow: 0 2px 8px rgba(44,92,255,0.10);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.3s;
+      padding: 0;
+    }
+    .theme-toggle-btn img {
+      width: 28px;
+      height: 28px;
+      pointer-events: none;
+    }
+    .theme-toggle-btn:hover {
+      background: #e3e7fa;
+    }
+    body.dark-mode .theme-toggle-btn {
+      background: #232a45;
+    }
+    body.dark-mode .theme-toggle-btn:hover {
+      background: #181c2f;
+    }
+    body.dark-mode #senhaIcon,
+    body.dark-mode #themeIcon {
+      filter: invert(1) drop-shadow(0 1px 2px rgba(44,92,255,0.10));
+    }
+    body:not(.dark-mode) #senhaIcon,
+    body:not(.dark-mode) #themeIcon {
+      filter: drop-shadow(0 1px 2px rgba(44,92,255,0.10));
+    }
+    
 /* Pontilhado performático (substitui aquelas milhares de <li>) */
 body::before{
   content:""; position:fixed; inset:0; z-index:-1; pointer-events:none; opacity:.28;

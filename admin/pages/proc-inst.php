@@ -8,7 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $senha = $_POST['senha'];
 
     // Preparar a consulta SQL
-    $stmt = $pdo->prepare("SELECT * FROM administradores WHERE usuario = :usuario");
+    $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE usuario = :usuario");
     $stmt->bindParam(':usuario', $usuario);
     $stmt->execute();
     $admin = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -17,6 +17,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($admin && password_verify($senha, $admin['senha'])) {
         $_SESSION['usuario_id'] = $admin['id'];
         $_SESSION['usuario'] = $admin['usuario'];
+        $_SESSION['classe'] = $admin['classe'];
+        $_SESSION['foto_perfil'] = $admin['foto_perfil'];
         header("Location: inicial.php");
         exit();
     } else {

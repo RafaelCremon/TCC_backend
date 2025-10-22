@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $senha = password_hash($_POST['senha'], PASSWORD_DEFAULT);
 
     // Inserção no banco de dados
-    $query = "INSERT INTO administradores (instituicao_id, nome, usuario, email, telefone, senha) 
+    $query = "INSERT INTO usuarios (instituicao_id, nome, usuario, email, telefone, senha) 
               VALUES (?, ?, ?, ?, ?, ?)";
     $stmt = $pdo->prepare($query);
     $stmt->bindParam(1, $instituicao_id, PDO::PARAM_INT);
@@ -28,9 +28,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->bindParam(6, $senha, PDO::PARAM_STR);
 
     if ($stmt->execute()) {
-        echo "<div class='msg success'>Administrador cadastrado com sucesso!</div>";
+        echo "<div class='msg success'>Usuário cadastrado com sucesso!</div>";
     } else {
-        echo "<div class='msg error'>Erro ao cadastrar administrador: " . $pdo->errorInfo()[2] . "</div>";
+        echo "<div class='msg error'>Erro ao cadastrar usuário: " . $pdo->errorInfo()[2] . "</div>";
     }
 }
 ?>
@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastrar Administrador</title>
+    <title>Cadastrar Usuário</title>
     <script src="https://cdn.jsdelivr.net/npm/inputmask@5.0.6/dist/inputmask.min.js"></script>
     <style>
         body {

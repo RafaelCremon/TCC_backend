@@ -1,10 +1,10 @@
 <?php
 require_once '../../includes/db.php'; // Incluindo a conexão com o banco de dados
 
-// Buscar administradores
-$query = "SELECT a.id, a.nome, a.usuario, a.email, a.telefone, i.nome AS instituicao
-          FROM administradores a
-          INNER JOIN instituicoes i ON a.instituicao_id = i.id";
+// Buscar usuários
+$query = "SELECT u.id, u.nome, u.usuario, u.email, u.telefone, i.nome AS instituicao
+          FROM usuarios u
+          INNER JOIN instituicoes i ON u.instituicao_id = i.id";
 $stmt = $pdo->prepare($query);
 $stmt->execute();
 $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -15,7 +15,7 @@ $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Listagem de Administradores</title>
+    <title>Listagem de Usuários</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -88,7 +88,7 @@ $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </head>
 <body>
     <div class="container">
-        <h2>Listagem de Administradores</h2>
+        <h2>Listagem de Usuários</h2>
         <table>
             <thead>
                 <tr>

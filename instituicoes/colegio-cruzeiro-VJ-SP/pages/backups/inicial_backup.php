@@ -22,8 +22,347 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Página Inicial</title>
-  <link rel="stylesheet" href="../css/inicial.css?v=<?php echo time(); ?>_no_border_fix_<?php echo rand(10000,99999); ?>">
+  <link rel="stylesheet" href="../css/inicial.css?v=<?php echo time(); ?>_clean_grid">
   <link rel="stylesheet" href="../css/calendario.css?v=<?php echo time(); ?>_force_stretch_<?php echo rand(1000,9999); ?>">
+  <style>
+  /* FORÇAR EVENTOS ESTICADOS */
+  .event-item {
+    background: rgba(108, 124, 231, 0.2) !important;
+    border-left: 4px solid #00e0ff !important;
+    padding: 12px 16px !important;
+    margin-bottom: 10px !important;
+    border-radius: 0 8px 8px 0 !important;
+    min-height: 60px !important;
+  }
+  .event-title {
+    font-size: 0.9rem !important;
+    margin-bottom: 6px !important;
+    font-weight: 700 !important;
+  }
+  .event-time {
+    font-size: 0.75rem !important;
+    margin-top: 4px !important;
+    gap: 6px !important;
+  }
+  .event-date {
+    font-size: 0.65rem !important;
+    margin-bottom: 6px !important;
+  }
+  
+  /* CENTRALIZAR CALENDÁRIO E ATALHOS */
+  .main-grid { 
+    display: grid !important; 
+    grid-template-columns: auto auto !important; 
+    gap: 8px !important; 
+    justify-content: center !important;
+    width: 100% !important;
+    max-width: 1200px !important;
+    margin: 0 auto !important;
+  }
+  .shortcuts-section {
+    width: auto !important;
+    max-width: 600px !important;
+  }
+  .calendar-sidebar { 
+    width: auto !important;
+    min-width: 500px !important; 
+    max-width: 500px !important; 
+  }
+  .calendar-section { 
+    max-width: 500px !important; 
+    min-width: 500px !important; 
+    padding: 15px 18px !important; 
+    border: 2px solid rgba(58, 74, 122, 0.8) !important;
+  }
+  .calendar-day { 
+    width: 32px !important; 
+    height: 32px !important; 
+    font-size: 1rem !important; 
+  }
+  .calendar-grid { 
+    grid-template-columns: repeat(7, 32px) !important; 
+    gap: 4px !important; 
+  }
+  .calendar-nav-btn {
+    background: rgba(255, 255, 255, 0.3) !important;
+    border: none !important;
+    color: white !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    width: 20px !important;
+    height: 20px !important;
+    border-radius: 50% !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.3s ease !important;
+    backdrop-filter: blur(10px) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+    pointer-events: auto !important;
+    z-index: 10 !important;
+  }
+  .calendar-nav-btn:hover {
+    background: rgba(255, 255, 255, 0.5) !important;
+    transform: scale(1.1) !important;
+  }
+  
+  /* RESPONSIVO CENTRALIZADO */
+  @media (max-width: 1024px) {
+    .main-grid {
+      grid-template-columns: 1fr !important;
+      grid-template-rows: auto auto !important;
+      justify-content: center !important;
+      justify-items: center !important;
+      gap: 10px !important;
+    }
+    .shortcuts-section,
+    .calendar-sidebar {
+      max-width: 600px !important;
+      width: 100% !important;
+    }
+  }
+  
+  /* Botões do menu de perfil do admin */
+  .profile-menu-btn {
+    width: 100%;
+    background: linear-gradient(90deg, #eaf2ff 0%, #dbeaff 100%);
+    border: none;
+    padding: 11px 16px;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 9px;
+    font-weight: 500;
+    color: #2e3192;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    margin-bottom: 4px;
+    transition: background .18s, color .18s;
+    box-shadow: 0 1px 6px rgba(44,92,255,0.07);
+  }
+  .profile-menu-btn:last-child {
+    background: linear-gradient(90deg, #ffeaea 0%, #ffd6d6 100%);
+    color: #d32f2f;
+  }
+  .profile-menu-btn:hover {
+    background: #e6efff;
+    color: #0057ff;
+  }
+  .profile-menu-btn:last-child:hover {
+    background: #ffd6d6;
+    color: #b71c1c;
+  }
+  .profile-menu-btn svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+  body.dark-mode #profileMenu {
+    background: #232a4d !important;
+    border-color: #232a4d !important;
+    box-shadow: 0 2px 12px rgba(0,224,255,0.08);
+  }
+  body.dark-mode .profile-menu-btn {
+    background: linear-gradient(90deg, #232a4d 0%, #181c2f 100%);
+    color: #00e0ff;
+    box-shadow: 0 1px 8px rgba(0,224,255,0.07);
+  }
+  body.dark-mode .profile-menu-btn:last-child {
+    background: linear-gradient(90deg, #3a1a1a 0%, #232a4d 100%);
+    color: #ffbdbd;
+  }
+  body.dark-mode .profile-menu-btn:hover {
+    background: #181c2f;
+    color: #00e0ff;
+  }
+  body.dark-mode .profile-menu-btn:last-child:hover {
+    background: #3a1a1a;
+    color: #ff6b6b;
+  }
+  /* Mini perfil popup modo escuro */
+  body.dark-mode #miniPerfilPopup {
+    background: #232a4d !important;
+    box-shadow: 0 2px 12px rgba(0,224,255,0.08) !important;
+  }
+  body.dark-mode #miniPerfilPopup span:first-child {
+    color: #00e0ff !important;
+  }
+  body.dark-mode #miniPerfilPopup div[style*="color:#333"] {
+    color: #b3d9ff !important;
+  }
+  body.dark-mode #btnCarteirinha,
+  body.dark-mode #btnTrocarTema {
+    background: linear-gradient(90deg, #232a4d 0%, #181c2f 100%) !important;
+    color: #00e0ff !important;
+  }
+  body.dark-mode #btnCarteirinha:hover,
+  body.dark-mode #btnTrocarTema:hover {
+    background: #181c2f !important;
+    color: #00e0ff !important;
+  }
+  body.dark-mode button[name="logout"] {
+    background: linear-gradient(90deg, #3a1a1a 0%, #232a4d 100%) !important;
+    color: #ffbdbd !important;
+  }
+  body.dark-mode button[name="logout"]:hover {
+    background: #3a1a1a !important;
+    color: #ff6b6b !important;
+  }
+  /* Popup compacto e estilizado para opções Mini Mapa */
+  .mini-mapa-opcoes-popup {
+    position: absolute;
+    left: 50%;
+    bottom: 100%;
+    transform: translateX(-50%) translateY(-10px) scale(0.97);
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    padding: 4px 8px;
+    background: #f7faff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(44,92,255,0.10);
+    border: 1px solid #e0eaff;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.18s cubic-bezier(.4,1.4,.6,1), transform 0.18s cubic-bezier(.4,1.4,.6,1);
+    z-index: 20;
+    min-width: 0;
+  }
+  .mini-mapa-opcoes-popup.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(-18px) scale(1);
+  }
+  .mini-mapa-opcoes-popup button {
+    background: #fff;
+    border: 1px solid #b6d2ff;
+    border-radius: 6px;
+    padding: 2px 8px 2px 6px;
+    font-size: 12px;
+    color: #2e3192;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    box-shadow: 0 1px 4px rgba(44,92,255,0.07);
+    transition: background 0.13s, color 0.13s, box-shadow 0.13s;
+    min-width: 0;
+  }
+  .mini-mapa-opcoes-popup button:hover {
+    background: #eaf2ff;
+    color: #0057ff;
+    box-shadow: 0 2px 8px rgba(44,92,255,0.13);
+  }
+  .mini-mapa-opcoes-popup svg {
+    width: 13px;
+    height: 13px;
+    stroke: #5b8cff;
+    margin-right: 1px;
+  }
+  /* Mini mapa popup modo escuro */
+  body.dark-mode .mini-mapa-opcoes-popup {
+    background: #232a4d !important;
+    border-color: #3a4a7a !important;
+    box-shadow: 0 2px 8px rgba(0,224,255,0.10) !important;
+  }
+  body.dark-mode .mini-mapa-opcoes-popup button {
+    background: #2e1a47 !important;
+    border-color: #3a4a7a !important;
+    color: #00e0ff !important;
+    box-shadow: 0 1px 4px rgba(0,224,255,0.07) !important;
+  }
+  body.dark-mode .mini-mapa-opcoes-popup button:hover {
+    background: #3a4a7a !important;
+    color: #00e0ff !important;
+    box-shadow: 0 2px 8px rgba(0,224,255,0.13) !important;
+  }
+  body.dark-mode .mini-mapa-opcoes-popup svg {
+    stroke: #00e0ff !important;
+  }
+  .apple-transition-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: linear-gradient(120deg, #5b8cff 0%, #2e3192 100%);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 9999;
+      transition: opacity 0.7s cubic-bezier(.4,1.4,.6,1);
+    }
+    .apple-transition-active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .shortcuts-card.apple-animate {
+      animation: appleFadeOutScale 0.7s cubic-bezier(.4,1.4,.6,1) forwards;
+    }
+      .shortcuts-card.apple-animate-in {
+        animation: appleFadeInScaleUp 0.7s cubic-bezier(.4,1.4,.6,1);
+      }
+      @keyframes appleFadeInScaleUp {
+        0% {
+          opacity: 0;
+          transform: scale(1.12) translateY(40px);
+        }
+        40% {
+          opacity: 0.7;
+          transform: scale(1.04) translateY(16px);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
+    @keyframes appleFadeInScale {
+      0% { opacity: 0; transform: scale(1.12); }
+      40% { opacity: 0.7; transform: scale(1.04); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+    .shortcuts-card.hide {
+      animation: fadeOutScale 0.5s cubic-bezier(.4,1.4,.6,1) forwards;
+    }
+    @keyframes fadeOutScale {
+      to {
+        opacity: 0;
+        transform: scale(0.92) translateY(30px);
+        filter: blur(2px);
+      }
+    }
+
+    /* Adicione ao seu CSS */    /* Adicione ao seu CSS */
+    .atalho-slot.preenchido {
+      transition: background 0.3s, box-shadow 0.3s;
+      background: #eaf2ff;
+      box-shadow: 0 2px 12px rgba(44,92,255,0.10);
+    }
+    .atalho-slot.preenchido {
+      transition: background 0.3s, box-shadow 0.3s;
+      background: #eaf2ff;
+      box-shadow: 0 2px 12px rgba(44,92,255,0.10);
+    }
+    
+    /* Menu minimapa */
+    #menuMinimapa {
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
+    
+    body.dark-mode #menuMinimapa {
+      background: #232a4d !important;
+      border-color: #3a4a7a !important;
+      color: #f1f1f1 !important;
+    }
+    
+    body.dark-mode #menuMinimapa button {
+      background: #2e1a47 !important;
+      color: #00e0ff !important;
+    }
+    
+    body.dark-mode #menuMinimapa button:hover {
+      background: #3a4a7a !important;
+    }
+  </style>
 </head>
 <body>
   <div class="apple-transition-overlay" id="appleOverlay"></div>
@@ -40,8 +379,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
   <h2 class="welcome-header" id="headerWelcome" style="font-size:16px; font-weight:400; margin:4px 0 0 0; color:#5b8cff; opacity:0; transition:opacity 0.5s;"></h2>
     </div>
     <div class="admin-profile" id="adminProfile" style="position: relative; cursor: pointer;">
-      <img src="../assets/imagens/spongebob.png" alt="Foto de Perfil" class="admin-avatar">
+      <img src="../assets/imagens/spongebob.png" alt="Admin" class="admin-avatar">
       <span><?php echo htmlspecialchars($_SESSION['usuario']); ?></span>
+      <!-- Menu suspenso -->
+      <!--
+      <div id="profileMenu" style="display:none; position:absolute; right:0; top:110%; background:#fff; border:1px solid #ddd; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.08); min-width:120px; z-index:100;">
+        <button id="toggleThemeBtn" class="profile-menu-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#5b8cff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.93 4.93l1.41 1.41"/><path d="M17.66 17.66l1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M4.93 19.07l1.41-1.41"/><path d="M17.66 6.34l1.41-1.41"/></svg>
+          Alternar modo claro/escuro
+        </button>
+        <button id="btnSair" class="profile-menu-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#d32f2f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+          Sair
+        </button>
+      </div>
+      -->
     </div>
   </header>
 
@@ -243,194 +595,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
   };
 
   // O calendário agora se inicializa automaticamente
-  
-  // === FUNCIONALIDADE DELETAR EVENTOS - DEBUG ===
-  console.log('🚀 Iniciando script deletar eventos...');
-  
-  // LIMPAR EVENTOS DE EXEMPLO DO LOCALSTORAGE
-  function limparEventosExemplo() {
-    try {
-      const events = JSON.parse(localStorage.getItem('calendarEvents') || '{}');
-      let eventosRemovidos = 0;
-      
-      for (const dateKey in events) {
-        const dayEvents = events[dateKey];
-        for (let i = dayEvents.length - 1; i >= 0; i--) {
-          const event = dayEvents[i];
-          if (event.title === '📚 Reunião Pedagógica' || 
-              event.title === '🎓 Apresentação TCC' ||
-              event.title === 'Reunião Pedagógica' ||
-              event.title === 'Apresentação TCC') {
-            dayEvents.splice(i, 1);
-            eventosRemovidos++;
-          }
-        }
-        
-        // Se não há mais eventos nesta data, remover a chave
-        if (dayEvents.length === 0) {
-          delete events[dateKey];
-        }
-      }
-      
-      if (eventosRemovidos > 0) {
-        localStorage.setItem('calendarEvents', JSON.stringify(events));
-        console.log(`🧹 ${eventosRemovidos} eventos de exemplo removidos do localStorage`);
-      }
-    } catch (error) {
-      console.error('❌ Erro ao limpar eventos exemplo:', error);
-    }
-  }
-  
-  // Executar limpeza
-  limparEventosExemplo();
-  
-  function adicionarBotoesDeletar() {
-    console.log('🔍 Verificando calendário...');
-    
-    if (!window.calendar) {
-      console.log('❌ window.calendar não existe');
-      return false;
-    }
-    
-    console.log('✅ window.calendar encontrado:', typeof window.calendar);
-    
-    if (!window.calendar.createEventElement) {
-      console.log('❌ createEventElement não existe');
-      return false;
-    }
-    
-    console.log('✅ createEventElement encontrado');
-    
-    // Salvar original
-    if (!window.originalCreateEventElement) {
-      window.originalCreateEventElement = window.calendar.createEventElement.bind(window.calendar);
-      console.log('💾 Função original salva');
-    }
-    
-    // Nova função
-    window.calendar.createEventElement = function(event) {
-      console.log('🎯 createEventElement chamado para:', event.title);
-      
-      const eventDiv = document.createElement('div');
-      eventDiv.className = 'event-item';
-      eventDiv.style.position = 'relative';
-      
-      // Container flex
-      const container = document.createElement('div');
-      container.style.cssText = 'display: flex; justify-content: space-between; align-items: center; width: 100%;';
-      
-      // Lado esquerdo com informações
-      const infoDiv = document.createElement('div');
-      infoDiv.style.flex = '1';
-      
-      if (event.date) {
-        const dateDiv = document.createElement('div');
-        dateDiv.className = 'event-date';
-        dateDiv.textContent = '📅 ' + event.date;
-        infoDiv.appendChild(dateDiv);
-      }
-      
-      const titleDiv = document.createElement('div');
-      titleDiv.className = 'event-title';
-      titleDiv.textContent = event.title || 'Sem título';
-      infoDiv.appendChild(titleDiv);
-      
-      const timeDiv = document.createElement('div');
-      timeDiv.className = 'event-time';
-      timeDiv.textContent = event.time || 'Sem horário';
-      infoDiv.appendChild(timeDiv);
-      
-      // BOTÃO DELETAR - DESIGN MELHORADO
-      const deleteBtn = document.createElement('button');
-      deleteBtn.innerHTML = '🗑️';
-      deleteBtn.title = 'Deletar evento';
-      deleteBtn.style.cssText = `
-        background: linear-gradient(135deg, rgba(255, 107, 107, 0.9) 0%, rgba(220, 38, 38, 0.9) 100%) !important;
-        color: white !important;
-        border: none !important;
-        padding: 4px 6px !important;
-        border-radius: 5px !important;
-        cursor: pointer !important;
-        font-size: 14px !important;
-        margin-left: 6px !important;
-        min-width: 26px !important;
-        height: 26px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        transition: all 0.3s ease !important;
-        box-shadow: 0 2px 4px rgba(255, 107, 107, 0.3) !important;
-        backdrop-filter: blur(10px) !important;
-      `;
-      
-      deleteBtn.addEventListener('mouseenter', function() {
-        this.style.background = 'linear-gradient(135deg, rgba(255, 107, 107, 1) 0%, rgba(220, 38, 38, 1) 100%) !important';
-        this.style.transform = 'scale(1.1)';
-        this.style.boxShadow = '0 4px 8px rgba(255, 107, 107, 0.5) !important';
-      });
-      
-      deleteBtn.addEventListener('mouseleave', function() {
-        this.style.background = 'linear-gradient(135deg, rgba(255, 107, 107, 0.9) 0%, rgba(220, 38, 38, 0.9) 100%) !important';
-        this.style.transform = 'scale(1)';
-        this.style.boxShadow = '0 2px 4px rgba(255, 107, 107, 0.3) !important';
-      });
-      
-      deleteBtn.onclick = function(e) {
-        e.stopPropagation();
-        console.log('🗑️ Deletando evento:', event.title);
-        
-        if (confirm(`🗑️ Deletar evento "${event.title}"?\n\n⚠️ Esta ação não pode ser desfeita.`)) {
-          console.log('✅ Confirmou deletar');
-          
-          for (const dateKey in window.calendar.events) {
-            const dayEvents = window.calendar.events[dateKey];
-            const idx = dayEvents.findIndex(e => e.title === event.title && e.time === event.time);
-            if (idx !== -1) {
-              dayEvents.splice(idx, 1);
-              if (dayEvents.length === 0) delete window.calendar.events[dateKey];
-              window.calendar.saveEvents();
-              window.calendar.render();
-              
-              // Feedback visual
-              console.log('✅ Evento deletado com sucesso');
-              return;
-            }
-          }
-        }
-      };
-      
-      // Montar
-      container.appendChild(infoDiv);
-      container.appendChild(deleteBtn);
-      eventDiv.appendChild(container);
-      
-      console.log('✅ Evento criado com botão DELETAR visível');
-      return eventDiv;
-    };
-    
-    // Re-renderizar
-    window.calendar.render();
-    console.log('🔄 Calendário re-renderizado');
-    
-    return true;
-  }
-  
-  // Múltiplas tentativas
-  let tentativa = 0;
-  function tentar() {
-    tentativa++;
-    console.log('🔄 Tentativa', tentativa);
-    
-    if (adicionarBotoesDeletar()) {
-      console.log('🎉 SUCESSO!');
-    } else if (tentativa < 20) {
-      setTimeout(tentar, 500);
-    } else {
-      console.log('❌ FALHOU após 20 tentativas');
-    }
-  }
-  
-  setTimeout(tentar, 1000);
   </script>
   <script>
   window.addEventListener('DOMContentLoaded', function() {
@@ -681,6 +845,126 @@ document.getElementById('enviarAssistente').onclick = async function() {
   <button id="fecharCarteirinha" style="margin-top:18px;background:#0057ff;color:#fff;border:none;border-radius:8px;padding:7px 18px;font-weight:500;cursor:pointer;position:absolute;top:40px;right:calc(50vw - 170px);">Fechar</button>
 </div>
 
+<style>
+.carteirinha-modelo {
+  background: #06398c;
+  border-radius: 36px;
+  box-shadow: 0 2px 18px rgba(44,92,255,0.18);
+  width: 480px;
+  max-width: 95vw;
+  min-height: 320px;
+  padding: 32px 32px 24px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  position: relative;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+.carteirinha-topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+.carteirinha-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.carteirinha-colegio {
+  color: #fff;
+  line-height: 1.1;
+}
+.carteirinha-quantum {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  min-width: 120px;
+  height: 90px;
+}
+.carteirinha-quantum img {
+  max-height: 90px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+.carteirinha-conteudo {
+  display: flex;
+  align-items: flex-start;
+  gap: 28px;
+}
+.carteirinha-foto {
+  background: #d9d9d9;
+  border-radius: 8px;
+  width: 110px;
+  height: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.foto-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.carteirinha-dados {
+  color: #fff;
+  font-size: 1.13rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+  position: relative;
+  min-width: 210px;
+}
+.carteirinha-nome {
+  font-weight: 600;
+  font-size: 1.18rem;
+  margin-bottom: 2px;
+}
+.carteirinha-rgm,
+.carteirinha-ensino,
+.carteirinha-serie,
+.carteirinha-validade {
+  font-size: 1.03rem;
+  margin-bottom: 2px;
+  font-weight: 400;
+}
+.carteirinha-serie {
+  margin-top: 4px;
+  margin-bottom: 0;
+  display: inline-block;
+  position: relative;
+  z-index: 2;
+}
+.carteirinha-validade {
+  margin-top: 4px;
+  font-size: 1.03rem;
+  position: relative;
+  z-index: 1;
+}
+@media (max-width: 600px) {
+  .carteirinha-modelo {
+    width: 98vw;
+    padding: 18px 8px 18px 8px;
+    border-radius: 18px;
+  }
+  #fecharCarteirinha {
+    right: 12px !important;
+    top: 12px !important;
+  }
+  .carteirinha-conteudo {
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+  }
+  .carteirinha-validade {
+    margin-top: 0;
+  }
+}
+</style>
+
 <script>
 // Botão Carteirinha
 document.getElementById('btnCarteirinha').onclick = function() {
@@ -758,11 +1042,5 @@ document.getElementById('btnLogout').onclick = function() {
   window.location.href = '../login.php';
 };
 </script>
-
-  <!-- Scripts externos necessários -->
-  <script src="../js/inicial.js"></script>
-  <script src="../js/atalhos.js"></script>
-  <script src="../js/calendario.js?v=<?php echo time(); ?>_all_events_<?php echo rand(1000,9999); ?>"></script>
-
 </body>
 </html>
