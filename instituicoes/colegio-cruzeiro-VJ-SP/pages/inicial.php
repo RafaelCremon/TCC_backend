@@ -14,6 +14,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
     header('Location: login.php'); // Redireciona para a página de login
     exit;
 }
+
+// Carrega atalhos do banco se não estiverem na sessão
+if (isset($_SESSION['usuario_id']) && !isset($_SESSION['atalhos_usuario'])) {
+    require_once '../../../includes/db.php'; // ajuste o caminho se necessário
+    $stmt = $pdo->prepare("SELECT atalhos FROM usuarios WHERE id = :id");
+    $stmt->bindParam(':id', $_SESSION['usuario_id']);
+    $stmt->execute();
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($row && $row['atalhos']) {
+        $_SESSION['atalhos_usuario'] = json_decode($row['atalhos'], true);
+    }
+}
+
+// 1. Defina as opções de atalhos disponíveis
+function get_opcoes_atalhos_padrao() {
+  return [
+    [
+      'id' => 'academico',
+  'nome' => 'Avisos',
+  'icone' => '<svg class="sidebar-icon" viewBox="0 0 24 24"><path d="M18 16v-5a6 6 0 10-12 0v5a2 2 0 01-2 2h16a2 2 0 01-2-2zm-6 5a2 2 0 002-2h-4a2 2 0 002 2z"/></svg>',
+      'link' => 'avisos.php'
+    ],
+    [
+      'id' => 'minimapa',
+      'nome' => 'Mini Mapa',
+      'icone' => '<svg class="sidebar-icon" viewBox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/></svg>',
+      'link' => '#',
+    ],
+    [
+      'id' => 'lanchonetes',
+      'nome' => 'Lanchonetes',
+      'icone' => '<svg class="sidebar-icon" viewBox="0 0 24 24"><path d="M16 4h-2c-1.1 0-2 .9-2 2v2H6c-1.1 0-2 .9-2 2v9c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-2V4c0-1.1-.9-2-2-2zm-4 0h2v2h-2V4zM6 8h14v9H6V8z"/></svg>',
+      'link' => 'lanchonetes.html',
+    ],
+    [
+      'id' => 'financeiro',
+      'nome' => 'Financeiro',
+      'icone' => '<svg class="sidebar-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-2-9h4v2h-4v-2zm-2 4h8v2H8v-2z"/></svg>',
+      'link' => '#',
+    ],
+    [
+      'id' => 'preferencias',
+      'nome' => 'Preferências',
+      'icone' => '<svg class="sidebar-icon" viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c.04.32.07.65.07.98s-.03.66-.07.98l2.11 1.65c.19.15.24.42.12.64l-2 3.46c-.12.22-.39.3-.61.22l-2.49-1c-.52.4-1.08.73-1.69.98l-.38 2.65c-.03.24-.24.42-.49.42h-4c-.25 0-.46-.18-.49-.42l-.38-2.65c-.61-.25-1.17-.59-1.69-.98l-2.49 1c-.23.09-.49 0-.61-.22l-2-3.46c-.12-.22-.07-.49.12-.64l2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>',
+      'link' => '#',
+    ],
+  ];
+}
+$opcoes = get_opcoes_atalhos_padrao();
+$atalhos_usuario = isset($_SESSION['atalhos_usuario']) ? $_SESSION['atalhos_usuario'] : [];
 ?>
 
 <!DOCTYPE html>
@@ -24,6 +74,77 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
   <title>Página Inicial</title>
   <link rel="stylesheet" href="../css/inicial.css?v=<?php echo time(); ?>_no_border_fix_<?php echo rand(10000,99999); ?>">
   <link rel="stylesheet" href="../css/calendario.css?v=<?php echo time(); ?>_force_stretch_<?php echo rand(1000,9999); ?>">
+  <style>
+  /* Animação mini perfil */
+  #miniPerfilPopup {
+    opacity: 0;
+    transform: scale(0.95) translateY(-16px);
+    pointer-events: none;
+    transition: opacity 0.32s cubic-bezier(.4,1.4,.6,1), transform 0.32s cubic-bezier(.4,1.4,.6,1);
+    display: none;
+  }
+  #miniPerfilPopup.show {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    pointer-events: auto;
+    display: block;
+  }
+    /* Sidebar hover */
+    .sidebar-item {
+      transition: background 0.22s, color 0.22s, box-shadow 0.22s, transform 0.18s;
+      border-radius: 10px;
+    }
+    .sidebar-item:hover, .sidebar-item:focus {
+      background: linear-gradient(90deg, #eaf2ff 0%, #dbe7ff 100%);
+      color: #2e3192;
+      box-shadow: 0 2px 12px rgba(44,92,255,0.10);
+      transform: scale(1.04);
+    }
+    .sidebar-item svg {
+      transition: filter 0.22s, transform 0.18s;
+    }
+    .sidebar-item:hover svg, .sidebar-item:focus svg {
+      filter: drop-shadow(0 2px 8px #5b8cff33);
+      transform: scale(1.12);
+    }
+
+    /* Atalhos hover */
+    .shortcut-btn, .add-shortcut-btn {
+      transition: background 0.22s, color 0.22s, box-shadow 0.22s, transform 0.18s;
+      border-radius: 10px;
+    }
+    .shortcut-btn:hover, .shortcut-btn:focus {
+      background: linear-gradient(90deg, #eaf2ff 0%, #dbe7ff 100%);
+      color: #2e3192;
+      box-shadow: 0 2px 12px rgba(44,92,255,0.10);
+      transform: scale(1.06);
+    }
+    .add-shortcut-btn:hover, .add-shortcut-btn:focus {
+      background: #eaf2ff;
+      color: #0057ff;
+      box-shadow: 0 2px 8px #5b8cff22;
+      transform: scale(1.13);
+    }
+
+    /* Botões principais */
+    button, .btn-create, .btn-cancel, .btn-salvar {
+      transition: background 0.22s, color 0.22s, box-shadow 0.22s, transform 0.18s;
+    }
+    button:hover, button:focus, .btn-create:hover, .btn-cancel:hover, .btn-salvar:hover {
+      filter: brightness(1.08);
+      box-shadow: 0 2px 12px #5b8cff22;
+      transform: scale(1.04);
+    }
+
+    /* Cartões e cards */
+    .shortcuts-card, .welcome-card {
+      transition: box-shadow 0.22s, transform 0.18s;
+    }
+    .shortcuts-card:hover, .welcome-card:hover {
+      box-shadow: 0 4px 24px #5b8cff22;
+      transform: scale(1.01);
+    }
+  </style>
 </head>
 <body>
   <div class="apple-transition-overlay" id="appleOverlay"></div>
@@ -50,28 +171,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
     <div>
       <h2 class="welcome-title" id="cardWelcome" style="font-size:1.3rem;font-weight:600;margin:0 0 4px 0;color:#5b8cff;opacity:0;transition:opacity 0.5s;"></h2>
       <p class="welcome-desc">Acesse e gerencie todos os recursos da plataforma Quantum Admin.</p>
-    </div>
+    </div> 
   </div>
 
   <aside class="sidebar" id="sidebar">
 
     <a href="#" class="sidebar-item">
-      <svg class="sidebar-icon" viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.5V12h-2V9.7l-7 3.11v5.39l-7-3.11V18h2v-3.2l7 3.11 9-4.5V18h2v-6l-11 6-11-6 11-6z"/></svg>
-      <span>Acadêmico</span>
+      <svg class="sidebar-icon" viewBox="0 0 24 24"><path d="M18 16v-5a6 6 0 10-12 0v5a2 2 0 01-2 2h16a2 2 0 01-2-2zm-6 5a2 2 0 002-2h-4a2 2 0 002 2z"/></svg>
+      <span>Avisos</span>
     </a>
 
     <div class="sidebar-item-container">
       <div class="sidebar-item" id="mapButton">
         <svg class="sidebar-icon" viewBox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/></svg>
         <span>Mini Mapa</span>
-      </div>
-      <div class="options" id="optionsMenu">
-  <button onclick="window.location.href='tour.html?bloco=A'">Bloco A</button>
-  <button onclick="window.location.href='tour.html?bloco=B'">Bloco B</button>
-  <button onclick="window.location.href='tour.html?bloco=C'">Bloco C</button>
-  <button onclick="window.location.href='tour.html?bloco=D'">Bloco D</button>
-  <button onclick="window.location.href='tour.html?bloco=INFANTIL'">Infantil</button>
-  <button onclick="window.location.href='tour.html?bloco=Biblioteca'">Biblioteca</button>
       </div>
     </div>
 
@@ -111,24 +224,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
                   <line x1="3" y1="10" x2="21" y2="10"></line>
                 </svg>
               </button>
-              <button 
+              <a 
                 id="editShortcutsBtn"
+                href="atalhos.php"
                 title="Editar atalhos" 
-                style="background: none; border: none; cursor: pointer; padding: 4px;"
+                style="background: none; border: none; cursor: pointer; padding: 4px; display: inline-flex; align-items: center; justify-content: center;"
                 aria-label="Editar atalhos"
               >
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0057ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M12 20h9" />
-                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path>
                 </svg>
-              </button>
+              </a>
             </div>
           </div>
           <div class="shortcut-buttons">
-            <button class="add-shortcut-btn" onclick="window.location.href='atalhos.php'">+</button>
-            <button class="add-shortcut-btn" onclick="window.location.href='atalhos.php'">+</button>
-            <button class="add-shortcut-btn" onclick="window.location.href='atalhos.php'">+</button>
-            <button class="add-shortcut-btn" onclick="window.location.href='atalhos.php'">+</button>
+            <?php
+    // Mostra os atalhos do usuário
+    $totalSlots = 4;
+    $count = 0;
+    foreach ($atalhos_usuario as $id) {
+      foreach ($opcoes as $op) {
+        if ($op['id'] === $id) {
+          $extra = $op['id'] === 'minimapa' ? 'id="shortcutMinimapa"' : '';
+          echo '<a href="'.$op['link'].'" class="shortcut-btn" '.$extra.'>'.$op['icone'].'<span>'.$op['nome'].'</span></a>';
+          $count++;
+        }
+      }
+    }
+    // Preenche os slots restantes com "+"
+    for ($i = $count; $i < $totalSlots; $i++) {
+      echo '<button class="add-shortcut-btn" onclick="window.location.href=\'atalhos.php\'">+</button>';
+    }
+  ?>
           </div>
         </div>
 
@@ -162,9 +290,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
                 <h4 style="margin: 0; color: #e0f4ff; font-size: 1.1rem; font-weight: 700; display: flex; align-items: center; gap: 6px; text-shadow: 0 2px 4px rgba(0, 224, 255, 0.3);">
                   🎯 Eventos
                 </h4>
+                <?php if (isset($_SESSION['classe']) && (int)$_SESSION['classe'] === 1 || (int)$_SESSION['classe'] === 2): ?>
                 <button class="add-event-btn" onclick="addNewEvent()" title="Adicionar novo evento (Ctrl+N)" style="width: 32px; height: 32px; font-size: 20px; font-weight: 800;">
                   <span>+</span>
                 </button>
+                <?php endif; ?>
               </div>
               <div class="events-panel" id="eventsPanel">
                 <div class="no-events">Carregando eventos...</div>
@@ -453,29 +583,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
       // Aguardar calendário estar pronto
       console.log('Inicializando recursos da aplicação...');
       
-      // Perfil
-      const adminProfile = document.getElementById('adminProfile');
-      const profileMenu = document.getElementById('profileMenu');
-      const btnSair = document.getElementById('btnSair');
-      if (adminProfile && profileMenu) {
-        adminProfile.addEventListener('click', function(e) {
-          e.stopPropagation();
-          profileMenu.style.display = profileMenu.style.display === 'block' ? 'none' : 'block';
-        });
-        document.addEventListener('click', function() {
-          profileMenu.style.display = 'none';
-        });
-      }
-      // Botão sair do perfil
-      if (btnSair) {
-        btnSair.onclick = function() {
-          document.querySelector('.shortcuts-card').classList.add('apple-animate');
-          document.getElementById('appleOverlay').classList.add('apple-transition-active');
-          setTimeout(function() {
-            window.location.href = '../login.html';
-          }, 700);
-        };
-      }
+      // Removido código antigo do menu de perfil para evitar conflito com miniPerfilPopup
     }
     if (welcomeDiv && welcomeText && cardWelcome) {
       if (!jaViuBoasVindas) {
@@ -596,7 +704,7 @@ document.getElementById('enviarAssistente').onclick = async function() {
 };
 </script>
 <!-- Adicione este bloco logo após o header -->
-<div id="miniPerfilPopup" style="display:none;position:fixed;top:70px;right:32px;z-index:9999;background:#fff;border-radius:22px;box-shadow:0 2px 12px rgba(44,92,255,0.13);width:340px;max-width:90vw;padding:22px 20px 18px 20px;">
+<div id="miniPerfilPopup" style="position:fixed;top:70px;right:32px;z-index:20000;background:#fff;border-radius:22px;box-shadow:0 2px 12px rgba(44,92,255,0.13);width:340px;max-width:90vw;padding:22px 20px 18px 20px;">
   <div style="display:flex;align-items:center;gap:14px;margin-bottom:10px;">
     <img src="../assets/imagens/spongebob.png" alt="Avatar Admin" style="width:64px;height:64px;border-radius:50%;box-shadow:0 2px 8px rgba(44,92,255,0.10);">
     <div>
@@ -628,18 +736,18 @@ document.getElementById('enviarAssistente').onclick = async function() {
       </svg>
       Trocar tema
     </button>
-    <form method="POST">
-    <button type="submit" name="logout" 
-        style="background:#ffd6d6;
-               border:none;
-               border-radius:8px;
-               padding:7px 16px;
-               font-weight:500;
-               color:#d32f2f;
-               cursor:pointer;">
-        Sair
-    </button>
-</form>
+  <form method="POST">
+  <button id="btnLogout" type="submit" name="logout" 
+    style="background:#ffd6d6;
+         border:none;
+         border-radius:8px;
+         padding:7px 16px;
+         font-weight:500;
+         color:#d32f2f;
+         cursor:pointer;">
+    Sair
+  </button>
+  </form>
   </div>
 </div>
 
@@ -696,24 +804,63 @@ document.getElementById('carteirinhaPopup').onclick = function(e) {
 };
 </script>
 <script>
-// Mini perfil popup funcional
-const adminProfile = document.getElementById('adminProfile');
-const miniPerfilPopup = document.getElementById('miniPerfilPopup');
-
-// Abre/fecha o mini perfil ao clicar na foto
-adminProfile.onclick = function(e) {
-  e.stopPropagation();
-  miniPerfilPopup.style.display = miniPerfilPopup.style.display === 'none' || miniPerfilPopup.style.display === '' ? 'block' : 'none';
-};
-
-// Fecha o mini perfil ao clicar fora dele
-document.addEventListener('click', function(e) {
-  if (miniPerfilPopup.style.display === 'block') {
-    // Só fecha se o clique não for dentro do popup
-    if (!miniPerfilPopup.contains(e.target) && e.target !== adminProfile) {
-      miniPerfilPopup.style.display = 'none';
-    }
+// Mini perfil popup com animação e logs de depuração
+document.addEventListener('DOMContentLoaded', function() {
+  var adminProfile = document.getElementById('adminProfile');
+  var miniPerfilPopup = document.getElementById('miniPerfilPopup');
+  if (!adminProfile) {
+    alert('Erro: avatar do perfil não encontrado!');
+    console.error('[MiniPerfil] adminProfile não encontrado');
+    return;
   }
+  if (!miniPerfilPopup) {
+    alert('Erro: popup do mini perfil não encontrado!');
+    console.error('[MiniPerfil] miniPerfilPopup não encontrado');
+    return;
+  }
+  function abrirMiniPerfilAnimado() {
+    console.log('[MiniPerfil] Abrindo popup...');
+    miniPerfilPopup.style.display = 'block';
+    miniPerfilPopup.style.zIndex = '20000';
+    // Força reflow para garantir a transição
+    void miniPerfilPopup.offsetWidth;
+    miniPerfilPopup.classList.add('show');
+    // Fallback: se não aparecer, força visibilidade
+    setTimeout(function() {
+      if (getComputedStyle(miniPerfilPopup).opacity === '0') {
+        miniPerfilPopup.style.opacity = '1';
+        miniPerfilPopup.style.pointerEvents = 'auto';
+        miniPerfilPopup.style.display = 'block';
+        console.log('[MiniPerfil] Fallback: forçando visibilidade!');
+      }
+    }, 350);
+  }
+  function fecharMiniPerfilAnimado() {
+    console.log('[MiniPerfil] Fechando popup...');
+    miniPerfilPopup.classList.remove('show');
+    // Após a transição, esconde o popup
+    setTimeout(function() {
+      if (!miniPerfilPopup.classList.contains('show')) {
+        miniPerfilPopup.style.display = 'none';
+      }
+    }, 320);
+  }
+  adminProfile.onclick = function(e) {
+    e.stopPropagation();
+    console.log('[MiniPerfil] Clique no avatar!');
+    if (!miniPerfilPopup.classList.contains('show')) {
+      abrirMiniPerfilAnimado();
+    } else {
+      fecharMiniPerfilAnimado();
+    }
+  };
+  document.addEventListener('click', function(e) {
+    if (miniPerfilPopup.classList.contains('show')) {
+      if (!miniPerfilPopup.contains(e.target) && e.target !== adminProfile) {
+        fecharMiniPerfilAnimado();
+      }
+    }
+  });
 });
 
 // Função para definir o tema
@@ -750,19 +897,184 @@ document.getElementById('btnTrocarTema').onclick = function() {
   const newTheme = !isDark;
   setTheme(newTheme);
   saveTheme(newTheme);
-  miniPerfilPopup.style.display = 'none';
-};
-
-// Botão Logout
-document.getElementById('btnLogout').onclick = function() {
-  window.location.href = '../login.php';
+  fecharMiniPerfilAnimado();
 };
 </script>
 
-  <!-- Scripts externos necessários -->
+
+  <!-- Popup de seleção de bloco -->
+
+  <div id="popupBlocos" class="popup-blocos-overlay">
+    <div class="popup-blocos-card">
+      <h3>Escolha um bloco:</h3>
+      <div class="popup-blocos-btns">
+        <button onclick="window.location.href='tour.html?bloco=A'" class="btn-bloco">Bloco A</button>
+        <button onclick="window.location.href='tour.html?bloco=B'" class="btn-bloco">Bloco B</button>
+        <button onclick="window.location.href='tour.html?bloco=C'" class="btn-bloco">Bloco C</button>
+        <button onclick="window.location.href='tour.html?bloco=D'" class="btn-bloco">Bloco D</button>
+        <button onclick="window.location.href='tour.html?bloco=INFANTIL'" class="btn-bloco">Infantil</button>
+        <button onclick="window.location.href='tour.html?bloco=Biblioteca'" class="btn-bloco">Biblioteca</button>
+      </div>
+      <button id="btnCancelarPopupBlocos" class="btn-cancelar-popup">Cancelar</button>
+    </div>
+  </div>
+  <style>
+  .popup-blocos-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    z-index: 10000;
+    background: rgba(44,92,255,0.13);
+    backdrop-filter: blur(2px);
+    align-items: center;
+    justify-content: center;
+    animation: fadeInPopupBg 0.5s;
+  }
+  .popup-blocos-overlay.show {
+    display: flex;
+    animation: fadeInPopupBg 0.5s;
+  }
+  @keyframes fadeInPopupBg {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  .popup-blocos-card {
+    background: #fff;
+    padding: 32px 24px 24px 24px;
+    border-radius: 22px;
+    box-shadow: 0 8px 32px rgba(44,92,255,0.18);
+    min-width: 280px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform: scale(0.85);
+    opacity: 0;
+    animation: popupScaleIn 0.5s cubic-bezier(.4,1.4,.6,1) forwards;
+  }
+  @keyframes popupScaleIn {
+    from { transform: scale(0.85); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .popup-blocos-card h3 {
+    margin-bottom: 18px;
+    color: #2e3192;
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    animation: fadeInPopupTitle 0.7s 0.2s both;
+  }
+  @keyframes fadeInPopupTitle {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .popup-blocos-btns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    justify-content: center;
+    margin-bottom: 18px;
+    animation: fadeInPopupBtns 0.7s 0.3s both;
+  }
+  @keyframes fadeInPopupBtns {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .btn-bloco {
+    background: linear-gradient(135deg, #5b8cff 0%, #2e3192 100%);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 22px;
+    font-size: 1.08rem;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(44,92,255,0.10);
+    transition: background 0.2s, transform 0.18s, box-shadow 0.18s;
+    outline: none;
+  }
+  .btn-bloco:hover, .btn-bloco:focus {
+    background: linear-gradient(135deg, #2e3192 0%, #5b8cff 100%);
+    transform: scale(1.08);
+    box-shadow: 0 4px 16px rgba(44,92,255,0.18);
+  }
+  .btn-cancelar-popup {
+    margin-top: 18px;
+    background: #eee;
+    color: #2e3192;
+    border: none;
+    padding: 10px 28px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: background 0.18s, color 0.18s;
+  }
+  .btn-cancelar-popup:hover {
+    background: #dbe7ff;
+    color: #0057ff;
+  }
+
+  /* Tema escuro */
+  body.dark-mode .popup-blocos-overlay {
+    background: rgba(20,24,40,0.82);
+  }
+  body.dark-mode .popup-blocos-card {
+    background: #181c2a;
+    box-shadow: 0 8px 32px rgba(20,24,40,0.38);
+  }
+  body.dark-mode .popup-blocos-card h3 {
+    color: #8ab4ff;
+  }
+  body.dark-mode .btn-bloco {
+    background: linear-gradient(135deg, #2e3192 0%, #5b8cff 100%);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(20,24,40,0.18);
+  }
+  body.dark-mode .btn-bloco:hover, body.dark-mode .btn-bloco:focus {
+    background: linear-gradient(135deg, #5b8cff 0%, #2e3192 100%);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(20,24,40,0.28);
+  }
+  body.dark-mode .btn-cancelar-popup {
+    background: #23263a;
+    color: #8ab4ff;
+  }
+  body.dark-mode .btn-cancelar-popup:hover {
+    background: #2e3192;
+    color: #fff;
+  }
+  </style>
+
   <script src="../js/inicial.js"></script>
   <script src="../js/atalhos.js"></script>
   <script src="../js/calendario.js?v=<?php echo time(); ?>_all_events_<?php echo rand(1000,9999); ?>"></script>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    function abrirPopupBlocos(e) {
+      e.preventDefault();
+      const popup = document.getElementById('popupBlocos');
+      popup.classList.add('show');
+    }
+
+    // Sidebar
+    const mapBtn = document.getElementById('mapButton');
+    if (mapBtn) mapBtn.addEventListener('click', abrirPopupBlocos);
+
+    // Atalhos rápidos
+    const shortcutMinimapa = document.getElementById('shortcutMinimapa');
+    if (shortcutMinimapa) shortcutMinimapa.addEventListener('click', abrirPopupBlocos);
+
+    // Fecha popup ao clicar fora
+    document.getElementById('popupBlocos').addEventListener('click', function(e) {
+      if (e.target === this) this.classList.remove('show');
+    });
+    // Botão cancelar
+    document.getElementById('btnCancelarPopupBlocos').onclick = function() {
+      document.getElementById('popupBlocos').classList.remove('show');
+    };
+  });
+  </script>
 
 </body>
 </html>
