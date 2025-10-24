@@ -4,17 +4,55 @@ require_once '../../../includes/db.php';
 function esc($str) { return htmlspecialchars($str, ENT_QUOTES, 'UTF-8'); }
 $classe = isset($_SESSION['classe']) ? (int)$_SESSION['classe'] : 0;
 $usuario = isset($_SESSION['usuario']) ? esc($_SESSION['usuario']) : 'Anônimo';
+
+// Filtros de busca e tag
+$busca = isset($_GET['busca']) ? trim($_GET['busca']) : '';
+$tag = isset($_GET['tag']) ? trim($_GET['tag']) : '';
+
+// Paginação
+$avisosPorPagina = 6;
+$paginaAtual = isset($_GET['pagina']) ? max(1, (int)$_GET['pagina']) : 1;
+$offset = ($paginaAtual - 1) * $avisosPorPagina;
+
+// Monta WHERE dinâmico
+$where = [];
+$params = [];
+if ($busca !== '') {
+    $where[] = '(LOWER(conteudo) LIKE :busca OR LOWER(tags) LIKE :busca)';
+    $params[':busca'] = '%' . mb_strtolower($busca, 'UTF-8') . '%';
+}
+if ($tag !== '') {
+    $where[] = 'FIND_IN_SET(:tag, REPLACE(tags, ", ", ",")) > 0';
+    $params[':tag'] = $tag;
+}
+$whereSQL = $where ? ('WHERE ' . implode(' AND ', $where)) : '';
+
+// Conta total filtrado
+$stmtCount = $pdo->prepare("SELECT COUNT(*) FROM avisos $whereSQL");
+foreach ($params as $k => $v) $stmtCount->bindValue($k, $v);
+$stmtCount->execute();
+$totalAvisos = $stmtCount->fetchColumn();
+$totalPaginas = max(1, ceil($totalAvisos / $avisosPorPagina));
 if (($classe === 1 || $classe === 2) && isset($_GET['excluir'])) {
     $id = (int)$_GET['excluir'];
-    $stmt = $pdo->prepare('SELECT usuario FROM avisos WHERE id = :id');
+    $stmt = $pdo->prepare('SELECT usuario, anexo FROM avisos WHERE id = :id');
     $stmt->bindParam(':id', $id, PDO::PARAM_INT);
     $stmt->execute();
-    $autor = $stmt->fetchColumn();
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    $autor = $row ? $row['usuario'] : null;
+    $anexo = $row ? $row['anexo'] : null;
     if ($classe === 1 || $autor === $usuario) {
         $stmt = $pdo->prepare('DELETE FROM avisos WHERE id = :id');
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
-        $msg = '<div class="msg-sucesso">Aviso excluído com sucesso!</div>';
+        if ($anexo) {
+            $anexoPath = __DIR__ . '/../../../uploads/avisos/' . basename($anexo);
+            if (file_exists($anexoPath)) {
+                @unlink($anexoPath);
+            }
+        }
+        header('Location: avisos.php');
+        exit;
     } else {
         $msg = '<div class="msg-erro">Você não tem permissão para excluir este aviso.</div>';
     }
@@ -27,41 +65,53 @@ if (($classe === 1 || $classe === 2) && isset($_POST['editar_id']) && isset($_PO
     $stmt->execute();
     $autor = $stmt->fetchColumn();
     if ($classe === 1 || $autor === $usuario) {
-        $stmt = $pdo->prepare('UPDATE avisos SET conteudo = :conteudo WHERE id = :id');
-        $stmt->bindParam(':conteudo', $novo_conteudo);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->execute();
-        $msg = '<div class="msg-sucesso">Aviso editado com sucesso!</div>';
+    $stmt = $pdo->prepare('UPDATE avisos SET conteudo = :conteudo WHERE id = :id');
+    $stmt->bindParam(':conteudo', $novo_conteudo);
+    $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+    $stmt->execute();
+    header('Location: avisos.php');
+    exit;
     } else {
-        $msg = '<div class="msg-erro">Você não tem permissão para editar este aviso.</div>';
+    $msg = '<div class="msg-erro">Você não tem permissão para editar este aviso.</div>';
     }
 }
 if (($classe === 1 || $classe === 2) && isset($_POST['conteudo']) && trim($_POST['conteudo']) !== '' && !isset($_POST['editar_id'])) {
     $conteudo = trim($_POST['conteudo']);
-    $tags = isset($_POST['tags']) ? $_POST['tags'] : [];
-    $tags_str = implode(',', $tags);
-    $img_path = null;
-    if (isset($_FILES['imagem']) && $_FILES['imagem']['error'] === UPLOAD_ERR_OK) {
-        $ext = strtolower(pathinfo($_FILES['imagem']['name'], PATHINFO_EXTENSION));
-        $permitidas = ['jpg','jpeg','png','gif','webp'];
-        if (in_array($ext, $permitidas)) {
-            $dir = '../uploads/avisos/';
-            if (!is_dir($dir)) mkdir($dir, 0777, true);
+    $tags_str = isset($_POST['tags']) ? trim($_POST['tags']) : '';
+    $data_inicial = isset($_POST['data_inicial']) ? $_POST['data_inicial'] : null;
+    $data_limite = isset($_POST['data_limite']) ? $_POST['data_limite'] : null;
+    $anexo_path = null;
+    if (isset($_FILES['anexo']) && $_FILES['anexo']['error'] === UPLOAD_ERR_OK) {
+    $ext = strtolower(pathinfo($_FILES['anexo']['name'], PATHINFO_EXTENSION));
+    $permitidas = ['jpg','jpeg','png','gif','webp','pdf','doc','docx','xls','xlsx','ppt','pptx','txt','zip','rar','7z','csv','mp4','mp3'];
+    if (in_array($ext, $permitidas)) {
+            $dir = 'uploads/avisos/'; // Caminho público
+            if (!is_dir(__DIR__ . '/../../../' . $dir)) mkdir(__DIR__ . '/../../../' . $dir, 0777, true);
             $nome_arquivo = uniqid('aviso_') . '.' . $ext;
-            $destino = $dir . $nome_arquivo;
-            if (move_uploaded_file($_FILES['imagem']['tmp_name'], $destino)) {
-                $img_path = $destino;
+            $destino = __DIR__ . '/../../../' . $dir . $nome_arquivo;
+            if (move_uploaded_file($_FILES['anexo']['tmp_name'], $destino)) {
+                $anexo_path = rtrim($dir, '/') . '/' . $nome_arquivo; // Caminho salvo no banco, SEM barra inicial
+                $anexo_path = ltrim($anexo_path, '/');
             }
-        }
     }
-    $stmt = $pdo->prepare('INSERT INTO avisos (usuario, conteudo, data, imagem, tags) VALUES (:usuario, :conteudo, NOW(), :imagem, :tags)');
+    }
+    // Adicionar as colunas data_inicial e data_limite na tabela avisos se ainda não existirem
+    try {
+    $pdo->query("ALTER TABLE avisos ADD COLUMN data_inicial DATE NULL, ADD COLUMN data_limite DATE NULL");
+    } catch (Exception $e) { /* ignora erro se já existe */ }
+    $stmt = $pdo->prepare('INSERT INTO avisos (usuario, conteudo, data, anexo, tags, data_inicial, data_limite) VALUES (:usuario, :conteudo, NOW(), :anexo, :tags, :data_inicial, :data_limite)');
     $stmt->bindParam(':usuario', $usuario);
     $stmt->bindParam(':conteudo', $conteudo);
-    $stmt->bindParam(':imagem', $img_path);
+    $stmt->bindParam(':anexo', $anexo_path);
     $stmt->bindParam(':tags', $tags_str);
+    $stmt->bindParam(':data_inicial', $data_inicial);
+    $stmt->bindParam(':data_limite', $data_limite);
     $stmt->execute();
-    $msg = '<div class="msg-sucesso">Aviso postado com sucesso!</div>';
+    header('Location: avisos.php');
+    exit;
 }
+// ...existing code...
+// ...existing code...
 ?><!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -70,14 +120,18 @@ if (($classe === 1 || $classe === 2) && isset($_POST['conteudo']) && trim($_POST
     <title>Avisos - Quantum Edu.</title>
     <link rel="stylesheet" href="../css/inicial.css?v=<?php echo time(); ?>_avisos">
     <style>
-    body { background: #f7faff; }
+    body {
+        background: linear-gradient(135deg, #eaf2ff 0%, #f7faff 100%);
+        min-height: 100vh;
+    }
     .header-avisos {
-        background: #fff;
-        border-bottom: 1px solid #e0eaff;
+        background: linear-gradient(90deg, #5b8cff 0%, #2e3192 100%);
+        border-bottom: 0;
         position: sticky;
         top: 0;
         z-index: 10;
-        padding: 0 0 0 0;
+        box-shadow: 0 2px 16px #2e319222;
+        padding: 0;
     }
     .header-content {
         max-width: 1200px;
@@ -85,44 +139,100 @@ if (($classe === 1 || $classe === 2) && isset($_POST['conteudo']) && trim($_POST
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 18px 24px 12px 24px;
+        padding: 4px 14px 2px 14px;
     }
     .header-title {
         font-size: 2.1rem;
         font-weight: 700;
-        color: #2e3192;
+        color: #fff;
         margin: 0;
+        letter-spacing: 0.01em;
+        text-shadow: 0 2px 8px #2e319244;
     }
     .header-desc {
-        color: #5b8cff;
+        color: #c7d7ff;
         font-size: 1.13rem;
         margin-top: 2px;
         font-weight: 400;
+        text-shadow: 0 1px 4px #2e319244;
     }
     .avisos-main {
         max-width: 1200px;
         margin: 0 auto;
-        padding: 32px 16px 0 16px;
+        padding: 38px 18px 0 18px;
+        background: #fff;
+        border-radius: 22px;
+        box-shadow: 0 4px 32px #5b8cff18;
+        margin-top: -28px;
+        position: relative;
+        z-index: 2;
     }
     .busca-bar {
         display: flex;
         align-items: center;
         gap: 12px;
         margin-bottom: 28px;
+        background: #eaf2ff;
+        border-radius: 12px;
+        padding: 12px 18px;
+        box-shadow: 0 2px 8px #5b8cff11;
     }
-    .busca-bar input {
+    .busca-bar input, .busca-bar select {
         flex: 1;
         padding: 10px 16px;
         border-radius: 8px;
-        border: 1px solid #e0eaff;
+        border: 1.5px solid #b3c6ff;
         font-size: 1.08rem;
         background: #fff;
         color: #222;
-        transition: border 0.18s;
+        transition: border 0.18s, background 0.18s, color 0.18s;
+        box-shadow: 0 1px 4px #5b8cff11;
     }
-    .busca-bar input:focus {
+    .busca-bar input:focus, .busca-bar select:focus {
         border: 1.5px solid #5b8cff;
         outline: none;
+        background: #f7faff;
+    }
+    .busca-bar button {
+        background: #5b8cff;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 18px;
+        font-size: 1.05rem;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 2px 8px #5b8cff22;
+        transition: background 0.18s, color 0.18s;
+    }
+    .busca-bar button:hover {
+        background: #2e3192;
+        color: #fff;
+    }
+    body.dark-mode .busca-bar {
+        background: #23263a;
+        box-shadow: 0 2px 8px #2e319244;
+    }
+    body.dark-mode .busca-bar input,
+    body.dark-mode .busca-bar select {
+        background: #181c2a;
+        color: #eaf2ff;
+        border: 1.5px solid #5b8cff44;
+    }
+    body.dark-mode .busca-bar input:focus,
+    body.dark-mode .busca-bar select:focus {
+        background: #23263a;
+        color: #fff;
+        border: 1.5px solid #5b8cff;
+    }
+    body.dark-mode .busca-bar button {
+        background: #2e3192;
+        color: #fff;
+        box-shadow: 0 2px 8px #2e319244;
+    }
+    body.dark-mode .busca-bar button:hover {
+        background: #5b8cff;
+        color: #fff;
     }
     .form-aviso {
         margin-bottom: 28px;
@@ -130,48 +240,56 @@ if (($classe === 1 || $classe === 2) && isset($_POST['conteudo']) && trim($_POST
     .avisos-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-        gap: 24px;
+        gap: 28px;
+        margin-bottom: 18px;
     }
     .aviso-card {
-        border: 1px solid #e0eaff;
-        border-radius: 14px;
-        padding: 18px 20px 14px 20px;
-        background: #fff;
-        box-shadow: 0 2px 8px #5b8cff11;
-        transition: box-shadow 0.18s, transform 0.18s;
+        border: 1.5px solid #b3c6ff;
+        border-radius: 16px;
+        padding: 20px 22px 16px 22px;
+        background: linear-gradient(135deg, #f7faff 60%, #eaf2ff 100%);
+        box-shadow: 0 2px 12px #5b8cff11;
+        transition: box-shadow 0.18s, transform 0.18s, border 0.18s;
         display: flex;
         flex-direction: column;
         min-height: 120px;
+        position: relative;
     }
     .aviso-card:hover {
-        box-shadow: 0 4px 16px #5b8cff22;
-        transform: scale(1.01);
+        box-shadow: 0 6px 24px #5b8cff33;
+        border: 1.5px solid #5b8cff;
+        transform: scale(1.015);
     }
     .aviso-autor {
         font-weight: 600;
-        color: #0057ff;
-        font-size: 1.01rem;
+        color: #2e3192;
+        font-size: 1.05rem;
+        letter-spacing: 0.01em;
     }
     .aviso-data {
-        color: #888;
-        font-size: 12px;
+        color: #5b8cff;
+        font-size: 13px;
         margin-left: 8px;
+        font-weight: 500;
     }
     .aviso-conteudo {
-        margin: 10px 0 0 0;
-        font-size: 1.13rem;
-        color: #222;
+        margin: 12px 0 0 0;
+        font-size: 1.15rem;
+        color: #2e3192;
         white-space: pre-line;
         flex: 1;
+        font-weight: 500;
+        letter-spacing: 0.01em;
     }
     .aviso-acoes {
-        margin-top: 10px;
+        margin-top: 12px;
     }
     .aviso-acoes a {
-        color: #0057ff;
-        margin-right: 16px;
+        color: #5b8cff;
+        margin-right: 18px;
         text-decoration: none;
-        font-weight: 500;
+        font-weight: 600;
+        font-size: 1.01rem;
         transition: color 0.18s;
     }
     .aviso-acoes a:last-child {
@@ -203,13 +321,14 @@ if (($classe === 1 || $classe === 2) && isset($_POST['conteudo']) && trim($_POST
     .form-aviso textarea {
         width: 100%;
         border-radius: 8px;
-        border: 1px solid #e0eaff;
+        border: 1.5px solid #b3c6ff;
         padding: 10px;
         font-size: 1.08rem;
         margin-bottom: 8px;
         resize: vertical;
-        background: #f7faff;
-        color: #222;
+        background: #eaf2ff;
+        color: #2e3192;
+        font-weight: 500;
     }
     .form-aviso button {
         background: linear-gradient(135deg, #5b8cff 0%, #2e3192 100%);
@@ -218,27 +337,35 @@ if (($classe === 1 || $classe === 2) && isset($_POST['conteudo']) && trim($_POST
         border-radius: 8px;
         padding: 8px 22px;
         font-size: 1.08rem;
-        font-weight: 500;
+        font-weight: 600;
         cursor: pointer;
         transition: background 0.18s, transform 0.18s;
         box-shadow: 0 2px 8px #5b8cff22;
+        letter-spacing: 0.01em;
     }
     .form-aviso button:hover {
         background: linear-gradient(135deg, #2e3192 0%, #5b8cff 100%);
         transform: scale(1.04);
     }
     @media (max-width: 700px) {
-        .header-content, .avisos-main { padding-left: 8px; padding-right: 8px; }
+        .header-content, .avisos-main { padding-left: 6px; padding-right: 6px; }
+        .avisos-main { border-radius: 12px; padding-top: 10px; }
+        .header-content { padding: 2px 2px 2px 2px; }
+        .busca-bar { padding: 6px 4px; }
     }
     /* Tema escuro */
     body.dark-mode { background: #181c2a; }
-    body.dark-mode .header-avisos { background: #181c2a; border-bottom: 1px solid #23263a; }
-    body.dark-mode .header-title { color: #8ab4ff; }
-    body.dark-mode .header-desc { color: #eaf2ff; }
-    body.dark-mode .avisos-main { background: #181c2a; }
-    body.dark-mode .aviso-card { background: #23263a; border-color: #23263a; color: #eaf2ff; }
+    body.dark-mode .header-avisos {
+        background: linear-gradient(90deg, #23263a 0%, #5b8cff 100%);
+        border-bottom: 0;
+        box-shadow: 0 2px 16px #2e319244;
+    }
+    body.dark-mode .header-title { color: #8ab4ff; text-shadow: 0 2px 8px #2e319244; }
+    body.dark-mode .header-desc { color: #eaf2ff; text-shadow: 0 1px 4px #2e319244; }
+    body.dark-mode .avisos-main { background: #23263a; box-shadow: 0 4px 32px #2e319244; }
+    body.dark-mode .aviso-card { background: linear-gradient(135deg, #23263a 60%, #2e3192 100%); border-color: #5b8cff44; color: #eaf2ff; }
     body.dark-mode .aviso-conteudo { color: #eaf2ff; }
-    body.dark-mode .form-aviso textarea { background: #23263a; color: #eaf2ff; border-color: #23263a; }
+    body.dark-mode .form-aviso textarea { background: #181c2a; color: #eaf2ff; border-color: #5b8cff44; }
     body.dark-mode .msg-sucesso { background: #23263a; color: #8ab4ff; }
     body.dark-mode .msg-erro { background: #2e3192; color: #ffd6d6; }
     </style>
@@ -250,70 +377,139 @@ if (($classe === 1 || $classe === 2) && isset($_POST['conteudo']) && trim($_POST
                 <div class="header-title">Estante de Avisos</div>
                 <div class="header-desc">Veja e compartilhe comunicados importantes da instituição.</div>
             </div>
-            <a href="inicial.php" style="text-decoration:none;"><img src="../assets/imagens/LOGO.png" alt="Logo Quantum" style="width:38px;height:38px;border-radius:50%;box-shadow:0 2px 8px #5b8cff22;"></a>
+            <a href="inicial.php" style="text-decoration:none;display:flex;align-items:center;gap:8px;font-size:1.25rem;color:#0057ff;font-weight:600;">
+                <span style="font-size:2.1rem;line-height:1;vertical-align:middle;">&#8592;</span>
+                <span style="font-size:1.08rem;">Voltar</span>
+            </a>
         </div>
     </div>
     <main class="avisos-main">
         <?php if (isset($msg)) echo $msg; ?>
         <div class="busca-bar">
-            <input type="text" id="buscaAviso" placeholder="Buscar aviso..." oninput="filtrarAvisos()">
-            <?php if ($classe === 1 || $classe === 2): ?>
-            <form method="post" class="form-aviso" style="margin:0;flex:1;max-width:420px;" enctype="multipart/form-data">
-                <textarea name="conteudo" rows="2" placeholder="Escreva um novo aviso..." required></textarea>
-                <div style="margin:8px 0 8px 0;display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
-                    <label style="font-size:0.98rem;color:#2e3192;font-weight:500;">Tags:</label>
+            <form id="formBuscaTag" method="get" style="display:flex;gap:12px;flex:1;align-items:center;">
+                <input type="text" name="busca" id="buscaAviso" placeholder="Buscar aviso..." value="<?php echo esc($busca); ?>" style="flex:1;" />
+                <select name="tag" id="buscaTag" style="padding:8px 12px;border-radius:8px;border:1px solid #e0eaff;font-size:1rem;background:#fff;color:#222;">
+                    <option value="">Filtrar por tag</option>
                     <?php
-                    $tags_padrao = ['matemática','português','geral','materias técnicas','3ºs anos','3ºJ'];
-                    foreach ($tags_padrao as $tag) {
-                        echo '<label style="font-size:0.97rem;"><input type="checkbox" name="tags[]" value="'.esc($tag).'"> '.esc($tag).'</label>';
+                    // Buscar todas as tags únicas dos avisos
+                    $tagsUnicas = [];
+                    $tagsQuery = $pdo->query('SELECT tags FROM avisos');
+                    foreach ($tagsQuery as $rowTag) {
+                        $tagsArr = array_filter(array_map('trim', explode(',', $rowTag['tags'])));
+                        foreach ($tagsArr as $tagOpt) {
+                            if ($tagOpt !== '' && !in_array($tagOpt, $tagsUnicas)) {
+                                $tagsUnicas[] = $tagOpt;
+                            }
+                        }
+                    }
+                    sort($tagsUnicas, SORT_NATURAL | SORT_FLAG_CASE);
+                    foreach ($tagsUnicas as $tagOpt) {
+                        $selected = ($tagOpt === $tag) ? 'selected' : '';
+                        echo '<option value="'.esc($tagOpt).'" '.($selected ? 'selected' : '').'>'.esc($tagOpt).'</option>';
                     }
                     ?>
-                </div>
-                <input type="file" name="imagem" accept="image/*" style="margin-bottom:8px;">
-                <button type="submit">Postar</button>
+                </select>
+                <button type="submit" style="background:#5b8cff;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:1.05rem;font-weight:600;cursor:pointer;box-shadow:0 2px 8px #5b8cff22;">Buscar</button>
+                <?php if ($classe === 1 || $classe === 2): ?>
+                <button id="abrirPopupAviso" type="button" title="Novo aviso" style="background:#0057ff;color:#fff;border-radius:50%;width:44px;height:44px;border:none;font-size:2rem;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px #5b8cff22;cursor:pointer;margin-left:8px;">+</button>
+                <?php endif; ?>
             </form>
-            <?php endif; ?>
+        </div>
+
+        <!-- Popup de criação de aviso -->
+        <div id="popupAvisoOverlay" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10000;background:rgba(44,92,255,0.13);backdrop-filter:blur(2px);align-items:center;justify-content:center;animation:fadeInPopupBg 0.5s;">
+            <div id="popupAvisoCard" style="background:#fff;padding:32px 24px 24px 24px;border-radius:22px;box-shadow:0 8px 32px rgba(44,92,255,0.18);min-width:280px;display:flex;flex-direction:column;align-items:center;transform:scale(0.85);opacity:0;animation:popupScaleIn 0.5s cubic-bezier(.4,1.4,.6,1) forwards;">
+                <h3 style="margin-bottom:18px;color:#2e3192;font-size:1.35rem;font-weight:700;letter-spacing:0.01em;animation:fadeInPopupTitle 0.7s 0.2s both;">Novo Aviso</h3>
+                <form method="post" class="form-aviso" enctype="multipart/form-data" style="width:100%;max-width:420px;">
+                    <textarea name="conteudo" rows="2" placeholder="Escreva um novo aviso..." required style="width:100%;margin-bottom:10px;"></textarea>
+                    <div style="margin:8px 0 8px 0;display:flex;flex-direction:column;gap:8px;align-items:flex-start;">
+                        <label style="font-size:0.98rem;color:#2e3192;font-weight:500;">Tags (separe por vírgula):</label>
+                        <input type="text" name="tags" placeholder="Ex: matemática, 3ºJ, importante" style="width:100%;padding:8px 10px;border-radius:7px;border:1px solid #e0eaff;font-size:1rem;">
+                    </div>
+                    <div style="margin:8px 0 8px 0;display:flex;gap:12px;align-items:center;">
+                        <label style="font-size:0.98rem;color:#2e3192;font-weight:500;">Data inicial:</label>
+                        <input type="date" name="data_inicial" style="padding:6px 10px;border-radius:7px;border:1px solid #e0eaff;font-size:1rem;">
+                        <label style="font-size:0.98rem;color:#2e3192;font-weight:500;">Data limite:</label>
+                        <input type="date" name="data_limite" style="padding:6px 10px;border-radius:7px;border:1px solid #e0eaff;font-size:1rem;">
+                    </div>
+                    <input type="file" name="anexo" style="margin-bottom:8px;">
+                    <div style="display:flex;gap:12px;justify-content:flex-end;">
+                        <button type="button" id="fecharPopupAviso" style="background:#eee;color:#2e3192;border:none;padding:10px 28px;border-radius:8px;cursor:pointer;font-size:1rem;font-weight:500;transition:background 0.18s, color 0.18s;">Cancelar</button>
+                        <button type="submit" style="background:linear-gradient(135deg,#5b8cff 0%,#2e3192 100%);color:#fff;border:none;border-radius:8px;padding:10px 28px;font-size:1rem;font-weight:500;cursor:pointer;">Postar</button>
+                    </div>
+                </form>
+            </div>
         </div>
         <div class="avisos-grid" id="avisosGrid">
         <?php
-        $stmt = $pdo->query('SELECT id, usuario, conteudo, data, imagem, tags FROM avisos ORDER BY data DESC');
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $pode_editar = ($classe === 1 || ($classe === 2 && $row['usuario'] === $usuario));
-            $tags = array_filter(array_map('trim', explode(',', $row['tags'] ?? '')));
-            echo '<div class="aviso-card" data-conteudo="' . esc(strtolower($row['conteudo'].' '.implode(' ',$tags))) . '">';
-            echo '<span class="aviso-autor">' . esc($row['usuario']) . '</span>';
-            echo '<span class="aviso-data">(' . esc($row['data']) . ')</span>';
-            if (!empty($tags)) {
-                echo '<div style="margin:6px 0 0 0;">';
-                foreach ($tags as $tag) {
-                    echo '<span style="display:inline-block;background:#eaf2ff;color:#2e3192;font-size:0.93rem;padding:2px 10px;border-radius:7px;margin-right:6px;margin-bottom:2px;">#'.esc($tag).'</span>';
+    $sql = "SELECT id, usuario, conteudo, data, anexo, tags, data_limite FROM avisos $whereSQL ORDER BY data DESC LIMIT :limit OFFSET :offset";
+    $stmt = $pdo->prepare($sql);
+    foreach ($params as $k => $v) $stmt->bindValue($k, $v);
+    $stmt->bindValue(':limit', $avisosPorPagina, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+    $stmt->execute();
+        $avisos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $qtdAvisos = count($avisos);
+        if ($qtdAvisos === 0) {
+            echo '<div class="aviso-card" style="display:flex;align-items:center;justify-content:center;min-height:220px;opacity:0.92;width:100%;grid-column:1/-1;">'
+                .'<div style="text-align:center;width:100%;"><img src="../assets/imagens/LOGO.png" alt="Sem avisos" style="width:54px;height:54px;opacity:0.25;margin-bottom:10px;"><div style="font-size:1.18rem;color:#888;font-weight:500;">Nenhum aviso encontrado</div><div style="font-size:0.98rem;color:#bbb;">Quando houver avisos, eles aparecerão aqui.</div></div>'
+            .'</div>';
+        } else {
+            foreach ($avisos as $row) {
+                $pode_editar = ($classe === 1 || ($classe === 2 && $row['usuario'] === $usuario));
+                $tags = array_filter(array_map('trim', explode(',', $row['tags'] ?? '')));
+                echo '<div class="aviso-card" data-conteudo="' . esc(strtolower($row['conteudo'].' '.implode(' ',$tags))) . '">';
+                echo '<span class="aviso-autor">' . esc($row['usuario']) . '</span>';
+                echo '<span class="aviso-data">(' . esc($row['data']) . ')</span>';
+                if (!empty($row['data_limite']) && $row['data_limite'] !== '0000-00-00' && $row['data_limite'] !== '1970-01-01') {
+                    $dataLimiteFormatada = date('d/m/Y', strtotime($row['data_limite']));
+                    if ($dataLimiteFormatada !== '30/11/-0001' && $dataLimiteFormatada !== '01/01/1970') {
+                        echo '<div style="margin:4px 0 0 0;font-size:0.97rem;color:#5b8cff;">Limite: ' . esc($dataLimiteFormatada) . '</div>';
+                    }
+                }
+                if (!empty($tags)) {
+                    echo '<div style="margin:6px 0 0 0;">';
+                    foreach ($tags as $tag) {
+                        echo '<span style="display:inline-block;background:#eaf2ff;color:#2e3192;font-size:0.93rem;padding:2px 10px;border-radius:7px;margin-right:6px;margin-bottom:2px;">#'.esc($tag).'</span>';
+                    }
+                    echo '</div>';
+                }
+                if (!empty($row['anexo'])) {
+                    $anexosrc = esc($row['anexo']);
+                    $nomeArquivo = basename($anexosrc);
+                    echo '<div style="margin:10px 0 0 0;"><a href="download.php?file=' . urlencode($anexosrc) . '" style="color:#0057ff;font-weight:500;text-decoration:underline;">📎 Baixar anexo: '.esc($nomeArquivo).'</a></div>';
+                }
+                if ($pode_editar && isset($_GET['editar']) && $_GET['editar'] == $row['id']) {
+                    echo '<form method="post" class="form-aviso" style="margin-top:10px;">';
+                    echo '<textarea name="novo_conteudo" rows="3" required>' . esc($row['conteudo']) . '</textarea><br>';
+                    echo '<input type="hidden" name="editar_id" value="' . $row['id'] . '">';
+                    echo '<button type="submit">Salvar</button> ';
+                    echo '<a href="avisos.php" style="color:#d32f2f;">Cancelar</a>';
+                    echo '</form>';
+                } else {
+                    echo '<div class="aviso-conteudo">' . nl2br(esc($row['conteudo'])) . '</div>';
+                    if ($pode_editar) {
+                        echo '<div class="aviso-acoes">';
+                        echo '<a href="avisos.php?editar=' . $row['id'] . '">Editar</a>';
+                        echo '<a href="avisos.php?excluir=' . $row['id'] . '" onclick="return confirm(\'Tem certeza que deseja excluir?\');">Excluir</a>';
+                        echo '</div>';
+                    }
                 }
                 echo '</div>';
             }
-            if (!empty($row['imagem'])) {
-                $imgsrc = esc($row['imagem']);
-                if (strpos($imgsrc, '../') === 0) $imgsrc = substr($imgsrc, 2); // Corrige caminho relativo
-                echo '<div style="margin:10px 0 0 0;"><img src="'.esc($imgsrc).'" alt="Imagem do aviso" style="max-width:100%;max-height:180px;border-radius:10px;box-shadow:0 2px 8px #5b8cff22;"></div>';
-            }
-            if ($pode_editar && isset($_GET['editar']) && $_GET['editar'] == $row['id']) {
-                echo '<form method="post" class="form-aviso" style="margin-top:10px;">';
-                echo '<textarea name="novo_conteudo" rows="3" required>' . esc($row['conteudo']) . '</textarea><br>';
-                echo '<input type="hidden" name="editar_id" value="' . $row['id'] . '">';
-                echo '<button type="submit">Salvar</button> ';
-                echo '<a href="avisos.php" style="color:#d32f2f;">Cancelar</a>';
-                echo '</form>';
-            } else {
-                echo '<div class="aviso-conteudo">' . nl2br(esc($row['conteudo'])) . '</div>';
-                if ($pode_editar) {
-                    echo '<div class="aviso-acoes">';
-                    echo '<a href="avisos.php?editar=' . $row['id'] . '">Editar</a>';
-                    echo '<a href="avisos.php?excluir=' . $row['id'] . '" onclick="return confirm(\'Tem certeza que deseja excluir?\');">Excluir</a>';
-                    echo '</div>';
-                }
-            }
-            echo '</div>';
+            // Removido preenchimento extra de cards
         }
         ?>
+        </div>
+        <!-- Paginação -->
+        <div style="display:flex;justify-content:center;align-items:center;margin:32px 0 0 0;gap:18px;">
+            <?php if ($paginaAtual > 1): ?>
+                <a href="avisos.php?pagina=<?php echo $paginaAtual-1; ?>" style="font-size:1.5rem;color:#0057ff;text-decoration:none;padding:6px 14px;border-radius:50%;background:#eaf2ff;">&#8592;</a>
+            <?php endif; ?>
+            <span style="font-size:1.08rem;color:#2e3192;font-weight:500;">Página <?php echo $paginaAtual; ?> de <?php echo $totalPaginas; ?></span>
+            <?php if ($paginaAtual < $totalPaginas): ?>
+                <a href="avisos.php?pagina=<?php echo $paginaAtual+1; ?>" style="font-size:1.5rem;color:#0057ff;text-decoration:none;padding:6px 14px;border-radius:50%;background:#eaf2ff;">&#8594;</a>
+            <?php endif; ?>
         </div>
     </main>
     <script>
@@ -328,12 +524,28 @@ if (($classe === 1 || $classe === 2) && isset($_POST['conteudo']) && trim($_POST
     }
     loadSavedTheme();
     // Filtro de busca local
-    function filtrarAvisos() {
-        const termo = document.getElementById('buscaAviso').value.toLowerCase();
-        document.querySelectorAll('.aviso-card').forEach(card => {
-            const conteudo = card.getAttribute('data-conteudo');
-            card.style.display = conteudo.includes(termo) ? '' : 'none';
-        });
+    // Busca e filtro agora são feitos no backend
+
+    // Popup de criação de aviso
+    const abrirPopupAviso = document.getElementById('abrirPopupAviso');
+    const popupAvisoOverlay = document.getElementById('popupAvisoOverlay');
+    const popupAvisoCard = document.getElementById('popupAvisoCard');
+    const fecharPopupAviso = document.getElementById('fecharPopupAviso');
+    if (abrirPopupAviso && popupAvisoOverlay && popupAvisoCard && fecharPopupAviso) {
+        abrirPopupAviso.onclick = function() {
+            popupAvisoOverlay.style.display = 'flex';
+            // animação
+            setTimeout(() => { popupAvisoCard.style.opacity = 1; popupAvisoCard.style.transform = 'scale(1)'; }, 10);
+        };
+        fecharPopupAviso.onclick = function() {
+            popupAvisoCard.style.opacity = 0;
+            popupAvisoCard.style.transform = 'scale(0.85)';
+            setTimeout(() => { popupAvisoOverlay.style.display = 'none'; }, 320);
+        };
+        // Fecha ao clicar fora do card
+        popupAvisoOverlay.onclick = function(e) {
+            if (e.target === popupAvisoOverlay) fecharPopupAviso.onclick();
+        };
     }
     </script>
 </body>

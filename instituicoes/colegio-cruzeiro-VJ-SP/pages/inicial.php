@@ -28,12 +28,14 @@ if (isset($_SESSION['usuario_id']) && !isset($_SESSION['atalhos_usuario'])) {
 }
 
 // 1. Defina as opções de atalhos disponíveis
+
 function get_opcoes_atalhos_padrao() {
-  return [
+  $classe = isset($_SESSION['classe']) ? (int)$_SESSION['classe'] : 0;
+  $opcoes = [
     [
       'id' => 'academico',
-  'nome' => 'Avisos',
-  'icone' => '<svg class="sidebar-icon" viewBox="0 0 24 24"><path d="M18 16v-5a6 6 0 10-12 0v5a2 2 0 01-2 2h16a2 2 0 01-2-2zm-6 5a2 2 0 002-2h-4a2 2 0 002 2z"/></svg>',
+      'nome' => 'Avisos',
+      'icone' => '<svg class="sidebar-icon" viewBox="0 0 24 24"><path d="M18 16v-5a6 6 0 10-12 0v5a2 2 0 01-2 2h16a2 2 0 01-2-2zm-6 5a2 2 0 002-2h-4a2 2 0 002 2z"/></svg>',
       'link' => 'avisos.php'
     ],
     [
@@ -48,22 +50,38 @@ function get_opcoes_atalhos_padrao() {
       'icone' => '<svg class="sidebar-icon" viewBox="0 0 24 24"><path d="M16 4h-2c-1.1 0-2 .9-2 2v2H6c-1.1 0-2 .9-2 2v9c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-2V4c0-1.1-.9-2-2-2zm-4 0h2v2h-2V4zM6 8h14v9H6V8z"/></svg>',
       'link' => 'lanchonetes.html',
     ],
-    [
-      'id' => 'financeiro',
-      'nome' => 'Financeiro',
-      'icone' => '<svg class="sidebar-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-2-9h4v2h-4v-2zm-2 4h8v2H8v-2z"/></svg>',
-      'link' => '#',
-    ],
-    [
-      'id' => 'preferencias',
-      'nome' => 'Preferências',
-      'icone' => '<svg class="sidebar-icon" viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c.04.32.07.65.07.98s-.03.66-.07.98l2.11 1.65c.19.15.24.42.12.64l-2 3.46c-.12.22-.39.3-.61.22l-2.49-1c-.52.4-1.08.73-1.69.98l-.38 2.65c-.03.24-.24.42-.49.42h-4c-.25 0-.46-.18-.49-.42l-.38-2.65c-.61-.25-1.17-.59-1.69-.98l-2.49 1c-.23.09-.49 0-.61-.22l-2-3.46c-.12-.22-.07-.49.12-.64l2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>',
-      'link' => '#',
-    ],
   ];
+  // Atalho "Usuários" (classe 1/2) - aceita id antigo 'financeiro' e novo 'usuarios'
+  if ($classe === 1 || $classe === 2) {
+    $opcoes[] = [
+      'id' => 'usuarios',
+      'nome' => 'Usuários',
+      'icone' => '<svg class="sidebar-icon" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5s-3 1.34-3 3 1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05C15.64 13.36 17 14.28 17 15.5V19h7v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>',
+      'link' => '#',
+    ];
+  }
+  // Preferências
+  $opcoes[] = [
+    'id' => 'preferencias',
+    'nome' => 'Preferências',
+    'icone' => '<svg class="sidebar-icon" viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c.04.32.07.65.07.98s-.03.66-.07.98l2.11 1.65c.19.15.24.42.12.64l-2 3.46c-.12.22-.39.3-.61.22l-2.49-1c-.52.4-1.08.73-1.69.98l-.38 2.65c-.03.24-.24.42-.49.42h-4c-.25 0-.46-.18-.49-.42l-.38-2.65c-.61-.25-1.17-.59-1.69-.98l-2.49 1c-.23.09-.49 0-.61-.22l-2-3.46c-.12-.22-.07-.49.12-.64l2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>',
+    'link' => '#',
+  ];
+  return $opcoes;
+}
+
+// Corrige atalhos antigos: se houver 'financeiro', troca para 'usuarios' para classe 1/2
+$atalhos_usuario = isset($_SESSION['atalhos_usuario']) ? $_SESSION['atalhos_usuario'] : [];
+if (isset($_SESSION['classe']) && (int)$_SESSION['classe'] === 1 || (int)$_SESSION['classe'] === 2) {
+  foreach ($atalhos_usuario as &$id) {
+    if ($id === 'financeiro') {
+      $id = 'usuarios';
+    }
+  }
+  unset($id);
+  $_SESSION['atalhos_usuario'] = $atalhos_usuario;
 }
 $opcoes = get_opcoes_atalhos_padrao();
-$atalhos_usuario = isset($_SESSION['atalhos_usuario']) ? $_SESSION['atalhos_usuario'] : [];
 ?>
 
 <!DOCTYPE html>
@@ -193,10 +211,13 @@ $atalhos_usuario = isset($_SESSION['atalhos_usuario']) ? $_SESSION['atalhos_usua
       <span>Lanchonetes</span>
     </a>
 
-    <a href="#" class="sidebar-item">
-      <svg class="sidebar-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-2-9h4v2h-4v-2zm-2 4h8v2H8v-2z"/></svg>
-      <span>Financeiro</span>
+
+  <?php if (isset($_SESSION['classe']) && ((int)$_SESSION['classe'] === 1 || (int)$_SESSION['classe'] === 2)): ?>
+  <a href="usuarios.php" class="sidebar-item">
+      <svg class="sidebar-icon" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5s-3 1.34-3 3 1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05C15.64 13.36 17 14.28 17 15.5V19h7v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+      <span>Usuários</span>
     </a>
+    <?php endif; ?>
 
     <a href="#" class="sidebar-item">
       <svg class="sidebar-icon" viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c.04.32.07.65.07.98s-.03.66-.07.98l2.11 1.65c.19.15.24.42.12.64l-2 3.46c-.12.22-.39.3-.61.22l-2.49-1c-.52.4-1.08.73-1.69.98l-.38 2.65c-.03.24-.24.42-.49.42h-4c-.25 0-.46-.18-.49-.42l-.38-2.65c-.61-.25-1.17-.59-1.69-.98l-2.49 1c-.23.09-.49 0-.61-.22l-2-3.46c-.12-.22-.07-.49.12-.64l2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>
@@ -247,7 +268,8 @@ $atalhos_usuario = isset($_SESSION['atalhos_usuario']) ? $_SESSION['atalhos_usua
       foreach ($opcoes as $op) {
         if ($op['id'] === $id) {
           $extra = $op['id'] === 'minimapa' ? 'id="shortcutMinimapa"' : '';
-          echo '<a href="'.$op['link'].'" class="shortcut-btn" '.$extra.'>'.$op['icone'].'<span>'.$op['nome'].'</span></a>';
+          $link = $op['id'] === 'usuarios' ? 'usuarios.php' : $op['link'];
+          echo '<a href="'.$link.'" class="shortcut-btn" '.$extra.'>'.$op['icone'].'<span>'.$op['nome'].'</span></a>';
           $count++;
         }
       }
