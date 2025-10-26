@@ -17,15 +17,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
 
 // Carrega atalhos do banco se não estiverem na sessão
 if (isset($_SESSION['usuario_id']) && !isset($_SESSION['atalhos_usuario'])) {
-    require_once '../../../includes/db.php'; // ajuste o caminho se necessário
-    $stmt = $pdo->prepare("SELECT atalhos FROM usuarios WHERE id = :id");
+    require_once '../../../includes/db.php';
+    $stmt = $pdo->prepare("SELECT p.atalhos FROM plataforma p WHERE p.usuario_id = :id");
     $stmt->bindParam(':id', $_SESSION['usuario_id']);
     $stmt->execute();
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    if ($row && $row['atalhos']) {
+    if ($row && $row['atalhos'] !== null) {
         $_SESSION['atalhos_usuario'] = json_decode($row['atalhos'], true);
+    } else {
+        // Se não existir registro na plataforma, cria um para o usuário
+        $insert = $pdo->prepare("INSERT IGNORE INTO plataforma (usuario_id) VALUES (:id)");
+        $insert->bindParam(':id', $_SESSION['usuario_id']);
+        $insert->execute();
+        $_SESSION['atalhos_usuario'] = [];
     }
 }
+
+// Buscar dados completos do usuário e da instituição para o miniperfil
+$usuarioDados = null;
+if (isset($_SESSION['usuario_id'])) {
+  require_once '../../../includes/db.php';
+  $usuario_id = $_SESSION['usuario_id'];
+  $stmt = $pdo->prepare('SELECT u.*, i.nome as nome_instituicao FROM usuarios u JOIN instituicoes i ON u.instituicao_id = i.id WHERE u.id = :id');
+  $stmt->bindParam(':id', $usuario_id);
+  $stmt->execute();
+  $usuarioDados = $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+// Função para buscar foto de perfil do usuário logado
+function getFotoPerfil($pdo, $usuario_id) {
+    $stmt = $pdo->prepare('SELECT foto_perfil FROM plataforma WHERE usuario_id = :id');
+    $stmt->bindParam(':id', $usuario_id);
+    $stmt->execute();
+    $foto = $stmt->fetchColumn();
+    if ($foto && file_exists($foto)) {
+        // Corrige caminho relativo para uso no src
+        $foto = str_replace('..', '..', $foto);
+        return $foto;
+    }
+    return '../assets/imagens/spongebob.png';
+}
+
+// No início do arquivo, após session_start e require db.php:
+$fotoPerfilLogado = getFotoPerfil($pdo, $_SESSION['usuario_id']);
 
 // 1. Defina as opções de atalhos disponíveis
 
@@ -64,7 +98,7 @@ function get_opcoes_atalhos_padrao() {
   $opcoes[] = [
     'id' => 'preferencias',
     'nome' => 'Preferências',
-    'icone' => '<svg class="sidebar-icon" viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c.04.32.07.65.07.98s-.03.66-.07.98l2.11 1.65c.19.15.24.42.12.64l-2 3.46c-.12.22-.39.3-.61.22l-2.49-1c-.52.4-1.08.73-1.69.98l-.38 2.65c-.03.24-.24.42-.49.42h-4c-.25 0-.46-.18-.49-.42l-.38-2.65c-.61-.25-1.17-.59-1.69-.98l-2.49 1c-.23.09-.49 0-.61-.22l-2-3.46c-.12-.22-.07-.49.12-.64l2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>',
+    'icone' => '<svg class="sidebar-icon" viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c.04.32.07.65.07.98s-.03.66-.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>',
     'link' => '#',
   ];
   return $opcoes;
@@ -75,7 +109,6 @@ $atalhos_usuario = isset($_SESSION['atalhos_usuario']) ? $_SESSION['atalhos_usua
 if (isset($_SESSION['classe']) && (int)$_SESSION['classe'] === 1 || (int)$_SESSION['classe'] === 2) {
   foreach ($atalhos_usuario as &$id) {
     if ($id === 'financeiro') {
-      $id = 'usuarios';
     }
   }
   unset($id);
@@ -179,13 +212,13 @@ $opcoes = get_opcoes_atalhos_padrao();
   <h2 class="welcome-header" id="headerWelcome" style="font-size:16px; font-weight:400; margin:4px 0 0 0; color:#5b8cff; opacity:0; transition:opacity 0.5s;"></h2>
     </div>
     <div class="admin-profile" id="adminProfile" style="position: relative; cursor: pointer;">
-      <img src="../assets/imagens/spongebob.png" alt="Foto de Perfil" class="admin-avatar">
+      <img src="<?php echo htmlspecialchars($fotoPerfilLogado); ?>" alt="Foto de Perfil" class="admin-avatar">
       <span><?php echo htmlspecialchars($_SESSION['usuario']); ?></span>
     </div>
   </header>
 
   <div class="welcome-card">
-    <img src="../assets/imagens/spongebob.png" alt="Avatar Admin" class="welcome-avatar">
+    <img src="<?php echo htmlspecialchars($fotoPerfilLogado); ?>" alt="Avatar Admin" class="welcome-avatar">
     <div>
       <h2 class="welcome-title" id="cardWelcome" style="font-size:1.3rem;font-weight:600;margin:0 0 4px 0;color:#5b8cff;opacity:0;transition:opacity 0.5s;"></h2>
       <p class="welcome-desc">Acesse e gerencie todos os recursos da plataforma Quantum Admin.</p>
@@ -194,7 +227,7 @@ $opcoes = get_opcoes_atalhos_padrao();
 
   <aside class="sidebar" id="sidebar">
 
-    <a href="#" class="sidebar-item">
+    <a href="avisos.php" class="sidebar-item">
       <svg class="sidebar-icon" viewBox="0 0 24 24"><path d="M18 16v-5a6 6 0 10-12 0v5a2 2 0 01-2 2h16a2 2 0 01-2-2zm-6 5a2 2 0 002-2h-4a2 2 0 002 2z"/></svg>
       <span>Avisos</span>
     </a>
@@ -202,7 +235,7 @@ $opcoes = get_opcoes_atalhos_padrao();
     <div class="sidebar-item-container">
       <div class="sidebar-item" id="mapButton">
         <svg class="sidebar-icon" viewBox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/></svg>
-        <span>Mini Mapa</span>
+            <?php echo $usuarioDados ? htmlspecialchars($usuarioDados['usuario']) : 'Usuário'; ?>
       </div>
     </div>
 
@@ -220,7 +253,7 @@ $opcoes = get_opcoes_atalhos_padrao();
     <?php endif; ?>
 
     <a href="#" class="sidebar-item">
-      <svg class="sidebar-icon" viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c.04.32.07.65.07.98s-.03.66-.07.98l2.11 1.65c.19.15.24.42.12.64l-2 3.46c-.12.22-.39.3-.61.22l-2.49-1c-.52.4-1.08.73-1.69.98l-.38 2.65c-.03.24-.24.42-.49.42h-4c-.25 0-.46-.18-.49-.42l-.38-2.65c-.61-.25-1.17-.59-1.69-.98l-2.49 1c-.23.09-.49 0-.61-.22l-2-3.46c-.12-.22-.07-.49.12-.64l2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>
+      <svg class="sidebar-icon" viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c.04.32.07.65.07.98s-.03.66-.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h-4c-.25 0-.46-.18-.49-.42l-.38-2.65c-.61-.25-1.17-.59-1.69-.98l-2.49 1c-.23.09-.49 0-.61-.22l-2-3.46c-.12-.22-.07-.49.12-.64l2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>
       <span>Preferências</span>
     </a>
   </aside>
@@ -728,12 +761,26 @@ document.getElementById('enviarAssistente').onclick = async function() {
 <!-- Adicione este bloco logo após o header -->
 <div id="miniPerfilPopup" style="position:fixed;top:70px;right:32px;z-index:20000;background:#fff;border-radius:22px;box-shadow:0 2px 12px rgba(44,92,255,0.13);width:340px;max-width:90vw;padding:22px 20px 18px 20px;">
   <div style="display:flex;align-items:center;gap:14px;margin-bottom:10px;">
-    <img src="../assets/imagens/spongebob.png" alt="Avatar Admin" style="width:64px;height:64px;border-radius:50%;box-shadow:0 2px 8px rgba(44,92,255,0.10);">
+    <img src="<?php echo htmlspecialchars($fotoPerfilLogado); ?>" alt="Avatar Admin" style="width:64px;height:64px;border-radius:50%;box-shadow:0 2px 8px rgba(44,92,255,0.10);">
     <div>
-      <span style="font-weight:600;font-size:18px;color:#0057ff;"><?php echo htmlspecialchars($_SESSION['usuario']); ?></span>
-      <div style="font-size:14px;color:#333;">RGM: 2012081</div>
-      <div style="font-size:14px;color:#333;">Série: 3ºJ</div>
-      <div style="font-size:14px;color:#333;">Colégio: COLEGIO CRUZEIRO DO SUL</div>
+      <span style="font-weight:600;font-size:18px;color:#0057ff;display:flex;align-items:center;gap:8px;position:relative;">
+        <?php echo $usuarioDados ? htmlspecialchars($usuarioDados['usuario']) : 'Usuário'; ?>
+        <a href="perfil.php" title="Editar perfil" style="position:absolute;right:-38px;top:50%;transform:translateY(-50%);display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;background:#eaf2ff;border-radius:50%;text-decoration:none;box-shadow:0 2px 8px #0057ff22;transition:background 0.2s;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0057ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19.5 3 21l1.5-4L16.5 3.5z"/></svg>
+        </a>
+      </span>
+      <?php if ($usuarioDados && !empty($usuarioDados['nome'])): ?>
+        <div style="font-size:14px;color:#333;">Nome: <?php echo htmlspecialchars($usuarioDados['nome']); ?></div>
+      <?php endif; ?>
+      <?php if ($usuarioDados && !empty($usuarioDados['rgm'])): ?>
+        <div style="font-size:14px;color:#333;">RGM: <?php echo htmlspecialchars($usuarioDados['rgm']); ?></div>
+      <?php endif; ?>
+      <?php if ($usuarioDados && !empty($usuarioDados['serie'])): ?>
+        <div style="font-size:14px;color:#333;">Série: <?php echo htmlspecialchars($usuarioDados['serie']); ?></div>
+      <?php endif; ?>
+      <?php if ($usuarioDados && !empty($usuarioDados['nome_instituicao'])): ?>
+        <div style="font-size:14px;color:#333;">Colégio: <?php echo htmlspecialchars($usuarioDados['nome_instituicao']); ?></div>
+      <?php endif; ?>
     </div>
   </div>
   <div style="display:flex;gap:10px;justify-content:flex-end;">
@@ -800,11 +847,20 @@ document.getElementById('enviarAssistente').onclick = async function() {
         </div>
       </div>
       <div class="carteirinha-dados">
-        <div class="carteirinha-nome">GUSTAVO MEDEIROS</div>
-        <div class="carteirinha-rgm">RGM: 2012081</div>
-        <div class="carteirinha-ensino">ENSINO MÉDIO</div>
-        <div class="carteirinha-serie">SÉRIE: 3°J</div>
-        <div class="carteirinha-validade">VALIDADE: ??????</div>
+        <?php if ($usuarioDados && !empty($usuarioDados['nome'])): ?>
+          <div class="carteirinha-nome" style="display:flex;align-items:center;gap:8px;">
+            <?php echo htmlspecialchars($usuarioDados['nome']); ?>
+            <a href="perfil.php" title="Editar perfil" style="margin-left:4px;display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:#eaf2ff;border-radius:50%;text-decoration:none;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0057ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19.5 3 21l1.5-4L16.5 3.5z"/></svg>
+            </a>
+          </div>
+        <?php endif; ?>
+        <?php if ($usuarioDados && !empty($usuarioDados['rgm'])): ?>
+          <div class="carteirinha-rgm">RGM: <?php echo htmlspecialchars($usuarioDados['rgm']); ?></div>
+        <?php endif; ?>
+        <?php if ($usuarioDados && !empty($usuarioDados['serie'])): ?>
+          <div class="carteirinha-serie">SÉRIE: <?php echo htmlspecialchars($usuarioDados['serie']); ?></div>
+        <?php endif; ?>
       </div>
     </div>
   </div>

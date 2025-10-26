@@ -1,0 +1,184 @@
+.startup-main {
+    font-size: 2.2rem;
+    color: #b48cff;
+    font-weight: 900;
+    margin: 0 0 22px 0;
+    letter-spacing: 2px;
+    text-shadow: 0 4px 24px #0006, 0 0 8px #b48cff99;
+    text-align: center;
+    width: 100%;
+    display: block;
+    opacity: 1;
+    background: transparent;
+    z-index: 10001;
+}
+
+.copyright {
+    position: fixed;
+    left: 24px;
+    bottom: 18px;
+    color: #b48cffcc;
+    font-size: 1rem;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    letter-spacing: 1px;
+    z-index: 10010;
+    user-select: none;
+    pointer-events: none;
+    text-shadow: 0 2px 8px #000a;
+}
+.logo-quantum {
+    display: block;
+    margin: 0 auto 18px auto;
+    max-width: 110px;
+    width: 30vw;
+    min-width: 60px;
+    filter: drop-shadow(0 0 16px #b48cffcc);
+    opacity: 0.92;
+    transition: filter 0.3s;
+}
+.startup-name {
+    font-size: 2rem;
+    color: #a6a1e0;
+    font-weight: 800;
+    margin: 18px 0 32px 0;
+    letter-spacing: 3px;
+    text-shadow: 0 4px 24px #0006, 0 0 8px #a6a1e0cc;
+    text-align: center;
+    width: 100%;
+    display: block;
+    opacity: 1;
+    background: transparent;
+    z-index: 10001;
+}
+body, html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.splash-bg {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    background: repeating-linear-gradient(120deg, #18092b 0 40px, #3d1a5e 40px 80px),
+                radial-gradient(ellipse at 60% 40%, #b48cff33 0%, transparent 70%),
+                radial-gradient(ellipse at 30% 70%, #7c4dff22 0%, transparent 80%);
+    background-size: 80px 160px;
+    box-shadow: 0 0 80px 10px #b48cff22 inset, 0 0 120px 40px #7c4dff11 inset;
+    filter: blur(0px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: bgMove 8s linear infinite alternate;
+}
+
+@keyframes bgMove {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 80px 80px;
+    }
+}
+.splash-content {
+    text-align: center;
+    color: #fff;
+    z-index: 10000;
+    width: 100%;
+    max-width: 500px;
+    margin: auto;
+}
+
+h1 {
+    font-size: 3rem;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-weight: bold;
+    margin-bottom: 30px;
+    letter-spacing: 2px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        text-shadow: 0 0 10px #fff6, 0 0 30px #a6a1e0aa;
+        transform: scale(1);
+    }
+    50% {
+        text-shadow: 0 0 30px #fff, 0 0 60px #a6a1e0;
+        transform: scale(1.04);
+    }
+    100% {
+        text-shadow: 0 0 10px #fff6, 0 0 30px #a6a1e0aa;
+        transform: scale(1);
+    }
+}
+
+.focus {
+    filter: none;
+    color: #e0c3ff;
+}
+.blur {
+    filter: none;
+    color: #fff;
+    opacity: 1;
+}
+
+.progress-bar {
+    width: 60%;
+    height: 8px;
+    background: #3a3750;
+    border-radius: 8px;
+    margin: 0 auto 10px auto;
+    overflow: hidden;
+    box-shadow: 0 2px 8px #0004;
+}
+
+.progress {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #a6a1e0, #6e6877);
+    border-radius: 8px;
+    transition: width 0.5s;
+}
+
+.percent {
+    color: #a6a1e0;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+    text-align: right;
+    width: 60%;
+    margin: 0 auto 20px auto;
+}
+
+.socials {
+    margin-top: 20px;
+    color: #fff;
+    font-size: 1rem;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    opacity: 0.8;
+}
+
+.icon {
+    width: 18px;
+    height: 18px;
+    vertical-align: middle;
+    margin-right: 6px;
+    filter: invert(1) grayscale(1);
+}
+
+.splash-bg canvas#bg-dots {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1;
+    pointer-events: none;
+}

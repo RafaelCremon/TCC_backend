@@ -52,9 +52,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['atalhos'])) {
   $atalhos_usuario = $selecionados;
 
   if (isset($_SESSION['usuario_id'])) {
-    require_once '../../../includes/db.php'; // ajuste o caminho se necessário
+    require_once '../../../includes/db.php';
     $atalhos_json = json_encode($selecionados);
-    $stmt = $pdo->prepare("UPDATE usuarios SET atalhos = :atalhos WHERE id = :id");
+    // Garante que existe registro na plataforma para o usuário
+    $insert = $pdo->prepare("INSERT IGNORE INTO plataforma (usuario_id) VALUES (:id)");
+    $insert->bindParam(':id', $_SESSION['usuario_id']);
+    $insert->execute();
+    // Agora faz o update normalmente
+    $stmt = $pdo->prepare("UPDATE plataforma SET atalhos = :atalhos WHERE usuario_id = :id");
     $stmt->bindParam(':atalhos', $atalhos_json);
     $stmt->bindParam(':id', $_SESSION['usuario_id']);
     $stmt->execute();

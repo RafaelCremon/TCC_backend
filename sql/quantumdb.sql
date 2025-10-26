@@ -1,19 +1,5 @@
-
--- COPIAR ESSE CODIGO NO PHPMYSQL BANCO DO XAMPP PARA CRIAR 
--- O BANCO DE DADOS COMPLETO 
--- NAO TEM NENHUM USUARIO CADASTRADO FAÇA NO PAINEL ADMIN
--- Banco de dados: quantumdb
---
-
-CREATE DATABASE IF NOT EXISTS `quantumdb` 
-  DEFAULT CHARACTER SET utf8mb4 
-  COLLATE utf8mb4_general_ci;
-
-USE `quantumdb`;
-
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
-SET time_zone = "+00:00";
+CREATE DATABASE IF NOT EXISTS quantumdb CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE quantumdb;
 
 CREATE TABLE `avisos` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -50,13 +36,13 @@ CREATE TABLE `usuarios` (
   `instituicao_id` int(11) NOT NULL,
   `classe` varchar(100) DEFAULT NULL,
   `nome` varchar(255) NOT NULL,
+  `rgm` int(10) NOT NULL,
   `usuario` varchar(100) NOT NULL,
+  `serie` varchar(4) NOT NULL,
   `email` varchar(100) NOT NULL,
   `telefone` varchar(20) DEFAULT NULL,
   `senha` varchar(255) NOT NULL,
-  `foto_perfil` varchar(255) DEFAULT NULL,
   `criado_em` timestamp NOT NULL DEFAULT current_timestamp(),
-  `atalhos` text DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `usuario` (`usuario`),
   KEY `instituicao_id` (`instituicao_id`),
@@ -83,4 +69,13 @@ CREATE TABLE `eventos` (
   CONSTRAINT `eventos_ibfk_2` FOREIGN KEY (`criado_por`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-COMMIT;
+CREATE TABLE `plataforma` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `usuario_id` int(11) NOT NULL,
+  `atalhos` text DEFAULT NULL,
+  `foto_perfil` varchar(255) DEFAULT NULL,
+  `conquistas` text DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `usuario_id` (`usuario_id`),
+  CONSTRAINT `plataforma_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
