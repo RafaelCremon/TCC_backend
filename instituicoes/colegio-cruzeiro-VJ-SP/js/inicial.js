@@ -171,7 +171,7 @@ function trocarLogoTema(theme) {
   var logo = document.getElementById('headerLogo');
   if (!logo) return;
   if (theme === 'dark') {
-    logo.src = '../assets/logo_quantum_white.png';
+    logo.src = 'instituicoes/colegio-cruzeiro-VJ-SP/assets/imagens/LOGO.png';
   } else {
     logo.src = '../assets/logo_quantum.png';
   }

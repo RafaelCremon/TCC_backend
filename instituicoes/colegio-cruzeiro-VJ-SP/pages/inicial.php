@@ -207,7 +207,7 @@ $opcoes = get_opcoes_atalhos_padrao();
       <button id="toggleSidebarBtn" class="menu-button" aria-label="Abrir menu">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
       </button>
-  <img src="../assets/imagens/LOGO.png" alt="Logo Quantum" class="logo" id="headerLogo" style="width:32px;height:32px;border-radius:50%;margin-right:10px;vertical-align:middle;box-shadow:0 2px 8px rgba(44,92,255,0.10);">
+  <img src="..\assets\imagens\LOGO.png" alt="Logo Quantum" class="logo"  style="width:32px;height:32px;border-radius:50%;margin-right:10px;vertical-align:middle;box-shadow:0 2px 8px rgba(44,92,255,0.10);">
       <h1>Quantum Edu.</h1>
   <h2 class="welcome-header" id="headerWelcome" style="font-size:16px; font-weight:400; margin:4px 0 0 0; color:#5b8cff; opacity:0; transition:opacity 0.5s;"></h2>
     </div>
@@ -235,7 +235,7 @@ $opcoes = get_opcoes_atalhos_padrao();
     <div class="sidebar-item-container">
       <div class="sidebar-item" id="mapButton">
         <svg class="sidebar-icon" viewBox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/></svg>
-            <?php echo $usuarioDados ? htmlspecialchars($usuarioDados['usuario']) : 'Usuário'; ?>
+        <span>Mini Mapa</span>
       </div>
     </div>
 
@@ -321,38 +321,36 @@ $opcoes = get_opcoes_atalhos_padrao();
       </div>
 
       <div class="calendar-sidebar">
-        <div class="calendar-section calendar-fade-in">
-          <div class="calendar-header">
-            <h3 class="calendar-title">
-              📅 Calendário
-            </h3>
-            <div class="calendar-nav">
-              <button class="calendar-nav-btn" id="prevMonth" title="Mês anterior">‹</button>
-              <div class="calendar-month" id="currentMonth">Carregando...</div>
-              <button class="calendar-nav-btn" id="nextMonth" title="Próximo mês">›</button>
-            </div>
-          </div>
-          
-          <div class="calendar-container">
-            <div class="calendar-widget">
-              <div class="calendar-grid" id="calendarGrid">
-                <!-- O calendário será gerado aqui pelo JavaScript -->
+        <div class="calendar-section calendar-fade-in" style="padding:0; border:none; background:none; box-shadow:none;">
+          <div class="calendar-container" style="background:#232a4d; border-radius:18px; box-shadow:0 4px 32px rgba(44,92,255,0.13); padding:24px 18px; display:flex; gap:0; align-items:stretch;">
+            <div style="flex:1; display:flex; flex-direction:column;">
+              <div class="calendar-header">
+                <h3 class="calendar-title">📅 Calendário</h3>
+                <div class="calendar-nav">
+                  <button class="calendar-nav-btn" id="prevMonth" title="Mês anterior">‹</button>
+                  <div class="calendar-month" id="currentMonth">Carregando...</div>
+                  <button class="calendar-nav-btn" id="nextMonth" title="Próximo mês">›</button>
+                </div>
               </div>
-            </div>
-            
-            <div class="calendar-widget events-widget">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding: 6px 0;">
-                <h4 style="margin: 0; color: #e0f4ff; font-size: 1.1rem; font-weight: 700; display: flex; align-items: center; gap: 6px; text-shadow: 0 2px 4px rgba(0, 224, 255, 0.3);">
-                  🎯 Eventos
-                </h4>
-                <?php if (isset($_SESSION['classe']) && (int)$_SESSION['classe'] === 1 || (int)$_SESSION['classe'] === 2): ?>
-                <button class="add-event-btn" onclick="addNewEvent()" title="Adicionar novo evento (Ctrl+N)" style="width: 32px; height: 32px; font-size: 20px; font-weight: 800;">
-                  <span>+</span>
-                </button>
-                <?php endif; ?>
+              <div class="calendar-widget" style="flex:1;">
+                <div class="calendar-grid" id="calendarGrid">
+                  <!-- O calendário será gerado aqui pelo JavaScript -->
+                </div>
               </div>
-              <div class="events-panel" id="eventsPanel">
-                <div class="no-events">Carregando eventos...</div>
+              <div class="calendar-widget events-widget" style="min-width:320px; max-width:420px; border-radius:0 0 18px 18px; margin-left:0; box-shadow:none; background:rgba(30,40,80,0.98); margin-top:12px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding: 6px 0;">
+                  <h4 style="margin: 0; color: #e0f4ff; font-size: 1.1rem; font-weight: 700; display: flex; align-items: center; gap: 6px; text-shadow: 0 2px 4px rgba(0, 224, 255, 0.3);">
+                    🎯 Eventos
+                  </h4>
+                  <?php if (isset($_SESSION['classe']) && (int)$_SESSION['classe'] === 1 || (int)$_SESSION['classe'] === 2): ?>
+                  <button class="add-event-btn" onclick="addNewEvent()" title="Adicionar novo evento (Ctrl+N)" style="width: 32px; height: 32px; font-size: 20px; font-weight: 800;">
+                    <span>+</span>
+                  </button>
+                  <?php endif; ?>
+                </div>
+                <div class="events-panel" id="eventsPanel">
+                  <div class="no-events">Carregando eventos...</div>
+                </div>
               </div>
             </div>
           </div>
