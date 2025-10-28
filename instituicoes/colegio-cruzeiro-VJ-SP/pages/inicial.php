@@ -321,8 +321,8 @@ $opcoes = get_opcoes_atalhos_padrao();
       </div>
 
       <div class="calendar-sidebar">
-        <div class="calendar-section calendar-fade-in" style="padding:0; border:none; background:none; box-shadow:none;">
-          <div class="calendar-container" style="background:#232a4d; border-radius:18px; box-shadow:0 4px 32px rgba(44,92,255,0.13); padding:24px 18px; display:flex; gap:0; align-items:stretch;">
+  <div class="calendar-section calendar-fade-in">
+          <div class="calendar-container">
             <div style="flex:1; display:flex; flex-direction:column;">
               <div class="calendar-header">
                 <h3 class="calendar-title">📅 Calendário</h3>
@@ -337,9 +337,9 @@ $opcoes = get_opcoes_atalhos_padrao();
                   <!-- O calendário será gerado aqui pelo JavaScript -->
                 </div>
               </div>
-              <div class="calendar-widget events-widget" style="min-width:320px; max-width:420px; border-radius:0 0 18px 18px; margin-left:0; box-shadow:none; background:rgba(30,40,80,0.98); margin-top:12px;">
+              <div class="calendar-widget events-widget" style="min-width:320px; max-width:420px; border-radius:0 0 18px 18px; margin-left:0; margin-top:12px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding: 6px 0;">
-                  <h4 style="margin: 0; color: #e0f4ff; font-size: 1.1rem; font-weight: 700; display: flex; align-items: center; gap: 6px; text-shadow: 0 2px 4px rgba(0, 224, 255, 0.3);">
+                  <h4 style="margin: 0; color: #6fb4d1ff; font-size: 1.1rem; font-weight: 700; display: flex; align-items: center; gap: 6px; text-shadow: 0 2px 4px rgba(0, 224, 255, 0.3);">
                     🎯 Eventos
                   </h4>
                   <?php if (isset($_SESSION['classe']) && (int)$_SESSION['classe'] === 1 || (int)$_SESSION['classe'] === 2): ?>
@@ -1154,3 +1154,4 @@ document.getElementById('btnTrocarTema').onclick = function() {
 
 </body>
 </html>
+

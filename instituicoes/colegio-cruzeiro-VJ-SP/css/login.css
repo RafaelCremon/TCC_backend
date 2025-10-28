@@ -89,7 +89,7 @@ body{
       border-radius: 50%;
       width: 48px;
       height: 48px;
-      box-shadow: 0 2px 8px rgba(44,92,255,0.10);
+      box-shadow: 0 2px 8px #2c5cff1a;
       display: flex;
       align-items: center;
       justify-content: center;

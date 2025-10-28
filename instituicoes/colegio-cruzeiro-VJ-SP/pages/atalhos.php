@@ -23,7 +23,6 @@ function get_opcoes_atalhos_padrao() {
       'link' => 'lanchonetes.html',
     ],
   ];
-  // Só mostra "Usuários" para classe 1 ou 2
   if ($classe === 1 || $classe === 2) {
     $opcoes[] = [
       'id' => 'usuarios',
@@ -46,7 +45,6 @@ $atalhos_usuario = isset($_SESSION['atalhos_usuario']) ? $_SESSION['atalhos_usua
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['atalhos'])) {
   $selecionados = json_decode($_POST['atalhos'], true);
-  // Garante no máximo 4 e sem duplicados
   $selecionados = array_slice(array_unique($selecionados), 0, 4);
   $_SESSION['atalhos_usuario'] = $selecionados;
   $atalhos_usuario = $selecionados;
@@ -54,17 +52,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['atalhos'])) {
   if (isset($_SESSION['usuario_id'])) {
     require_once '../../../includes/db.php';
     $atalhos_json = json_encode($selecionados);
-    // Garante que existe registro na plataforma para o usuário
     $insert = $pdo->prepare("INSERT IGNORE INTO plataforma (usuario_id) VALUES (:id)");
     $insert->bindParam(':id', $_SESSION['usuario_id']);
     $insert->execute();
-    // Agora faz o update normalmente
     $stmt = $pdo->prepare("UPDATE plataforma SET atalhos = :atalhos WHERE usuario_id = :id");
     $stmt->bindParam(':atalhos', $atalhos_json);
     $stmt->bindParam(':id', $_SESSION['usuario_id']);
     $stmt->execute();
   }
-  // Redireciona para a tela inicial após salvar
   header('Location: inicial.php');
   exit;
 }
@@ -73,203 +68,404 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['atalhos'])) {
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Escolher Atalhos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Personalizar Atalhos</title>
   <link rel="stylesheet" href="../css/inicial.css?v=<?php echo time(); ?>">
   <style>
-    .btn-voltar-inicial {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      background: linear-gradient(90deg, #eaf2ff 0%, #dbe7ff 100%);
-      color: #2e3192;
-      border: none;
-      border-radius: 10px;
-      padding: 10px 22px;
-      font-size: 1.08rem;
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow: 0 2px 8px rgba(44,92,255,0.10);
-      margin-bottom: 22px;
-      margin-top: 18px;
-      transition: background 0.22s, color 0.22s, box-shadow 0.22s, transform 0.18s;
-    }
-    .btn-voltar-inicial:hover, .btn-voltar-inicial:focus {
-      background: linear-gradient(90deg, #dbe7ff 0%, #eaf2ff 100%);
-      color: #0057ff;
-      box-shadow: 0 4px 16px #5b8cff22;
-      transform: scale(1.06);
-    }
-    .btn-voltar-inicial svg {
-      width: 22px;
-      height: 22px;
-      vertical-align: middle;
-      transition: filter 0.22s, transform 0.18s;
-    }
-    .btn-voltar-inicial:hover svg, .btn-voltar-inicial:focus svg {
-      filter: drop-shadow(0 2px 8px #5b8cff33);
-      transform: scale(1.13);
-    }
-  </style>
-  <style>
-    body {
-      background: var(--bg-main, #f7faff);
-      color: var(--text-main, #222);
-      transition: background 0.3s, color 0.3s;
-    }
-    .atalhos-container {
-      max-width: 420px;
-      margin: 24px auto;
-      background: var(--bg-card, #f7faff);
-      border-radius: 16px;
-      padding: 18px 12px 18px 12px;
-      box-shadow: 0 2px 18px rgba(44,92,255,0.12);
-      text-align: center;
-      transition: background 0.3s;
-    }
-    .atalhos-slots {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      margin-bottom: 18px;
-      min-height: 90px;
-    }
-    .slot {
-      width: 80px;
-      height: 80px;
-      border: 2px dashed var(--border-slot, #b2c6e6);
-      border-radius: 12px;
-      background: var(--bg-slot, #fff);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 2px;
-      position: relative;
-      transition: border 0.2s, background 0.3s;
-      box-shadow: 0 2px 8px rgba(44,92,255,0.06);
-    }
-    .slot.dragover {
-      border: 2.5px solid #5b8cff;
-      background: #eaf2ff;
-    }
-    .slot .atalho-card {
-      position: static;
+    * {
       margin: 0;
-      cursor: grab;
+      padding: 0;
+      box-sizing: border-box;
     }
-    .atalhos-list {
+
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      padding: 20px;
+      transition: background 0.3s ease;
+    }
+
+    body.dark {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+      animation: fadeInDown 0.6s ease;
+    }
+
+    .voltar-btn {
+      position: absolute;
+      top: 30px;
+      left: 30px;
+      width: 48px;
+      height: 48px;
+      background: rgba(255, 255, 255, 0.95);
+      border: none;
+      border-radius: 50%;
+      font-size: 24px;
+      font-weight: bold;
+      color: #667eea;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      transition: all 0.3s ease;
       display: flex;
-      flex-wrap: wrap;
-      gap: 22px;
+      align-items: center;
       justify-content: center;
-      margin-bottom: 24px;
+      backdrop-filter: blur(10px);
     }
-    .atalho-card {
-      background: var(--bg-slot, #fff);
-      border: 2px solid #c7d6ff;
-      border-radius: 10px;
-      padding: 10px 4px 6px 4px;
-      width: 80px;
-      min-height: 60px;
-      cursor: grab;
-      transition: border 0.2s, box-shadow 0.2s, background 0.3s;
-      box-shadow: 0 2px 10px rgba(44,92,255,0.08);
+
+    .voltar-btn:hover {
+      transform: translateY(-2px) scale(1.05);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+      background: white;
+    }
+
+    body.dark .voltar-btn {
+      background: rgba(30, 30, 50, 0.95);
+      color: #8b9cff;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      color: white;
+      margin-bottom: 10px;
+      text-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .subtitle {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 1.1rem;
+      font-weight: 400;
+    }
+
+    .slots-section {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 24px;
+      padding: 40px;
+      margin-bottom: 30px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(10px);
+      animation: fadeInUp 0.6s ease;
+    }
+
+    body.dark .slots-section {
+      background: rgba(30, 30, 50, 0.95);
+    }
+
+    .section-title {
+      font-size: 1.3rem;
+      color: #667eea;
+      margin-bottom: 25px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    body.dark .section-title {
+      color: #8b9cff;
+    }
+
+    .section-title::before {
+      content: '';
+      width: 4px;
+      height: 24px;
+      background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+      border-radius: 2px;
+    }
+
+    .atalhos-slots {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .slot {
+      aspect-ratio: 1;
+      border: 3px dashed #d0d7ff;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #f8f9ff 0%, #f0f3ff 100%);
       display: flex;
       flex-direction: column;
       align-items: center;
-      user-select: none;
+      justify-content: center;
       position: relative;
-      margin-bottom: 0;
+      transition: all 0.3s ease;
+      overflow: hidden;
     }
-    .atalho-card.selected {
-      border: 2.5px solid #5b8cff;
-      box-shadow: 0 4px 18px rgba(44,92,255,0.15);
-      background: linear-gradient(120deg, #eaf2ff 0%, #f7faff 100%);
+
+    body.dark .slot {
+      background: linear-gradient(135deg, #1e1e32 0%, #252540 100%);
+      border-color: #3a3a5a;
     }
-  .atalho-card svg { width: 28px; height: 28px; margin-bottom: 6px;}
-  .atalho-card .nome { font-size: 13px; font-weight: 600; color: #2e3192;}
-    .btn-salvar {
-      background: linear-gradient(135deg, #5b8cff 0%, #2e3192 100%);
-      color: #fff; border: none; border-radius: 10px;
-      padding: 12px 34px; font-size: 17px; font-weight: 600; cursor: pointer;
-      margin-top: 14px;
-      box-shadow: 0 2px 8px rgba(44,92,255,0.10);
-      transition: background 0.3s;
+
+    .slot::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
     }
-    .btn-salvar:hover {
-      filter: brightness(1.08);
+
+    .slot:hover::before {
+      opacity: 1;
     }
-    .msg { color: #008a00; font-weight: 500; margin-bottom: 18px;}
-    .limite { color: #d90000; font-size: 15px; margin-bottom: 12px;}
+
+    .slot.dragover {
+      border-color: #667eea;
+      border-style: solid;
+      background: linear-gradient(135deg, #eef1ff 0%, #e8ecff 100%);
+      transform: scale(1.02);
+      box-shadow: 0 8px 24px rgba(102, 126, 234, 0.2);
+    }
+
+    body.dark .slot.dragover {
+      background: linear-gradient(135deg, #2a2a4a 0%, #32325a 100%);
+      border-color: #8b9cff;
+    }
+
     .slot-label {
       position: absolute;
-      top: 6px;
+      top: 12px;
       left: 12px;
-      font-size: 13px;
-      color: #5b8cff;
+      font-size: 0.75rem;
+      color: #667eea;
       font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
       opacity: 0.7;
-      letter-spacing: 0.02em;
     }
-    /* Dark mode */
-    body.dark {
-      --bg-main: #181c2a;
-      --bg-card: #232846;
-      --bg-slot: #232846;
-      --text-main: #eaf2ff;
-      --border-slot: #3b4a7a;
+
+    body.dark .slot-label {
+      color: #8b9cff;
     }
-    body.dark .atalho-card .nome,
-    body.dark .slot-label { color: #8bb6ff; }
-    body.dark .atalho-card { border-color: #3b4a7a; }
-    body.dark .atalho-card.selected { background: linear-gradient(120deg, #2e3192 0%, #232846 100%);}
-    body.dark .slot { border-color: #3b4a7a; background: #232846; }
-    body.dark .atalhos-container { background: #232846; }
-    body.dark .btn-salvar { background: linear-gradient(135deg, #5b8cff 0%, #232846 100%);}
+
+    .slot-empty-icon {
+      font-size: 2.5rem;
+      opacity: 0.2;
+    }
+
+    .atalho-card {
+      background: white;
+      border: 2px solid #e0e6ff;
+      border-radius: 16px;
+      padding: 20px;
+      cursor: grab;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      user-select: none;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      width: 100%;
+      height: 100%;
+    }
+
+    body.dark .atalho-card {
+      background: #2a2a4a;
+      border-color: #3a3a5a;
+    }
+
+    .atalho-card:active {
+      cursor: grabbing;
+    }
+
+    .atalho-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(102, 126, 234, 0.2);
+      border-color: #667eea;
+    }
+
+    .atalho-card.selected {
+      border-color: #667eea;
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.25);
+      background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+    }
+
+    body.dark .atalho-card.selected {
+      background: linear-gradient(135deg, #2a2a4a 0%, #32325a 100%);
+      border-color: #8b9cff;
+    }
+
+    .atalho-card svg {
+      width: 40px;
+      height: 40px;
+      fill: #667eea;
+      transition: transform 0.3s ease;
+    }
+
+    body.dark .atalho-card svg {
+      fill: #8b9cff;
+    }
+
+    .atalho-card:hover svg {
+      transform: scale(1.1);
+    }
+
+    .atalho-card .nome {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #2d3748;
+      text-align: center;
+    }
+
+    body.dark .atalho-card .nome {
+      color: #e0e6ff;
+    }
+
+    .atalhos-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 20px;
+      padding: 20px 0;
+    }
+
+    .disponivel-card {
+      aspect-ratio: 1;
+    }
+
+    .btn-salvar {
+      width: 100%;
+      max-width: 300px;
+      margin: 30px auto 0;
+      display: block;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 16px;
+      padding: 18px 40px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-salvar:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-salvar:active {
+      transform: translateY(0);
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 10px;
+      }
+
+      h1 {
+        font-size: 1.8rem;
+      }
+
+      .slots-section {
+        padding: 25px 20px;
+      }
+
+      .atalhos-slots {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .atalhos-list {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .voltar-btn {
+        top: 15px;
+        left: 15px;
+        width: 42px;
+        height: 42px;
+      }
+    }
   </style>
 </head>
 <body>
-  <form class="atalhos-container" method="post" onsubmit="return salvarAtalhos()">
-  <!-- Botão de voltar simplificado -->
-          <button onclick="window.location.href='inicial.php'" class="voltar-btn" style="margin-bottom: 18px; margin-top: 0; background: #e7eefe; color: #2e3192; border: none; border-radius: 8px; padding: 6px 14px; box-shadow: 0 2px 8px rgba(44,92,255,0.08); cursor: pointer; font-size: 22px; font-weight: bold; transition: background 0.2s, color 0.2s; display: flex; align-items: center; justify-content: center;">&lt;</button>
-    <h2>Arraste até 4 atalhos para os slots</h2>
-    <?php if (!empty($msg)) echo "<div class='msg'>$msg</div>"; ?>
-    <div class="atalhos-slots" id="slots">
-      <?php
-      // Preenche os slots com os atalhos do usuário, se houver
-      for ($i = 0; $i < 4; $i++) {
-        $id = isset($atalhos_usuario[$i]) ? $atalhos_usuario[$i] : '';
-        echo '<div class="slot" data-slot="'.$i.'" ondragover="dragOver(event)" ondrop="dropAtalho(event,'.$i.')" ondragleave="dragLeave(event)">';
-        echo '<span class="slot-label">Slot '.($i+1).'</span>';
-        if ($id) {
-          foreach ($opcoes as $op) {
-            if ($op['id'] === $id) {
-              echo '<div class="atalho-card selected" draggable="true" data-id="'.$op['id'].'" ondragstart="dragStart(event)">'.$op['icone'].'<div class="nome">'.$op['nome'].'</div></div>';
+  <button onclick="window.location.href='inicial.php'" class="voltar-btn" type="button">←</button>
+  
+  <div class="container">
+    <div class="header">
+      <h1>✨ Personalize seus Atalhos</h1>
+      <p class="subtitle">Arraste e solte até 4 atalhos nos slots abaixo</p>
+    </div>
+
+    <form method="post" onsubmit="return salvarAtalhos()">
+      <div class="slots-section">
+        <div class="section-title">🎯 Seus Atalhos</div>
+        <div class="atalhos-slots" id="slots">
+          <?php
+          for ($i = 0; $i < 4; $i++) {
+            $id = isset($atalhos_usuario[$i]) ? $atalhos_usuario[$i] : '';
+            echo '<div class="slot" data-slot="'.$i.'" ondragover="dragOver(event)" ondrop="dropAtalho(event,'.$i.')" ondragleave="dragLeave(event)">';
+            echo '<span class="slot-label">Slot '.($i+1).'</span>';
+            if ($id) {
+              foreach ($opcoes as $op) {
+                if ($op['id'] === $id) {
+                  echo '<div class="atalho-card selected" draggable="true" data-id="'.$op['id'].'" ondragstart="dragStart(event)">'.$op['icone'].'<div class="nome">'.$op['nome'].'</div></div>';
+                }
+              }
+            } else {
+              echo '<div class="slot-empty-icon">+</div>';
             }
+            echo '</div>';
           }
-        }
-        echo '</div>';
-      }
-      ?>
-    </div>
-    <div style="margin: 22px 0 10px 0; font-weight:500; color:#2e3192;">Arraste os atalhos abaixo para os slots acima:</div>
-    <div class="atalhos-list" id="atalhosList">
-      <?php foreach ($opcoes as $op): ?>
-        <?php if (!in_array($op['id'], $atalhos_usuario)): ?>
-          <div class="atalho-card" draggable="true" data-id="<?php echo $op['id']; ?>" ondragstart="dragStart(event)">
-            <?php echo $op['icone']; ?>
-            <div class="nome"><?php echo $op['nome']; ?></div>
-          </div>
-        <?php endif; ?>
-      <?php endforeach; ?>
-    </div>
-    <input type="hidden" name="atalhos" id="atalhosInput" value="">
-    <button class="btn-salvar" type="submit">Salvar</button>
-    <div style="margin-top:18px;">
-      
-    </div>
-  </form>
+          ?>
+        </div>
+
+        <div class="section-title" style="margin-top: 40px;">📱 Atalhos Disponíveis</div>
+        <div class="atalhos-list" id="atalhosList">
+          <?php foreach ($opcoes as $op): ?>
+            <?php if (!in_array($op['id'], $atalhos_usuario)): ?>
+              <div class="atalho-card disponivel-card" draggable="true" data-id="<?php echo $op['id']; ?>" ondragstart="dragStart(event)">
+                <?php echo $op['icone']; ?>
+                <div class="nome"><?php echo $op['nome']; ?></div>
+              </div>
+            <?php endif; ?>
+          <?php endforeach; ?>
+        </div>
+
+        <input type="hidden" name="atalhos" id="atalhosInput" value="">
+        <button class="btn-salvar" type="submit">Salvar Atalhos</button>
+      </div>
+    </form>
+  </div>
+
   <script>
-    // Tema: acompanha o inicial.php (usa localStorage 'theme')
     function aplicarTema() {
       const tema = localStorage.getItem('theme');
       if (tema === 'dark') document.body.classList.add('dark');
@@ -277,7 +473,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['atalhos'])) {
     }
     aplicarTema();
     window.addEventListener('storage', aplicarTema);
-
 
     let draggedId = null;
     let draggedFromSlot = null;
@@ -287,7 +482,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['atalhos'])) {
     function dragStart(e) {
       draggedId = e.target.getAttribute('data-id');
       dropSuccess = false;
-      // Descobre de qual slot veio
       let parentSlot = e.target.closest('.slot');
       if (parentSlot) {
         draggedFromSlot = parentSlot;
@@ -297,30 +491,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['atalhos'])) {
         draggedFromHTML = null;
       }
       e.dataTransfer.effectAllowed = "move";
+      e.target.style.opacity = '0.5';
     }
+
     function dragOver(e) {
       e.preventDefault();
       e.currentTarget.classList.add('dragover');
     }
+
     function dragLeave(e) {
       e.currentTarget.classList.remove('dragover');
     }
+
     function dropAtalho(e, slotIdx) {
       e.preventDefault();
       e.currentTarget.classList.remove('dragover');
       if (!draggedId) return;
       dropSuccess = true;
 
-      // Remove o atalho deste slot se já houver
       let slots = document.querySelectorAll('.slot');
       slots.forEach((slot, idx) => {
         let card = slot.querySelector('.atalho-card');
         if (card && card.getAttribute('data-id') === draggedId) {
-          slot.innerHTML = '<span class="slot-label">Slot ' + (idx+1) + '</span>';
+          slot.innerHTML = '<span class="slot-label">Slot ' + (idx+1) + '</span><div class="slot-empty-icon">+</div>';
         }
       });
 
-      // Remove o atalho da lista de baixo se estiver lá
       let cards = document.querySelectorAll('.atalhos-list .atalho-card');
       cards.forEach(card => {
         if (card.getAttribute('data-id') === draggedId) {
@@ -328,7 +524,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['atalhos'])) {
         }
       });
 
-      // Adiciona o atalho ao slot
       let opcoes = <?php echo json_encode($opcoes); ?>;
       let op = opcoes.find(o => o.id === draggedId);
       if (op) {
@@ -341,18 +536,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['atalhos'])) {
       draggedFromHTML = null;
     }
 
-    // Se soltar fora de qualquer slot, remove do slot e volta para a lista
     document.addEventListener('dragend', function(e) {
+      e.target.style.opacity = '1';
       if (draggedId && draggedFromSlot && !dropSuccess) {
-        // Remove o atalho do slot
-        draggedFromSlot.innerHTML = '<span class="slot-label">' + draggedFromSlot.querySelector('.slot-label').textContent + '</span>';
-        // Adiciona de volta na lista de atalhos disponíveis
+        draggedFromSlot.innerHTML = '<span class="slot-label">' + draggedFromSlot.querySelector('.slot-label').textContent + '</span><div class="slot-empty-icon">+</div>';
         let opcoes = <?php echo json_encode($opcoes); ?>;
         let op = opcoes.find(o => o.id === draggedId);
         if (op) {
           let atalhosList = document.getElementById('atalhosList');
           let div = document.createElement('div');
-          div.className = 'atalho-card';
+          div.className = 'atalho-card disponivel-card';
           div.setAttribute('draggable', 'true');
           div.setAttribute('data-id', op.id);
           div.setAttribute('ondragstart', 'dragStart(event)');
@@ -367,7 +560,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['atalhos'])) {
     });
 
     function salvarAtalhos() {
-      // Pega os atalhos dos slots na ordem
       let slots = document.querySelectorAll('.slot');
       let atalhos = [];
       slots.forEach(slot => {
@@ -379,4 +571,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['atalhos'])) {
     }
   </script>
 </body>
-</html>
+</html> 

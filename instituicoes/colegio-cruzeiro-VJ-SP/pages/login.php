@@ -151,7 +151,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         document.body.classList.add('dark-mode');
         themeIcon.src = '../assets/imagens/sun.png'; // Ícone de sol no modo escuro
         themeIcon.alt = 'Modo claro';
-        logoImg.src = '../assets/imagens/LOGOTEMAESCURO.png'; // Logo para tema escuro
+        logoImg.src = '../assets/imagens/FUNDOAZUL.png'; // Logo branca no modo escuro
       } else {
         document.body.classList.remove('dark-mode');
         themeIcon.src = '../assets/imagens/moon.png'; // Ícone de lua no modo claro
