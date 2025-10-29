@@ -1,0 +1,239 @@
+// atalhos.js - VERSÃO CORRIGIDA
+
+// Função auxiliar para obter chave única por usuário
+function getChaveAtalhos() {
+  if (typeof usuarioLogado !== 'undefined' && usuarioLogado.id) {
+    return `atalhos_usuario_${usuarioLogado.id}`;
+  }
+  return null;
+}
+
+// Mapeamento de atalhos disponíveis com ícones SVG
+const atalhosDisponiveis = {
+  'academico': {
+    nome: 'Avisos',
+    icone: '<svg class="shortcut-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 16v-5a6 6 0 10-12 0v5a2 2 0 01-2 2h16a2 2 0 01-2-2zm-6 5a2 2 0 002-2h-4a2 2 0 002 2z"/></svg>',
+    link: 'avisos.php'
+  },
+  'minimapa': {
+    nome: 'Mini Mapa',
+    icone: '<svg class="shortcut-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/></svg>',
+    link: '#minimapa'
+  },
+  'lanchonetes': {
+    nome: 'Lanchonetes',
+    icone: '<svg class="shortcut-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h-2c-1.1 0-2 .9-2 2v2H6c-1.1 0-2 .9-2 2v9c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-2V4c0-1.1-.9-2-2-2zm-4 0h2v2h-2V4zM6 8h14v9H6V8z"/></svg>',
+    link: 'lanchonetes.html'
+  },
+  'usuarios': {
+    nome: 'Usuários',
+    icone: '<svg class="shortcut-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5s-3 1.34-3 3 1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05C15.64 13.36 17 14.28 17 15.5V19h7v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>',
+    link: 'usuarios.php'
+  },
+  'preferencias': {
+    nome: 'Preferências',
+    icone: '<svg class="shortcut-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c.04.32.07.65.07.98s-.03.66-.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>',
+    link: '#preferencias'
+  }
+};
+
+// CSS para os ícones dos atalhos
+const atalhoStyles = `
+  <style>
+    .shortcut-icon {
+      width: 36px;
+      height: 36px;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: all 0.3s ease;
+      margin-bottom: 6px;
+      flex-shrink: 0;
+    }
+    
+    .shortcut-btn {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 14px 10px !important;
+      gap: 6px !important;
+      background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+      border: 2px solid rgba(91, 140, 255, 0.15);
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      color: #1b2b66;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-align: center;
+      min-height: 80px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .shortcut-btn:hover {
+      background: linear-gradient(135deg, #e6efff 0%, #dae8ff 100%);
+      border-color: #5b8cff;
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(91, 140, 255, 0.2);
+    }
+    
+    .shortcut-btn:hover .shortcut-icon {
+      transform: scale(1.1);
+      stroke: #5b8cff;
+    }
+    
+    .shortcut-btn span {
+      display: block;
+      line-height: 1.2;
+      max-width: 100%;
+      word-wrap: break-word;
+      font-size: 0.7rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+    
+    /* Dark mode */
+    body.dark-mode .shortcut-btn {
+      background: linear-gradient(135deg, #2e1a47 0%, #232a4d 100%);
+      border-color: rgba(127, 92, 255, 0.3);
+      color: #00e0ff;
+    }
+    
+    body.dark-mode .shortcut-btn:hover {
+      background: linear-gradient(135deg, #3a2557 0%, #2e3759 100%);
+      border-color: #00e0ff;
+      color: #ffffff;
+    }
+    
+    body.dark-mode .shortcut-btn:hover .shortcut-icon {
+      stroke: #00e0ff;
+    }
+  </style>
+`;
+
+// Adicionar os estilos ao documento
+if (!document.getElementById('atalhos-styles')) {
+  const styleElement = document.createElement('div');
+  styleElement.id = 'atalhos-styles';
+  styleElement.innerHTML = atalhoStyles;
+  document.head.appendChild(styleElement.firstElementChild);
+}
+
+// Função principal para carregar e exibir atalhos
+function carregarAtalhos() {
+  const chaveAtalhos = getChaveAtalhos();
+  if (!chaveAtalhos) {
+    console.warn('⚠️ Usuário não identificado - atalhos não carregados');
+    return;
+  }
+  
+  const shortcutButtonsContainer = document.querySelector('.shortcut-buttons');
+  if (!shortcutButtonsContainer) {
+    console.warn('⚠️ Container de atalhos não encontrado');
+    return;
+  }
+  
+  // Buscar atalhos salvos do localStorage OU do PHP
+  let atalhosSalvos = [];
+  
+  // Primeiro tenta pegar do PHP (se existir window.atalhosPHP)
+  if (typeof window.atalhosPHP !== 'undefined' && window.atalhosPHP) {
+    atalhosSalvos = window.atalhosPHP;
+    console.log('📥 Atalhos carregados do PHP:', atalhosSalvos);
+  } else {
+    // Se não, tenta localStorage
+    const savedData = localStorage.getItem(chaveAtalhos);
+    if (savedData) {
+      try {
+        atalhosSalvos = JSON.parse(savedData);
+        console.log('📥 Atalhos carregados do localStorage:', atalhosSalvos);
+      } catch (e) {
+        console.error('❌ Erro ao parsear atalhos:', e);
+        atalhosSalvos = [];
+      }
+    }
+  }
+  
+  // Limpar container
+  shortcutButtonsContainer.innerHTML = '';
+  
+  const totalSlots = 4;
+  
+  // Criar todos os 4 slots
+  for (let i = 0; i < totalSlots; i++) {
+    const atalhoId = atalhosSalvos[i];
+    
+    if (atalhoId && atalhosDisponiveis[atalhoId]) {
+      // Atalho preenchido
+      const atalho = atalhosDisponiveis[atalhoId];
+      const link = document.createElement('a');
+      link.href = atalho.link;
+      link.className = 'shortcut-btn';
+      link.innerHTML = `
+        ${atalho.icone}
+        <span>${atalho.nome}</span>
+      `;
+      
+      // Adicionar evento especial para minimapa
+      if (atalhoId === 'minimapa') {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          const mapButton = document.getElementById('mapButton');
+          if (mapButton) {
+            mapButton.click();
+          } else {
+            // Se não encontrar o botão, abrir popup de blocos diretamente
+            const popup = document.getElementById('popupBlocos');
+            if (popup) popup.classList.add('show');
+          }
+        });
+      }
+      
+      shortcutButtonsContainer.appendChild(link);
+    } else {
+      // Slot vazio - botão de adicionar
+      const btn = document.createElement('button');
+      btn.className = 'add-shortcut-btn';
+      btn.textContent = '+';
+      btn.title = 'Adicionar atalho';
+      btn.onclick = () => window.location.href = 'atalhos.php';
+      
+      shortcutButtonsContainer.appendChild(btn);
+    }
+  }
+  
+  const atalhosExistentes = atalhosSalvos.filter(id => id && atalhosDisponiveis[id]).length;
+  console.log(`✅ ${atalhosExistentes} atalhos de ${totalSlots} carregados`);
+}
+
+// Função para inicializar o sistema de atalhos
+function inicializarSistemaAtalhos() {
+  console.log('🚀 Inicializando sistema de atalhos...');
+  
+  // Tentar carregar múltiplas vezes para garantir que funcione
+  carregarAtalhos();
+  
+  // Recarregar após um delay (caso o DOM ainda não esteja pronto)
+  setTimeout(carregarAtalhos, 100);
+  setTimeout(carregarAtalhos, 500);
+  
+  console.log('✅ Sistema de atalhos inicializado');
+}
+
+// Auto-inicializar quando o DOM estiver pronto
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', inicializarSistemaAtalhos);
+} else {
+  inicializarSistemaAtalhos();
+}
+
+// Exportar funções para uso global
+window.carregarAtalhos = carregarAtalhos;
+window.inicializarSistemaAtalhos = inicializarSistemaAtalhos;

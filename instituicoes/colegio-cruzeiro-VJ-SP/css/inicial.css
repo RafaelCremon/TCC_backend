@@ -887,3 +887,205 @@ body.dark-mode .welcome-title {
 body.dark-mode .welcome-desc {
   color: #8fa2d9;
 }
+/* ===== FIX PARA ATALHOS - ADICIONAR AO FINAL DO inicial.css ===== */
+
+/* Ícones SVG dos atalhos */
+.shortcut-icon {
+  width: 36px;
+  height: 36px;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-bottom: 6px;
+  flex-shrink: 0;
+}
+
+/* Botões de atalhos preenchidos */
+.shortcut-btn {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 14px 10px !important;
+  gap: 6px !important;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+  border: 2px solid rgba(91, 140, 255, 0.15);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  color: #1b2b66;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-align: center;
+  min-height: 80px;
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 1 / 1;
+}
+
+.shortcut-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(91, 140, 255, 0.1), transparent);
+  transition: left 0.5s;
+}
+
+.shortcut-btn:hover::before {
+  left: 100%;
+}
+
+.shortcut-btn:hover {
+  background: linear-gradient(135deg, #e6efff 0%, #dae8ff 100%);
+  border-color: #5b8cff;
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 8px 20px rgba(91, 140, 255, 0.2);
+}
+
+.shortcut-btn:hover .shortcut-icon {
+  transform: scale(1.15) rotate(5deg);
+  stroke: #5b8cff;
+  filter: drop-shadow(0 2px 4px rgba(91, 140, 255, 0.3));
+}
+
+.shortcut-btn span {
+  display: block;
+  line-height: 1.2;
+  max-width: 100%;
+  word-wrap: break-word;
+  transition: all 0.3s ease;
+  font-size: 0.7rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.shortcut-btn:hover span {
+  color: #0057ff;
+  transform: scale(1.05);
+}
+
+/* Garantir que o grid funcione corretamente */
+.shortcut-buttons {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 20px !important;
+  width: 100% !important;
+}
+
+/* Botão de adicionar atalho - já existe no CSS mas garantindo consistência */
+.add-shortcut-btn {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  aspect-ratio: 1 / 1;
+  min-height: 80px;
+}
+
+/* Dark Mode - Atalhos preenchidos */
+body.dark-mode .shortcut-btn {
+  background: linear-gradient(135deg, #2e1a47 0%, #232a4d 100%);
+  border-color: rgba(127, 92, 255, 0.3);
+  color: #00e0ff;
+}
+
+body.dark-mode .shortcut-btn .shortcut-icon {
+  stroke: #7f5cff;
+}
+
+body.dark-mode .shortcut-btn:hover {
+  background: linear-gradient(135deg, #3a2557 0%, #2e3759 100%);
+  border-color: #00e0ff;
+  color: #ffffff;
+  box-shadow: 0 8px 20px rgba(0, 224, 255, 0.25);
+}
+
+body.dark-mode .shortcut-btn:hover .shortcut-icon {
+  stroke: #00e0ff;
+  filter: drop-shadow(0 2px 4px rgba(0, 224, 255, 0.4));
+}
+
+body.dark-mode .shortcut-btn:hover span {
+  color: #ffffff;
+}
+
+/* Responsividade para atalhos */
+@media (max-width: 768px) {
+  .shortcut-buttons {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
+  }
+  
+  .shortcut-btn,
+  .add-shortcut-btn {
+    min-height: 70px;
+  }
+  
+  .shortcut-icon {
+    width: 32px;
+    height: 32px;
+    margin-bottom: 5px;
+  }
+  
+  .shortcut-btn span {
+    font-size: 0.65rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .shortcut-buttons {
+    gap: 12px !important;
+  }
+  
+  .shortcut-btn,
+  .add-shortcut-btn {
+    min-height: 60px;
+    padding: 10px 6px !important;
+  }
+  
+  .shortcut-icon {
+    width: 28px;
+    height: 28px;
+    margin-bottom: 4px;
+  }
+  
+  .shortcut-btn span {
+    font-size: 0.6rem;
+  }
+}
+
+/* Animação de entrada para atalhos */
+@keyframes atalhoFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.shortcut-btn,
+.add-shortcut-btn {
+  animation: atalhoFadeIn 0.5s ease-out backwards;
+}
+
+.shortcut-btn:nth-child(1),
+.add-shortcut-btn:nth-child(1) { animation-delay: 0.1s; }
+.shortcut-btn:nth-child(2),
+.add-shortcut-btn:nth-child(2) { animation-delay: 0.2s; }
+.shortcut-btn:nth-child(3),
+.add-shortcut-btn:nth-child(3) { animation-delay: 0.3s; }
+.shortcut-btn:nth-child(4),
+.add-shortcut-btn:nth-child(4) { animation-delay: 0.4s; }
