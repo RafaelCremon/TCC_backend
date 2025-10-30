@@ -209,6 +209,48 @@ $opcoes = get_opcoes_atalhos_padrao();
     body.dark-mode .calendar-icon-dark {
       display: inline-block !important;
     }
+
+    /* Mini Perfil Popup - Modo Escuro */
+    body.dark-mode #miniPerfilPopup {
+      background: #1e2139 !important;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5) !important;
+    }
+    body.dark-mode #miniPerfilPopup span,
+    body.dark-mode #miniPerfilPopup div {
+      color: #e0e6ff !important;
+    }
+    body.dark-mode #miniPerfilPopup span[style*="color:#0057ff"] {
+      color: #8ab4ff !important;
+    }
+    body.dark-mode #miniPerfilPopup a[href="perfil.php"] {
+      background: #2e3353 !important;
+    }
+    body.dark-mode #miniPerfilPopup a[href="perfil.php"]:hover {
+      background: #3a4066 !important;
+    }
+    body.dark-mode #miniPerfilPopup a[href="perfil.php"] svg {
+      stroke: #8ab4ff !important;
+    }
+    body.dark-mode #btnCarteirinha,
+    body.dark-mode #btnTrocarTema {
+      background: #2e3353 !important;
+      color: #8ab4ff !important;
+    }
+    body.dark-mode #btnCarteirinha svg,
+    body.dark-mode #btnTrocarTema svg {
+      stroke: #8ab4ff !important;
+    }
+    body.dark-mode #btnCarteirinha:hover,
+    body.dark-mode #btnTrocarTema:hover {
+      background: #3a4066 !important;
+    }
+    body.dark-mode #btnLogout {
+      background: #4a2c2c !important;
+      color: #ffb3b3 !important;
+    }
+    body.dark-mode #btnLogout:hover {
+      background: #5c3636 !important;
+    }
   </style>
 </head>
 <body>
