@@ -120,18 +120,36 @@ if (($classe === 1 || $classe === 2) && isset($_POST['conteudo']) && trim($_POST
     <title>Avisos - Quantum Edu.</title>
     <link rel="stylesheet" href="../css/inicial.css?v=<?php echo time(); ?>_avisos">
     <style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
     body {
         background: linear-gradient(135deg, #eaf2ff 0%, #f7faff 100%);
         min-height: 100vh;
+        font-family: 'Segoe UI', 'SF Pro Display', -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+        transition: background 0.3s ease;
     }
     .header-avisos {
-        background: linear-gradient(90deg, #5b8cff 0%, #2e3192 100%);
+        background: linear-gradient(135deg, #1f2581 0%, #0d1147 100%);
         border-bottom: 0;
         position: sticky;
         top: 0;
-        z-index: 10;
-        box-shadow: 0 2px 16px #2e319222;
+        z-index: 100;
+        box-shadow: 0 4px 24px rgba(13, 17, 71, 0.4);
         padding: 0;
+        animation: slideDown 0.5s ease-out;
+    }
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
     .header-content {
         max-width: 1200px;
@@ -139,75 +157,95 @@ if (($classe === 1 || $classe === 2) && isset($_POST['conteudo']) && trim($_POST
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 4px 14px 2px 14px;
+        padding: 20px 24px;
     }
     .header-title {
-        font-size: 2.1rem;
+        font-size: 2rem;
         font-weight: 700;
         color: #fff;
-        margin: 0;
-        letter-spacing: 0.01em;
-        text-shadow: 0 2px 8px #2e319244;
+        margin: 0 0 4px 0;
+        letter-spacing: 0.02em;
+        text-shadow: 0 4px 12px rgba(46, 49, 146, 0.3);
     }
     .header-desc {
-        color: #c7d7ff;
-        font-size: 1.13rem;
-        margin-top: 2px;
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 1rem;
+        margin: 0;
         font-weight: 400;
-        text-shadow: 0 1px 4px #2e319244;
+        text-shadow: 0 2px 8px rgba(46, 49, 146, 0.2);
     }
     .avisos-main {
         max-width: 1200px;
         margin: 0 auto;
-        padding: 38px 18px 0 18px;
-        background: #fff;
-        border-radius: 22px;
-        box-shadow: 0 4px 32px #5b8cff18;
-        margin-top: -28px;
+        padding: 40px 24px;
+        background: #ffffff;
+        border-radius: 24px;
+        box-shadow: 0 8px 32px rgba(91, 140, 255, 0.12), 0 2px 8px rgba(91, 140, 255, 0.08);
+        margin-top: -32px;
         position: relative;
-        z-index: 2;
+        z-index: 10;
+        animation: slideUp 0.6s ease-out 0.1s both;
+    }
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
     .busca-bar {
         display: flex;
         align-items: center;
         gap: 12px;
-        margin-bottom: 28px;
-        background: #eaf2ff;
-        border-radius: 12px;
-        padding: 12px 18px;
-        box-shadow: 0 2px 8px #5b8cff11;
+        margin-bottom: 32px;
+        background: linear-gradient(135deg, #f7faff 0%, #eaf2ff 100%);
+        border-radius: 16px;
+        padding: 16px 20px;
+        box-shadow: 0 4px 16px rgba(91, 140, 255, 0.08);
+        border: 2px solid rgba(91, 140, 255, 0.1);
+        transition: all 0.3s ease;
+    }
+    .busca-bar:hover {
+        box-shadow: 0 6px 24px rgba(91, 140, 255, 0.12);
+        border-color: rgba(91, 140, 255, 0.2);
     }
     .busca-bar input, .busca-bar select {
         flex: 1;
-        padding: 10px 16px;
-        border-radius: 8px;
-        border: 1.5px solid #b3c6ff;
-        font-size: 1.08rem;
-        background: #fff;
-        color: #222;
-        transition: border 0.18s, background 0.18s, color 0.18s;
-        box-shadow: 0 1px 4px #5b8cff11;
+        padding: 12px 16px;
+        border-radius: 12px;
+        border: 2px solid #e0eaff;
+        font-size: 15px;
+        background: #ffffff;
+        color: #2e3192;
+        transition: all 0.3s ease;
+        font-family: inherit;
     }
     .busca-bar input:focus, .busca-bar select:focus {
-        border: 1.5px solid #5b8cff;
+        border-color: #5b8cff;
         outline: none;
-        background: #f7faff;
+        background: #ffffff;
+        box-shadow: 0 4px 12px rgba(91, 140, 255, 0.15);
+        transform: translateY(-1px);
     }
     .busca-bar button {
-        background: #5b8cff;
+        background: linear-gradient(135deg, #5b8cff 0%, #2e3192 100%);
         color: #fff;
         border: none;
-        border-radius: 8px;
-        padding: 8px 18px;
-        font-size: 1.05rem;
+        border-radius: 12px;
+        padding: 12px 24px;
+        font-size: 15px;
         font-weight: 600;
         cursor: pointer;
-        box-shadow: 0 2px 8px #5b8cff22;
-        transition: background 0.18s, color 0.18s;
+        box-shadow: 0 4px 12px rgba(91, 140, 255, 0.3);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .busca-bar button:hover {
-        background: #2e3192;
-        color: #fff;
+        background: linear-gradient(135deg, #4a7aee 0%, #1f2581 100%);
+        box-shadow: 0 6px 20px rgba(91, 140, 255, 0.4);
+        transform: translateY(-2px);
     }
     body.dark-mode .busca-bar {
         background: #23263a;
@@ -235,117 +273,153 @@ if (($classe === 1 || $classe === 2) && isset($_POST['conteudo']) && trim($_POST
         color: #fff;
     }
     .form-aviso {
-        margin-bottom: 28px;
+        margin-bottom: 32px;
     }
     .avisos-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-        gap: 28px;
-        margin-bottom: 18px;
+        grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+        gap: 24px;
+        margin-bottom: 24px;
+        animation: fadeIn 0.6s ease-out 0.3s both;
+    }
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
     }
     .aviso-card {
-        border: 1.5px solid #b3c6ff;
-        border-radius: 16px;
-        padding: 20px 22px 16px 22px;
-        background: linear-gradient(135deg, #f7faff 60%, #eaf2ff 100%);
-        box-shadow: 0 2px 12px #5b8cff11;
-        transition: box-shadow 0.18s, transform 0.18s, border 0.18s;
+        border: 2px solid #e0eaff;
+        border-radius: 18px;
+        padding: 24px;
+        background: linear-gradient(135deg, #ffffff 0%, #f7faff 100%);
+        box-shadow: 0 4px 16px rgba(91, 140, 255, 0.08);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         display: flex;
         flex-direction: column;
-        min-height: 120px;
+        min-height: 140px;
         position: relative;
     }
     .aviso-card:hover {
-        box-shadow: 0 6px 24px #5b8cff33;
-        border: 1.5px solid #5b8cff;
-        transform: scale(1.015);
+        box-shadow: 0 8px 32px rgba(91, 140, 255, 0.18);
+        border-color: #5b8cff;
+        transform: translateY(-4px);
     }
     .aviso-autor {
-        font-weight: 600;
+        font-weight: 700;
         color: #2e3192;
-        font-size: 1.05rem;
-        letter-spacing: 0.01em;
+        font-size: 1.1rem;
+        letter-spacing: 0.02em;
     }
     .aviso-data {
         color: #5b8cff;
         font-size: 13px;
-        margin-left: 8px;
+        margin-left: 10px;
         font-weight: 500;
     }
     .aviso-conteudo {
-        margin: 12px 0 0 0;
-        font-size: 1.15rem;
+        margin: 16px 0 0 0;
+        font-size: 15px;
         color: #2e3192;
         white-space: pre-line;
         flex: 1;
-        font-weight: 500;
+        line-height: 1.6;
+        font-weight: 400;
         letter-spacing: 0.01em;
     }
     .aviso-acoes {
-        margin-top: 12px;
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 2px solid #e8ecff;
+        display: flex;
+        gap: 16px;
     }
     .aviso-acoes a {
         color: #5b8cff;
-        margin-right: 18px;
         text-decoration: none;
         font-weight: 600;
-        font-size: 1.01rem;
-        transition: color 0.18s;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        padding: 6px 12px;
+        border-radius: 8px;
     }
     .aviso-acoes a:last-child {
-        color: #d32f2f;
-        margin-right: 0;
+        color: #ef4444;
     }
     .aviso-acoes a:hover {
-        text-decoration: underline;
+        background: #eaf2ff;
         color: #2e3192;
+        transform: translateX(2px);
+    }
+    .aviso-acoes a:last-child:hover {
+        background: #fee;
+        color: #dc2626;
     }
     .msg-sucesso {
-        background: #eaf2ff;
-        color: #0057ff;
-        border-radius: 8px;
-        padding: 10px 16px;
-        margin-bottom: 18px;
-        font-weight: 500;
-        box-shadow: 0 2px 8px #5b8cff11;
+        background: linear-gradient(135deg, #d1f4e0 0%, #e8f9ee 100%);
+        color: #0d7936;
+        border: 2px solid #4caf50;
+        border-radius: 14px;
+        padding: 18px 24px;
+        margin-bottom: 24px;
+        font-weight: 600;
+        font-size: 15px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+        animation: slideDown 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .msg-erro {
-        background: #ffd6d6;
-        color: #d32f2f;
-        border-radius: 8px;
-        padding: 10px 16px;
-        margin-bottom: 18px;
-        font-weight: 500;
-        box-shadow: 0 2px 8px #d32f2f11;
+        background: linear-gradient(135deg, #ffdddd 0%, #ffeded 100%);
+        color: #a50000;
+        border: 2px solid #ef4444;
+        border-radius: 14px;
+        padding: 18px 24px;
+        margin-bottom: 24px;
+        font-weight: 600;
+        font-size: 15px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+        animation: slideDown 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .form-aviso textarea {
         width: 100%;
-        border-radius: 8px;
-        border: 1.5px solid #b3c6ff;
-        padding: 10px;
-        font-size: 1.08rem;
-        margin-bottom: 8px;
+        border-radius: 12px;
+        border: 2px solid #d0e0ff;
+        padding: 16px;
+        font-size: 15px;
+        margin-bottom: 16px;
         resize: vertical;
-        background: #eaf2ff;
+        background: linear-gradient(135deg, #ffffff 0%, #f7faff 100%);
         color: #2e3192;
-        font-weight: 500;
+        font-weight: 400;
+        line-height: 1.6;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        min-height: 100px;
     }
     .form-aviso button {
         background: linear-gradient(135deg, #5b8cff 0%, #2e3192 100%);
         color: #fff;
         border: none;
-        border-radius: 8px;
-        padding: 8px 22px;
-        font-size: 1.08rem;
-        font-weight: 600;
+        border-radius: 12px;
+        padding: 14px 32px;
+        font-size: 15px;
+        font-weight: 700;
         cursor: pointer;
-        transition: background 0.18s, transform 0.18s;
-        box-shadow: 0 2px 8px #5b8cff22;
-        letter-spacing: 0.01em;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 16px rgba(91, 140, 255, 0.3);
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+    }
+    .form-aviso textarea:focus {
+        outline: none;
+        border-color: #5b8cff;
+        box-shadow: 0 4px 16px rgba(91, 140, 255, 0.15);
+        transform: translateY(-2px);
     }
     .form-aviso button:hover {
         background: linear-gradient(135deg, #2e3192 0%, #5b8cff 100%);
-        transform: scale(1.04);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 24px rgba(91, 140, 255, 0.4);
     }
     @media (max-width: 700px) {
         .header-content, .avisos-main { padding-left: 6px; padding-right: 6px; }
@@ -356,18 +430,50 @@ if (($classe === 1 || $classe === 2) && isset($_POST['conteudo']) && trim($_POST
     /* Tema escuro */
     body.dark-mode { background: #181c2a; }
     body.dark-mode .header-avisos {
-        background: linear-gradient(90deg, #23263a 0%, #5b8cff 100%);
+        background: linear-gradient(135deg, #0d1147 0%, #1a1f5a 100%);
         border-bottom: 0;
-        box-shadow: 0 2px 16px #2e319244;
+        box-shadow: 0 4px 24px rgba(13, 17, 71, 0.6);
     }
     body.dark-mode .header-title { color: #8ab4ff; text-shadow: 0 2px 8px #2e319244; }
     body.dark-mode .header-desc { color: #eaf2ff; text-shadow: 0 1px 4px #2e319244; }
     body.dark-mode .avisos-main { background: #23263a; box-shadow: 0 4px 32px #2e319244; }
-    body.dark-mode .aviso-card { background: linear-gradient(135deg, #23263a 60%, #2e3192 100%); border-color: #5b8cff44; color: #eaf2ff; }
+    body.dark-mode .aviso-card { 
+        background: linear-gradient(135deg, #23263a 0%, #2e3192 100%); 
+        border-color: #5b8cff66; 
+        color: #eaf2ff; 
+        box-shadow: 0 4px 16px rgba(46, 49, 146, 0.3);
+    }
+    body.dark-mode .aviso-card:hover {
+        box-shadow: 0 8px 32px rgba(91, 140, 255, 0.4);
+        border-color: #8ab4ff;
+    }
+    body.dark-mode .aviso-autor { color: #8ab4ff; }
+    body.dark-mode .aviso-data { color: #5b8cff; }
     body.dark-mode .aviso-conteudo { color: #eaf2ff; }
-    body.dark-mode .form-aviso textarea { background: #181c2a; color: #eaf2ff; border-color: #5b8cff44; }
-    body.dark-mode .msg-sucesso { background: #23263a; color: #8ab4ff; }
-    body.dark-mode .msg-erro { background: #2e3192; color: #ffd6d6; }
+    body.dark-mode .aviso-acoes { border-top-color: #5b8cff22; }
+    body.dark-mode .aviso-acoes a { color: #8ab4ff; }
+    body.dark-mode .aviso-acoes a:hover { background: #2e3192; color: #eaf2ff; }
+    body.dark-mode .aviso-acoes a:last-child { color: #ff6b6b; }
+    body.dark-mode .aviso-acoes a:last-child:hover { background: #3a1f1f; color: #ff8787; }
+    body.dark-mode .form-aviso textarea { 
+        background: linear-gradient(135deg, #181c2a 0%, #23263a 100%); 
+        color: #eaf2ff; 
+        border-color: #5b8cff44; 
+    }
+    body.dark-mode .form-aviso textarea:focus {
+        border-color: #8ab4ff;
+        box-shadow: 0 4px 16px rgba(138, 180, 255, 0.2);
+    }
+    body.dark-mode .msg-sucesso { 
+        background: linear-gradient(135deg, #1a2e1a 0%, #23392a 100%); 
+        color: #8ab4ff; 
+        border-color: #4caf50; 
+    }
+    body.dark-mode .msg-erro { 
+        background: linear-gradient(135deg, #3a1f1f 0%, #4a2626 100%); 
+        color: #ff8787; 
+        border-color: #ef4444; 
+    }
     </style>
 </head>
 <body>
@@ -377,9 +483,9 @@ if (($classe === 1 || $classe === 2) && isset($_POST['conteudo']) && trim($_POST
                 <div class="header-title">Estante de Avisos</div>
                 <div class="header-desc">Veja e compartilhe comunicados importantes da instituição.</div>
             </div>
-            <a href="inicial.php" style="text-decoration:none;display:flex;align-items:center;gap:8px;font-size:1.25rem;color:#0057ff;font-weight:600;">
-                <span style="font-size:2.1rem;line-height:1;vertical-align:middle;">&#8592;</span>
-                <span style="font-size:1.08rem;">Voltar</span>
+            <a href="inicial.php" style="text-decoration:none;display:flex;align-items:center;gap:10px;font-size:1.25rem;color:#fff;font-weight:700;background:rgba(255,255,255,0.15);padding:10px 20px;border-radius:12px;transition:all 0.3s ease;backdrop-filter:blur(10px);border:2px solid rgba(255,255,255,0.2);" onmouseover="this.style.background='rgba(255,255,255,0.25)';this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(255,255,255,0.2)';" onmouseout="this.style.background='rgba(255,255,255,0.15)';this.style.transform='translateY(0)';this.style.boxShadow='none';">
+                <span style="font-size:1.6rem;line-height:1;vertical-align:middle;">&#8592;</span>
+                <span style="font-size:1.05rem;letter-spacing:0.02em;">Voltar</span>
             </a>
         </div>
     </div>
