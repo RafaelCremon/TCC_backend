@@ -119,6 +119,318 @@ body{
     body:not(.dark-mode) #themeIcon {
       filter: drop-shadow(0 1px 2px rgba(44,92,255,0.10));
     }
+
+/* ===== RESPONSIVIDADE COMPLETA PARA LOGIN ===== */
+
+/* Tablets e monitores pequenos (1024px ou menos) */
+@media (max-width: 1024px) {
+  .card {
+    width: min(400px, 90vw);
+    padding: 30px 30px 22px 30px;
+  }
+  
+  .theme-toggle-btn {
+    right: 28px;
+    bottom: 28px;
+    width: 46px;
+    height: 46px;
+  }
+  
+  .theme-toggle-btn img {
+    width: 26px;
+    height: 26px;
+  }
+}
+
+/* Tablets em modo retrato (768px ou menos) */
+@media (max-width: 768px) {
+  body {
+    overflow-y: auto;
+    align-items: flex-start;
+    padding: 30px 0;
+  }
+  
+  body::before {
+    background-size: 24px 24px;
+  }
+  
+  .card {
+    width: min(90vw, 380px);
+    padding: 28px 28px 20px 28px;
+    margin-top: 30px;
+    border-radius: 16px;
+  }
+  
+  .card-head {
+    margin-bottom: 10px;
+  }
+  
+  .logo {
+    width: 36px;
+    height: 36px;
+    border-radius: 11px;
+    margin-bottom: 7px;
+  }
+  
+  .card h1 {
+    font-size: 20px;
+  }
+  
+  .sub {
+    font-size: 13px;
+  }
+  
+  .campo {
+    margin: 12px 0;
+  }
+  
+  label {
+    font-size: 12px;
+    margin-bottom: 5px;
+  }
+  
+  input {
+    padding: 11px 13px;
+    font-size: 14px;
+    border-radius: 11px;
+  }
+  
+  button {
+    padding: 11px 16px;
+    font-size: 15px;
+  }
+  
+  .theme-toggle-btn {
+    right: 24px;
+    bottom: 24px;
+    width: 44px;
+    height: 44px;
+  }
+  
+  .theme-toggle-btn img {
+    width: 25px;
+    height: 25px;
+  }
+  
+  .toggle-senha {
+    right: 11px;
+  }
+  
+  #senhaIcon {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* Smartphones (480px ou menos) */
+@media (max-width: 480px) {
+  body {
+    padding: 20px 0;
+  }
+  
+  body::before {
+    background-size: 22px 22px;
+    opacity: 0.24;
+  }
+  
+  .card {
+    width: min(95vw, 100%);
+    padding: 24px 24px 18px 24px;
+    margin-top: 20px;
+    margin-left: 10px;
+    margin-right: 10px;
+    border-radius: 14px;
+  }
+  
+  .card-head {
+    margin-bottom: 8px;
+  }
+  
+  .logo {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    margin-bottom: 6px;
+  }
+  
+  .card h1 {
+    font-size: 19px;
+  }
+  
+  .sub {
+    font-size: 12px;
+    margin-top: 3px;
+  }
+  
+  .campo {
+    margin: 11px 0;
+  }
+  
+  label {
+    font-size: 11px;
+    margin-bottom: 5px;
+  }
+  
+  input {
+    padding: 10px 12px;
+    font-size: 13px;
+    border-radius: 10px;
+  }
+  
+  button {
+    padding: 10px 14px;
+    font-size: 14px;
+  }
+  
+  .mensagem-erro {
+    font-size: 11px;
+  }
+  
+  .theme-toggle-btn {
+    right: 20px;
+    bottom: 20px;
+    width: 42px;
+    height: 42px;
+  }
+  
+  .theme-toggle-btn img {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .toggle-senha {
+    right: 10px;
+  }
+  
+  #senhaIcon {
+    width: 17px;
+    height: 17px;
+  }
+}
+
+/* Smartphones muito pequenos (360px ou menos) */
+@media (max-width: 360px) {
+  body {
+    padding: 15px 0;
+  }
+  
+  .card {
+    width: 98vw;
+    padding: 20px 20px 16px 20px;
+    margin-top: 15px;
+    margin-left: 5px;
+    margin-right: 5px;
+    border-radius: 13px;
+  }
+  
+  .logo {
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+  }
+  
+  .card h1 {
+    font-size: 18px;
+  }
+  
+  .sub {
+    font-size: 11px;
+  }
+  
+  .campo {
+    margin: 10px 0;
+  }
+  
+  label {
+    font-size: 10px;
+  }
+  
+  input {
+    padding: 9px 11px;
+    font-size: 12px;
+    border-radius: 9px;
+  }
+  
+  button {
+    padding: 9px 13px;
+    font-size: 13px;
+  }
+  
+  .mensagem-erro {
+    font-size: 10px;
+  }
+  
+  .theme-toggle-btn {
+    right: 18px;
+    bottom: 18px;
+    width: 40px;
+    height: 40px;
+  }
+  
+  .theme-toggle-btn img {
+    width: 22px;
+    height: 22px;
+  }
+  
+  #senhaIcon {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+/* Modo paisagem em smartphones */
+@media (max-height: 500px) and (orientation: landscape) {
+  body {
+    padding: 15px 0;
+  }
+  
+  .card {
+    margin-top: 15px;
+    padding: 20px 24px;
+  }
+  
+  .card-head {
+    margin-bottom: 8px;
+  }
+  
+  .logo {
+    width: 32px;
+    height: 32px;
+    margin-bottom: 5px;
+  }
+  
+  .card h1 {
+    font-size: 18px;
+  }
+  
+  .sub {
+    font-size: 11px;
+  }
+  
+  .campo {
+    margin: 10px 0;
+  }
+  
+  input {
+    padding: 9px 12px;
+  }
+  
+  button {
+    padding: 9px 14px;
+  }
+  
+  .theme-toggle-btn {
+    width: 40px;
+    height: 40px;
+    right: 18px;
+    bottom: 18px;
+  }
+  
+  .theme-toggle-btn img {
+    width: 22px;
+    height: 22px;
+  }
+}
     
 /* Pontilhado performático (substitui aquelas milhares de <li>) */
 body::before{

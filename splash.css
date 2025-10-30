@@ -182,3 +182,306 @@ h1 {
     z-index: 1;
     pointer-events: none;
 }
+
+/* ===== RESPONSIVIDADE COMPLETA PARA SPLASH SCREEN ===== */
+
+/* Tablets e monitores pequenos (1024px ou menos) */
+@media (max-width: 1024px) {
+    .startup-main {
+        font-size: 2rem;
+        margin: 0 0 20px 0;
+    }
+    
+    .logo-quantum {
+        max-width: 100px;
+        margin-bottom: 16px;
+    }
+    
+    .startup-name {
+        font-size: 1.85rem;
+        margin: 16px 0 28px 0;
+    }
+    
+    h1 {
+        font-size: 2.75rem;
+        margin-bottom: 26px;
+    }
+    
+    .progress-bar {
+        width: 65%;
+    }
+    
+    .percent {
+        width: 65%;
+        font-size: 0.85rem;
+    }
+    
+    .copyright {
+        font-size: 0.95rem;
+        left: 22px;
+        bottom: 16px;
+    }
+}
+
+/* Tablets em modo retrato (768px ou menos) */
+@media (max-width: 768px) {
+    .startup-main {
+        font-size: 1.85rem;
+        margin: 0 0 18px 0;
+        letter-spacing: 1.5px;
+    }
+    
+    .logo-quantum {
+        max-width: 90px;
+        margin-bottom: 14px;
+    }
+    
+    .startup-name {
+        font-size: 1.7rem;
+        margin: 14px 0 24px 0;
+        letter-spacing: 2.5px;
+    }
+    
+    .splash-content {
+        max-width: 90%;
+        padding: 0 20px;
+    }
+    
+    h1 {
+        font-size: 2.5rem;
+        margin-bottom: 24px;
+        letter-spacing: 1.5px;
+    }
+    
+    .progress-bar {
+        width: 75%;
+        height: 7px;
+    }
+    
+    .percent {
+        width: 75%;
+        font-size: 0.8rem;
+        margin-bottom: 18px;
+    }
+    
+    .socials {
+        gap: 25px;
+        font-size: 0.95rem;
+    }
+    
+    .icon {
+        width: 16px;
+        height: 16px;
+        margin-right: 5px;
+    }
+    
+    .copyright {
+        font-size: 0.9rem;
+        left: 20px;
+        bottom: 14px;
+    }
+    
+    .splash-bg {
+        background-size: 70px 140px;
+    }
+}
+
+/* Smartphones (480px ou menos) */
+@media (max-width: 480px) {
+    .startup-main {
+        font-size: 1.6rem;
+        margin: 0 0 16px 0;
+        letter-spacing: 1.2px;
+    }
+    
+    .logo-quantum {
+        max-width: 80px;
+        min-width: 55px;
+        margin-bottom: 12px;
+    }
+    
+    .startup-name {
+        font-size: 1.5rem;
+        margin: 12px 0 22px 0;
+        letter-spacing: 2px;
+    }
+    
+    .splash-content {
+        max-width: 95%;
+        padding: 0 15px;
+    }
+    
+    h1 {
+        font-size: 2.2rem;
+        margin-bottom: 20px;
+        letter-spacing: 1.2px;
+    }
+    
+    @keyframes pulse {
+        0% {
+            text-shadow: 0 0 8px #fff6, 0 0 24px #a6a1e0aa;
+            transform: scale(1);
+        }
+        50% {
+            text-shadow: 0 0 24px #fff, 0 0 48px #a6a1e0;
+            transform: scale(1.03);
+        }
+        100% {
+            text-shadow: 0 0 8px #fff6, 0 0 24px #a6a1e0aa;
+            transform: scale(1);
+        }
+    }
+    
+    .progress-bar {
+        width: 85%;
+        height: 6px;
+        margin-bottom: 8px;
+    }
+    
+    .percent {
+        width: 85%;
+        font-size: 0.75rem;
+        margin-bottom: 16px;
+    }
+    
+    .socials {
+        gap: 20px;
+        font-size: 0.9rem;
+        margin-top: 18px;
+        flex-wrap: wrap;
+    }
+    
+    .icon {
+        width: 15px;
+        height: 15px;
+        margin-right: 4px;
+    }
+    
+    .copyright {
+        font-size: 0.8rem;
+        left: 16px;
+        bottom: 12px;
+        letter-spacing: 0.5px;
+    }
+    
+    .splash-bg {
+        background-size: 60px 120px;
+    }
+    
+    @keyframes bgMove {
+        0% {
+            background-position: 0 0;
+        }
+        100% {
+            background-position: 60px 60px;
+        }
+    }
+}
+
+/* Smartphones muito pequenos (360px ou menos) */
+@media (max-width: 360px) {
+    .startup-main {
+        font-size: 1.4rem;
+        margin: 0 0 14px 0;
+        letter-spacing: 1px;
+    }
+    
+    .logo-quantum {
+        max-width: 70px;
+        min-width: 50px;
+        margin-bottom: 10px;
+    }
+    
+    .startup-name {
+        font-size: 1.35rem;
+        margin: 10px 0 20px 0;
+        letter-spacing: 1.8px;
+    }
+    
+    h1 {
+        font-size: 2rem;
+        margin-bottom: 18px;
+        letter-spacing: 1px;
+    }
+    
+    .progress-bar {
+        width: 90%;
+        height: 5px;
+    }
+    
+    .percent {
+        width: 90%;
+        font-size: 0.7rem;
+        margin-bottom: 14px;
+    }
+    
+    .socials {
+        gap: 16px;
+        font-size: 0.85rem;
+        margin-top: 16px;
+    }
+    
+    .icon {
+        width: 14px;
+        height: 14px;
+    }
+    
+    .copyright {
+        font-size: 0.75rem;
+        left: 14px;
+        bottom: 10px;
+    }
+    
+    .splash-bg {
+        background-size: 50px 100px;
+    }
+}
+
+/* Modo paisagem em smartphones */
+@media (max-height: 500px) and (orientation: landscape) {
+    .startup-main {
+        font-size: 1.3rem;
+        margin: 0 0 10px 0;
+    }
+    
+    .logo-quantum {
+        max-width: 60px;
+        min-width: 45px;
+        margin-bottom: 8px;
+    }
+    
+    .startup-name {
+        font-size: 1.2rem;
+        margin: 8px 0 16px 0;
+        letter-spacing: 1.5px;
+    }
+    
+    h1 {
+        font-size: 1.8rem;
+        margin-bottom: 14px;
+    }
+    
+    .progress-bar {
+        width: 70%;
+        height: 5px;
+        margin-bottom: 6px;
+    }
+    
+    .percent {
+        width: 70%;
+        font-size: 0.7rem;
+        margin-bottom: 12px;
+    }
+    
+    .socials {
+        gap: 16px;
+        font-size: 0.8rem;
+        margin-top: 12px;
+    }
+    
+    .copyright {
+        font-size: 0.7rem;
+        left: 12px;
+        bottom: 8px;
+    }
+}

@@ -31,3 +31,145 @@ html,body{ height:100%; margin:0; padding:0; overflow:hidden; font-family:Inter,
 }
 .hotspot.arrow.next::before{ border-width:18px 0 18px 30px; border-color:transparent transparent transparent white; }
 .hotspot.arrow.prev::before{ border-width:18px 30px 18px 0; border-color:transparent white transparent transparent; }
+
+/* ===== RESPONSIVIDADE COMPLETA PARA MAPA 360 ===== */
+
+/* Tablets e monitores pequenos (1024px ou menos) */
+@media (max-width: 1024px) {
+  .hotspot {
+    width: 65px;
+    height: 65px;
+  }
+  
+  .hotspot.arrow::before {
+    border-width: 16px;
+  }
+  
+  .hotspot.arrow.next::before {
+    border-width: 16px 0 16px 28px;
+  }
+  
+  .hotspot.arrow.prev::before {
+    border-width: 16px 28px 16px 0;
+  }
+}
+
+/* Tablets em modo retrato (768px ou menos) */
+@media (max-width: 768px) {
+  .hotspot {
+    width: 60px;
+    height: 60px;
+    backdrop-filter: blur(6px);
+    background: rgba(255,255,255,.26);
+  }
+  
+  .hotspot:hover {
+    background: rgba(255,255,255,.35);
+  }
+  
+  .hotspot.arrow::before {
+    border-width: 14px;
+    filter: drop-shadow(1px 1px 3px rgba(0,0,0,.85));
+  }
+  
+  .hotspot.arrow.next::before {
+    border-width: 14px 0 14px 26px;
+  }
+  
+  .hotspot.arrow.prev::before {
+    border-width: 14px 26px 14px 0;
+  }
+}
+
+/* Smartphones (480px ou menos) */
+@media (max-width: 480px) {
+  .hotspot {
+    width: 55px;
+    height: 55px;
+    border-width: 1.5px;
+    backdrop-filter: blur(5px);
+    background: rgba(255,255,255,.28);
+  }
+  
+  .hotspot:hover {
+    transform: scale(1.08);
+    background: rgba(255,255,255,.38);
+  }
+  
+  .hotspot:active {
+    transform: scale(1.05);
+  }
+  
+  .hotspot.arrow::before {
+    border-width: 12px;
+  }
+  
+  .hotspot.arrow.next::before {
+    border-width: 12px 0 12px 24px;
+  }
+  
+  .hotspot.arrow.prev::before {
+    border-width: 12px 24px 12px 0;
+  }
+}
+
+/* Smartphones muito pequenos (360px ou menos) */
+@media (max-width: 360px) {
+  .hotspot {
+    width: 50px;
+    height: 50px;
+    backdrop-filter: blur(4px);
+    background: rgba(255,255,255,.3);
+  }
+  
+  .hotspot:hover {
+    background: rgba(255,255,255,.4);
+  }
+  
+  .hotspot.arrow::before {
+    border-width: 11px;
+  }
+  
+  .hotspot.arrow.next::before {
+    border-width: 11px 0 11px 22px;
+  }
+  
+  .hotspot.arrow.prev::before {
+    border-width: 11px 22px 11px 0;
+  }
+}
+
+/* Modo paisagem em smartphones */
+@media (max-height: 500px) and (orientation: landscape) {
+  .hotspot {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .hotspot.arrow::before {
+    border-width: 10px;
+  }
+  
+  .hotspot.arrow.next::before {
+    border-width: 10px 0 10px 20px;
+  }
+  
+  .hotspot.arrow.prev::before {
+    border-width: 10px 20px 10px 0;
+  }
+}
+
+/* Dispositivos com telas sensíveis ao toque */
+@media (hover: none) and (pointer: coarse) {
+  .hotspot {
+    /* Aumentar área de toque em dispositivos móveis */
+    min-width: 55px;
+    min-height: 55px;
+    background: rgba(255,255,255,.3);
+  }
+  
+  .hotspot:active {
+    background: rgba(255,255,255,.45);
+    transform: scale(0.95);
+  }
+}
