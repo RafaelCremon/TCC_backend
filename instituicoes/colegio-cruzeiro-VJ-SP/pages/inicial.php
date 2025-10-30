@@ -195,6 +195,20 @@ $opcoes = get_opcoes_atalhos_padrao();
       box-shadow: 0 4px 24px #5b8cff22;
       transform: scale(1.01);
     }
+
+    /* Ícones do calendário - modo claro mostra azul, modo escuro mostra roxo */
+    .calendar-icon-light {
+      display: inline-block !important;
+    }
+    .calendar-icon-dark {
+      display: none !important;
+    }
+    body.dark-mode .calendar-icon-light {
+      display: none !important;
+    }
+    body.dark-mode .calendar-icon-dark {
+      display: inline-block !important;
+    }
   </style>
 </head>
 <body>
@@ -325,7 +339,11 @@ $opcoes = get_opcoes_atalhos_padrao();
           <div class="calendar-container">
             <div style="flex:1; display:flex; flex-direction:column;">
               <div class="calendar-header">
-                <h3 class="calendar-title">📅 Calendário</h3>
+                <h3 class="calendar-title">
+                  <img src="../assets/imagens/CalendarioAzul.png" alt="Calendário" class="calendar-icon-light" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 8px;">
+                  <img src="../assets/imagens/CalendarioRoxo.png" alt="Calendário" class="calendar-icon-dark" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 8px; display: none;">
+                  Calendário
+                </h3>
                 <div class="calendar-nav">
                   <button class="calendar-nav-btn" id="prevMonth" title="Mês anterior">‹</button>
                   <div class="calendar-month" id="currentMonth">Carregando...</div>
