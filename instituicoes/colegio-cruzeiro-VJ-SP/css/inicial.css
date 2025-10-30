@@ -12,15 +12,24 @@
 }
 
 *{box-sizing:border-box}
-html,body{height:100%}
+html,body{
+  height:100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
 body{
-  margin:0; font-family:Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  margin:0; 
+  font-family:Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
   color:var(--ink);
   background:
     radial-gradient(1200px 600px at 10% -10%, #14266f 0%, transparent 60%),
     linear-gradient(180deg, var(--bg-2) 0%, var(--bg-1) 60%);
-  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  -webkit-font-smoothing:antialiased; 
+  text-rendering:optimizeLegibility;
   overflow-x: hidden;
+  position: relative;
 }
 body::before{
   content:""; position:fixed; inset:0; z-index:-1; pointer-events:none; opacity:.22;
@@ -280,8 +289,16 @@ body::before{
 }
 
 .content{ 
-  margin-left: 0; padding: 22px; display: flex;
-  justify-content: center; padding-top: 50px;
+  margin-left: 0; 
+  padding: 22px; 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 70px;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: calc(100vh - 60px);
 }
 
 .shortcuts-card {
@@ -289,12 +306,15 @@ body::before{
   border-radius: 20px;
   padding: 32px;
   box-shadow: 0 10px 40px rgba(44, 92, 255, 0.12), 0 2px 8px rgba(44, 92, 255, 0.04);
-  width: min(480px, 90vw);
+  width: 100%;
+  max-width: 600px;
   animation: fadeInUp 0.6s ease-out forwards;
   animation-delay: 0.4s;
   border: 1px solid rgba(91, 140, 255, 0.08);
   position: relative;
   overflow: hidden;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .shortcuts-card::before {
@@ -442,43 +462,549 @@ body::before{
   }
 }
 
-/* Responsividade aprimorada para atalhos */
-@media (max-width: 768px) {
+/* ===== RESPONSIVIDADE COMPLETA PARA MONITORES PEQUENOS E MOBILE ===== */
+
+/* Laptops e monitores médios (1440px ou menos) */
+@media (max-width: 1440px) {
+  html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+  
+  .content {
+    padding: 20px 15px;
+    padding-top: 70px;
+    margin-left: 88px;
+    max-width: calc(100vw - 88px);
+    box-sizing: border-box;
+  }
+  
+  .welcome-card {
+    max-width: 650px;
+    width: 100%;
+    margin: 0 auto 20px auto;
+  }
+  
   .shortcuts-card {
-    width: min(95vw, 100%);
-    padding: 24px;
-    margin: 0 10px;
+    max-width: 650px;
+    width: 100%;
+    margin: 0 auto;
   }
   
   .shortcut-buttons {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 18px !important;
   }
   
-  .add-shortcut-btn {
-    min-height: 70px;
-    font-size: 20px;
-  }
-  
-  .shortcuts-card h3 {
-    font-size: 1.2rem;
-    margin-bottom: 20px;
+  .add-shortcut-btn,
+  .shortcut-btn {
+    min-height: 80px;
   }
 }
 
-@media (max-width: 480px) {
-  .shortcut-buttons {
-    gap: 12px;
+/* Laptops de 13-14 polegadas (1280px ou menos) */
+@media (max-width: 1280px) {
+  .content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding: 18px 12px;
+    padding-top: 70px;
+    margin-left: 88px;
+    max-width: calc(100vw - 88px);
+    box-sizing: border-box;
   }
   
-  .add-shortcut-btn {
-    min-height: 60px;
-    font-size: 18px;
-    border-radius: 12px;
+  .welcome-card {
+    max-width: 580px;
+    width: 100%;
+    margin: 0 auto 18px auto;
+    padding: 22px 26px;
   }
   
   .shortcuts-card {
-    padding: 20px;
+    max-width: 580px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 28px;
+  }
+  
+  .shortcuts-card h3 {
+    font-size: 1.3rem;
+    margin-bottom: 22px;
+  }
+  
+  .shortcut-buttons {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 16px !important;
+  }
+  
+  .add-shortcut-btn,
+  .shortcut-btn {
+    min-height: 78px;
+    font-size: 0.7rem;
+  }
+  
+  .shortcut-icon {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+/* Monitores pequenos e laptops (1366px ou menos) */
+@media (max-width: 1366px) {
+  .content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding: 20px 15px;
+    padding-top: 70px;
+    margin-left: 88px;
+    max-width: calc(100vw - 88px);
+    box-sizing: border-box;
+  }
+  
+  .welcome-card {
+    max-width: 600px;
+    width: 100%;
+    margin: 0 auto 20px auto;
+    padding: 24px 30px;
+  }
+  
+  .shortcuts-card {
+    max-width: 600px;
+    width: 100%;
+    margin: 0 auto;
+  }
+  
+  .shortcut-buttons {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 18px !important;
+  }
+  
+  .add-shortcut-btn,
+  .shortcut-btn {
+    min-height: 85px;
+  }
+}
+
+/* Tablets e monitores pequenos (1024px ou menos) */
+@media (max-width: 1024px) {
+  .top-bar {
+    padding: 12px 18px;
+  }
+  
+  .top-bar h1 {
+    font-size: 16px;
+  }
+  
+  .sidebar {
+    width: 72px;
+    padding: 70px 6px 10px;
+  }
+  
+  .sidebar-item {
+    font-size: 11px;
+    padding: 6px;
+  }
+  
+  .sidebar-icon {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .content {
+    padding: 18px 12px;
+    padding-top: 70px;
+    margin-left: 72px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .welcome-card {
+    max-width: 95%;
+    width: 100%;
+    padding: 22px 28px;
+    gap: 18px;
+    margin: 0 auto 18px auto;
+  }
+  
+  .welcome-avatar {
+    width: 64px;
+    height: 64px;
+  }
+  
+  .welcome-title {
+    font-size: 1.75rem;
+  }
+  
+  .welcome-desc {
+    font-size: 0.95rem;
+  }
+  
+  .shortcuts-card {
+    max-width: 95%;
+    width: 100%;
+    margin: 0 auto;
+  }
+  
+  .shortcut-buttons {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 16px !important;
+  }
+}
+
+/* Tablets em modo retrato (768px ou menos) */
+@media (max-width: 768px) {
+  body {
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  
+  .top-bar {
+    padding: 10px 14px;
+    position: fixed;
+    width: 100%;
+  }
+  
+  .top-bar h1 {
+    font-size: 15px;
+  }
+  
+  .logo {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .admin-avatar {
+    width: 28px;
+    height: 28px;
+  }
+  
+  /* Sidebar adaptada para mobile */
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: fixed;
+    bottom: 0;
+    top: auto;
+    left: 0;
+    right: 0;
+    padding: 12px 8px;
+    flex-direction: row;
+    justify-content: space-around;
+    gap: 8px;
+    border-right: none;
+    border-top: 1px solid rgba(176,198,255,.4);
+    transform: translateY(100%);
+    z-index: 1001;
+  }
+  
+  .sidebar.visible {
+    transform: translateY(0);
+  }
+  
+  .sidebar-item {
+    flex-direction: column;
+    align-items: center;
+    font-size: 10px;
+    padding: 6px 4px;
+    min-width: 60px;
+    width: auto;
+  }
+  
+  .sidebar-item:hover {
+    transform: translateY(-3px) scale(1.05);
+  }
+  
+  .sidebar-icon {
+    width: 28px;
+    height: 28px;
+  }
+  
+  /* Menu de opções ajustado */
+  .options {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 90vw;
+    max-width: 360px;
+  }
+  
+  .options.active {
+    transform: translateX(-50%);
+  }
+  
+  /* Conteúdo principal */
+  .content {
+    margin-left: 0;
+    margin-bottom: 80px;
+    padding: 16px;
+    padding-top: 70px;
+  }
+  
+  /* Cards de atalhos */
+  .shortcuts-card {
+    width: min(95vw, 100%);
+    padding: 24px 20px;
+    margin: 20px auto;
+  }
+  
+  .shortcuts-card h3 {
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+  }
+  
+  .shortcut-buttons {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
+  }
+  
+  .add-shortcut-btn,
+  .shortcut-btn {
+    min-height: 85px;
+    font-size: 0.75rem;
+    padding: 12px 8px !important;
+  }
+  
+  .shortcut-icon {
+    width: 34px;
+    height: 34px;
+  }
+  
+  /* Welcome card */
+  .welcome-card {
+    max-width: 95%;
+    padding: 20px 24px;
+    margin: 20px auto;
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .welcome-avatar {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .welcome-title {
+    font-size: 1.6rem;
+  }
+  
+  .welcome-desc {
+    font-size: 0.9rem;
+  }
+  
+  /* Animações reduzidas em mobile */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* Smartphones (480px ou menos) */
+@media (max-width: 480px) {
+  .top-bar {
+    padding: 8px 12px;
+  }
+  
+  .top-bar h1 {
+    font-size: 14px;
+  }
+  
+  .brand {
+    gap: 10px;
+  }
+  
+  .logo {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .admin-avatar {
+    width: 26px;
+    height: 26px;
+  }
+  
+  .menu-button {
+    padding: 6px;
+  }
+  
+  .sidebar {
+    padding: 10px 6px;
+    gap: 6px;
+  }
+  
+  .sidebar-item {
+    font-size: 9px;
+    padding: 5px 3px;
+    min-width: 50px;
+  }
+  
+  .sidebar-icon {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .content {
+    padding: 12px;
+    padding-top: 65px;
+    margin-bottom: 75px;
+  }
+  
+  .shortcuts-card {
+    width: 100%;
+    padding: 18px 14px;
+    margin: 15px auto;
+    border-radius: 16px;
+  }
+  
+  .shortcuts-card h3 {
+    font-size: 1.15rem;
+    margin-bottom: 16px;
+  }
+  
+  .shortcuts-card h3::before {
+    font-size: 1rem;
+  }
+  
+  .shortcut-buttons {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+  
+  .add-shortcut-btn,
+  .shortcut-btn {
+    min-height: 75px;
+    font-size: 0.7rem;
+    padding: 10px 6px !important;
+    border-radius: 12px;
+  }
+  
+  .shortcut-icon {
+    width: 30px;
+    height: 30px;
+    margin-bottom: 4px;
+  }
+  
+  .welcome-card {
+    padding: 18px 20px;
+    margin: 15px auto;
+    border-radius: 18px;
+  }
+  
+  .welcome-avatar {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .welcome-title {
+    font-size: 1.4rem;
+  }
+  
+  .welcome-desc {
+    font-size: 0.85rem;
+  }
+  
+  .options {
+    min-width: 95vw;
+    padding: 8px;
+  }
+  
+  .options button {
+    padding: 10px;
+    font-size: 14px;
+  }
+}
+
+/* Smartphones muito pequenos (360px ou menos) */
+@media (max-width: 360px) {
+  .top-bar h1 {
+    font-size: 13px;
+  }
+  
+  .sidebar-item {
+    font-size: 8px;
+    min-width: 45px;
+  }
+  
+  .sidebar-icon {
+    width: 22px;
+    height: 22px;
+  }
+  
+  .shortcuts-card {
+    padding: 16px 12px;
+  }
+  
+  .shortcuts-card h3 {
+    font-size: 1.05rem;
+  }
+  
+  .shortcut-buttons {
+    gap: 10px !important;
+  }
+  
+  .add-shortcut-btn,
+  .shortcut-btn {
+    min-height: 65px;
+    font-size: 0.65rem;
+    padding: 8px 5px !important;
+  }
+  
+  .shortcut-icon {
+    width: 26px;
+    height: 26px;
+  }
+  
+  .welcome-title {
+    font-size: 1.25rem;
+  }
+  
+  .welcome-desc {
+    font-size: 0.8rem;
+  }
+}
+
+/* Modo paisagem em smartphones */
+@media (max-height: 500px) and (orientation: landscape) {
+  .content {
+    padding-top: 55px;
+    margin-bottom: 70px;
+  }
+  
+  .welcome-card {
+    flex-direction: row;
+    padding: 16px 20px;
+  }
+  
+  .welcome-avatar {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .welcome-title {
+    font-size: 1.3rem;
+  }
+  
+  .shortcuts-card {
+    padding: 18px;
+  }
+  
+  .shortcut-buttons {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 12px !important;
+  }
+  
+  .add-shortcut-btn,
+  .shortcut-btn {
+    min-height: 60px;
   }
 }
 
@@ -743,13 +1269,15 @@ body.dark-mode .overlay {
   border-radius: 22px;
   box-shadow: 0 12px 40px rgba(44, 92, 255, 0.15), 0 4px 12px rgba(44, 92, 255, 0.08);
   padding: 28px 36px;
-  max-width: 420px;
-  margin: 32px auto 0 auto;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto 24px auto;
   animation: welcomeEntrance 1s ease-out;
   position: relative;
   overflow: hidden;
   border: 1px solid rgba(91, 140, 255, 0.1);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-sizing: border-box;
 }
 
 @keyframes welcomeEntrance {
@@ -966,6 +1494,7 @@ body.dark-mode .welcome-desc {
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
 }
 

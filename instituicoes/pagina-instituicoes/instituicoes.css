@@ -26,3 +26,95 @@
  .escola-botao:hover {
       background-color: #e6f0ff;
 }
+
+/* ===== RESPONSIVIDADE COMPLETA PARA PÁGINA DE INSTITUIÇÕES ===== */
+
+/* Tablets e monitores pequenos (1024px ou menos) */
+@media (max-width: 1024px) {
+    .logo-escola {
+        width: 38px;
+        height: 38px;
+        margin-right: 14px;
+    }
+    
+    .escola-botao {
+        padding: 9px;
+        border-radius: 9px;
+    }
+}
+
+/* Tablets em modo retrato (768px ou menos) */
+@media (max-width: 768px) {
+    .logo-escola {
+        width: 36px;
+        height: 36px;
+        margin-right: 12px;
+        border-radius: 5px;
+    }
+    
+    .escola-botao {
+        padding: 8px;
+        border-radius: 8px;
+        font-size: 0.95rem;
+    }
+    
+    .info-escola {
+        gap: 4px;
+    }
+}
+
+/* Smartphones (480px ou menos) */
+@media (max-width: 480px) {
+    .logo-escola {
+        width: 34px;
+        height: 34px;
+        margin-right: 10px;
+        border-radius: 5px;
+    }
+    
+    .escola-botao {
+        padding: 8px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+    }
+    
+    .escola-botao:hover {
+        background-color: #e6f0ff;
+        transform: translateX(2px);
+    }
+    
+    .info-escola {
+        gap: 3px;
+    }
+}
+
+/* Smartphones muito pequenos (360px ou menos) */
+@media (max-width: 360px) {
+    .logo-escola {
+        width: 32px;
+        height: 32px;
+        margin-right: 9px;
+    }
+    
+    .escola-botao {
+        padding: 7px;
+        border-radius: 7px;
+        font-size: 0.85rem;
+        margin-bottom: 8px;
+    }
+}
+
+/* Modo paisagem em smartphones */
+@media (max-height: 500px) and (orientation: landscape) {
+    .logo-escola {
+        width: 30px;
+        height: 30px;
+        margin-right: 8px;
+    }
+    
+    .escola-botao {
+        padding: 6px 8px;
+        font-size: 0.85rem;
+    }
+}

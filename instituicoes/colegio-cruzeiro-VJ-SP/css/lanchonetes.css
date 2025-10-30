@@ -273,3 +273,407 @@ body.dark-mode .pedido-bot button {
 body.dark-mode .pedido-bot button:hover {
   background: linear-gradient(135deg, #0037aa 60%, #00b8cc 100%);
 }
+
+/* ===== RESPONSIVIDADE COMPLETA PARA LANCHONETES ===== */
+
+/* Tablets e monitores pequenos (1024px ou menos) */
+@media (max-width: 1024px) {
+  .lanchonetes-card {
+    max-width: 90vw;
+    padding: 32px 36px 26px 36px;
+  }
+  
+  .lanchonetes-list {
+    gap: 20px;
+  }
+  
+  .lanchonete-item {
+    padding: 20px 16px;
+  }
+}
+
+/* Tablets em modo retrato (768px ou menos) */
+@media (max-width: 768px) {
+  .lanchonetes-card {
+    max-width: 95vw;
+    padding: 28px 32px 24px 32px;
+    margin: 50px auto 0 auto;
+    border-radius: 20px;
+  }
+  
+  .lanchonetes-title {
+    font-size: 1.85rem;
+    margin-bottom: 16px;
+    gap: 10px;
+  }
+  
+  .lanchonetes-mainicon {
+    font-size: 2rem;
+  }
+  
+  .lanchonetes-list {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  
+  .lanchonete-item {
+    padding: 20px 18px;
+    border-radius: 14px;
+  }
+  
+  .lanchonete-icon {
+    width: 46px;
+    height: 46px;
+    font-size: 1.9rem;
+  }
+  
+  .lanchonete-nome {
+    font-size: 1.1rem;
+  }
+  
+  .voltar-btn {
+    font-size: 15px;
+    padding: 7px 14px;
+  }
+  
+  /* Cardápios */
+  .cardapio-novo-container {
+    padding: 0 10px;
+  }
+  
+  .cardapio-novo-topo {
+    height: 120px;
+  }
+  
+  .cardapio-novo-logo {
+    padding: 16px 50px;
+    font-size: 2.5rem;
+    border-radius: 45px;
+  }
+  
+  .cardapio-novo-lista {
+    padding: 28px 0 0 0;
+  }
+  
+  .cardapio-novo-tabela {
+    min-width: 300px;
+    max-width: 380px;
+    font-size: 1.15rem;
+    padding: 16px 0;
+  }
+  
+  .pedido-bot {
+    max-width: 360px;
+    padding: 20px 28px;
+    gap: 11px;
+  }
+  
+  .pedido-bot label {
+    font-size: 1.05rem;
+  }
+  
+  .pedido-bot input,
+  .pedido-bot select {
+    padding: 7px 11px;
+    font-size: 14px;
+  }
+  
+  .pedido-bot button {
+    padding: 9px 0;
+    font-size: 14px;
+  }
+  
+  .cardapio-list li {
+    padding: 8px 11px;
+    font-size: 14px;
+    margin-bottom: 5px;
+  }
+  
+  .cardapio-section-title {
+    font-size: 1.05rem;
+  }
+}
+
+/* Smartphones (480px ou menos) */
+@media (max-width: 480px) {
+  body {
+    overflow-y: auto;
+  }
+  
+  .lanchonetes-card {
+    max-width: 98vw;
+    padding: 24px 20px 20px 20px;
+    margin: 40px auto 0 auto;
+    border-radius: 18px;
+  }
+  
+  .lanchonetes-title {
+    font-size: 1.65rem;
+    margin-bottom: 14px;
+    gap: 9px;
+    letter-spacing: 0.5px;
+  }
+  
+  .lanchonetes-mainicon {
+    font-size: 1.85rem;
+  }
+  
+  .lanchonetes-list {
+    gap: 16px;
+  }
+  
+  .lanchonete-item {
+    padding: 18px 16px;
+    border-radius: 13px;
+    gap: 14px;
+  }
+  
+  .lanchonete-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 11px;
+    font-size: 1.8rem;
+  }
+  
+  .lanchonete-nome {
+    font-size: 1.05rem;
+    letter-spacing: 0.3px;
+  }
+  
+  .voltar-btn {
+    font-size: 14px;
+    padding: 7px 13px;
+    margin-left: 8px;
+    margin-top: 8px;
+  }
+  
+  /* Cardápios mobile */
+  .cardapio-novo-container {
+    padding: 0 8px;
+  }
+  
+  .cardapio-novo-topo {
+    height: 110px;
+  }
+  
+  .cardapio-novo-logo {
+    padding: 14px 45px;
+    font-size: 2.2rem;
+    border-radius: 40px;
+  }
+  
+  .cardapio-novo-lista {
+    padding: 24px 0 0 0;
+  }
+  
+  .cardapio-novo-tabela {
+    min-width: 280px;
+    max-width: 95vw;
+    font-size: 1.1rem;
+    padding: 14px 0;
+    border-radius: 10px;
+  }
+  
+  .pedido-bot {
+    max-width: 95vw;
+    padding: 18px 24px;
+    gap: 10px;
+    border-radius: 12px;
+    margin-top: 28px;
+  }
+  
+  .pedido-bot label {
+    font-size: 1rem;
+  }
+  
+  .pedido-bot input,
+  .pedido-bot select {
+    padding: 7px 10px;
+    font-size: 13px;
+    border-radius: 6px;
+  }
+  
+  .pedido-bot button {
+    padding: 9px 0;
+    font-size: 13px;
+    border-radius: 6px;
+  }
+  
+  .cardapio-list {
+    margin: 0 0 16px 0;
+  }
+  
+  .cardapio-list li {
+    padding: 7px 10px;
+    font-size: 13px;
+    border-radius: 5px;
+    margin-bottom: 5px;
+  }
+  
+  .cardapio-list .preco {
+    margin-left: 10px;
+  }
+  
+  .cardapio-section-title {
+    font-size: 1rem;
+    margin: 16px 0 5px 0;
+  }
+  
+  /* Modal de confirmação mobile */
+  #modalConfirmacaoUnicantina > div {
+    max-width: 90vw;
+    padding: 28px 32px;
+    border-radius: 10px;
+  }
+  
+  #modalConfirmacaoUnicantina > div > div:first-child {
+    font-size: 1.75rem;
+  }
+  
+  #modalConfirmacaoUnicantina > div > div:nth-child(2) {
+    font-size: 1rem;
+    margin-bottom: 16px;
+  }
+  
+  #btnConfirmarUnicantina,
+  #btnCancelarUnicantina {
+    font-size: 1.2rem;
+    padding: 9px 0;
+  }
+}
+
+/* Smartphones muito pequenos (360px ou menos) */
+@media (max-width: 360px) {
+  .lanchonetes-card {
+    max-width: 100vw;
+    padding: 20px 16px 18px 16px;
+    margin: 35px auto 0 auto;
+    border-radius: 16px;
+  }
+  
+  .lanchonetes-title {
+    font-size: 1.5rem;
+    margin-bottom: 12px;
+    gap: 8px;
+  }
+  
+  .lanchonetes-mainicon {
+    font-size: 1.7rem;
+  }
+  
+  .lanchonetes-list {
+    gap: 14px;
+  }
+  
+  .lanchonete-item {
+    padding: 16px 14px;
+    gap: 12px;
+  }
+  
+  .lanchonete-icon {
+    width: 42px;
+    height: 42px;
+    font-size: 1.7rem;
+  }
+  
+  .lanchonete-nome {
+    font-size: 1rem;
+  }
+  
+  .voltar-btn {
+    font-size: 13px;
+    padding: 6px 12px;
+  }
+  
+  .cardapio-novo-topo {
+    height: 100px;
+  }
+  
+  .cardapio-novo-logo {
+    padding: 12px 40px;
+    font-size: 2rem;
+    border-radius: 35px;
+  }
+  
+  .cardapio-novo-tabela {
+    min-width: 260px;
+    font-size: 1.05rem;
+  }
+  
+  .pedido-bot {
+    padding: 16px 20px;
+    gap: 9px;
+  }
+  
+  .pedido-bot label {
+    font-size: 0.95rem;
+  }
+  
+  .pedido-bot input,
+  .pedido-bot select {
+    padding: 6px 9px;
+    font-size: 12px;
+  }
+  
+  .pedido-bot button {
+    padding: 8px 0;
+    font-size: 12px;
+  }
+  
+  .cardapio-list li {
+    padding: 6px 9px;
+    font-size: 12px;
+  }
+  
+  .cardapio-section-title {
+    font-size: 0.95rem;
+  }
+  
+  #modalConfirmacaoUnicantina > div {
+    padding: 24px 28px;
+  }
+  
+  #modalConfirmacaoUnicantina > div > div:first-child {
+    font-size: 1.6rem;
+  }
+  
+  #modalConfirmacaoUnicantina > div > div:nth-child(2) {
+    font-size: 0.95rem;
+  }
+  
+  #btnConfirmarUnicantina,
+  #btnCancelarUnicantina {
+    font-size: 1.15rem;
+    padding: 8px 0;
+  }
+}
+
+/* Modo paisagem em smartphones */
+@media (max-height: 500px) and (orientation: landscape) {
+  .lanchonetes-card {
+    margin: 20px auto;
+    padding: 20px 30px;
+  }
+  
+  .lanchonetes-list {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  
+  .lanchonete-item {
+    padding: 14px 12px;
+  }
+  
+  .cardapio-novo-topo {
+    height: 90px;
+  }
+  
+  .cardapio-novo-logo {
+    padding: 10px 35px;
+    font-size: 1.8rem;
+  }
+  
+  .pedido-bot {
+    margin-top: 20px;
+  }
+}
